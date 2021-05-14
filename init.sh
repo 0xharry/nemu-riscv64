@@ -34,7 +34,7 @@ function init_no_git() {
   fi
 
   while [ ! -d $1 ]; do
-    git clone -b $version https://github.com/NJU-ProjectN/$1.git
+    git clone -b $version https://gitee.com/harryustc/$1.git
   done
   log="$1 `cd $1 && git log --oneline --no-abbrev-commit -n1`"$'\n'
 
