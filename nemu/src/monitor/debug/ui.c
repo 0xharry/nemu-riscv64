@@ -64,14 +64,15 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  { "si [N]", "Execute next N steps", cmd_si},
-  { "info r", "Print values of registers", cmd_info},
-  { "x N EXPR", "Print next 4N Bytes value from address EXRP", cmd_read_addr},
-  { "p EXPR", "Compute value of EXPR", cmd_p}
+  { "si", "\'si [N]\'Execute next N steps", cmd_si},
+  { "info", "\'info r\'Print values of registers", cmd_info},
+  { "x", "\'x N EXPR\'Print next 4N Bytes value from address EXRP", cmd_read_addr},
+  { "p", "\'p EXPR\'Compute value of EXPR", cmd_p}
   /* TODO: Add more commands */
 
 };
 
+// number of cmds
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
 
 static int cmd_help(char *args) {
