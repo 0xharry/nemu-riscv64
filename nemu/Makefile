@@ -1,4 +1,5 @@
 NAME = nemu
+# MAKEFLAGS += -j8
 
 ISA ?= x86 # if ISA is undefined，ISA=x86
 ISAS = $(shell ls src/isa/)
