@@ -1,7 +1,7 @@
 NAME = nemu
 # MAKEFLAGS += -j8
 
-ISA ?= x86 # if ISA is undefined，ISA=x86
+ISA ?= riscv64 # if ISA is undefined，ISA=riscv64
 ISAS = $(shell ls src/isa/)
 ifeq ($(filter $(ISAS), $(ISA)), ) # ISA must be valid
 $(error Invalid ISA. Supported: $(ISAS))

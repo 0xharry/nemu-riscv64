@@ -63,8 +63,10 @@ static inline void parse_args(int argc, char *argv[]) {
     {"port"     , required_argument, NULL, 'p'},
     {"help"     , no_argument      , NULL, 'h'},
     {0          , 0                , NULL,  0 },
+    // 最后一行用于处理不存在的参数
   };
   int o;
+  // 依次解析参数，解析完成返回-1
   while ( (o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
     switch (o) {
       case 'b': batch_mode = true; break;
