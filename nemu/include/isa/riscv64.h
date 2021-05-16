@@ -12,7 +12,7 @@
 typedef struct {
   union {
     rtlreg_t _64;
-  } gpr[32];
+  } gpr[32]; // 32个通用register
 
   vaddr_t pc;
 } riscv64_CPU_state;

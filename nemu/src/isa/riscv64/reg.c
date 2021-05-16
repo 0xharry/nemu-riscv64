@@ -8,11 +8,10 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
-// ???
 void isa_reg_display() {
-  for(int i=0; i<32; i+=2)
+  for(int i=0; i<32; ++i)
   {
-    printf("%s = ?\t%s = ?\n",regs[i],regs[i+1]);
+    printf("%s 0x%lx\n",regs[i],cpu.gpr[i]._64);
   }
 }
 

@@ -84,6 +84,8 @@ void cpu_exec(uint64_t n) {
     difftest_step(this_pc, cpu.pc);
 
     g_nr_guest_instr ++;
+    // 假装在debug，试试si好不好使
+    asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
 #ifdef DEBUG
     asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);

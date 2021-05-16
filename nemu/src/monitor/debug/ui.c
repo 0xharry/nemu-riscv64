@@ -9,7 +9,7 @@
 void cpu_exec(uint64_t);
 int is_batch_mode();
 
-/* We use the `readline' library to provide more flexibility to read from stdin. */
+/* 读一行char*返回,并保存历史. We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
 
@@ -32,14 +32,20 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-
+// 返回-1触发主循环退出条件
 static int cmd_q(char *args) {
   return -1;
 }
 
 static int cmd_help(char *args);
 
+// N步执行
 static int cmd_si(char *args) {
+  args = strtok(NULL," ");
+  if(!args)
+    cpu_exec(1);
+  else
+    cpu_exec(*args);
   return 0;
 }
 
@@ -125,6 +131,7 @@ void ui_mainloop() {
 #endif
 
     int i;
+    // 顺序查找匹配的命令，匹配调用handler，返回<0值退出
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
         if (cmd_table[i].handler(args) < 0) { return; }
@@ -132,6 +139,7 @@ void ui_mainloop() {
       }
     }
 
+    // 没找到那就有问题
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
   }
 }
