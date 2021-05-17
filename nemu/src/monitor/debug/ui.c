@@ -63,7 +63,7 @@ static int cmd_read_addr(char *args) {
   printf("%u Byte start at Mem[0x%ux]\n", n, expr);
   for(unsigned i=0; i<n; ++i)
   {
-    printf("0x%ux\n",*(unsigned *)(guest_to_host(expr-PMEM_BASE)));
+    printf("0x%ux\n",*(unsigned *)(guest_to_host(expr+4*i-PMEM_BASE)));
   }
   return 0;
 }
