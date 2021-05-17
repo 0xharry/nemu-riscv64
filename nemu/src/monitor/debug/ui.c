@@ -57,7 +57,7 @@ static int cmd_info(char *args) {
 
 #include <memory/paddr.h>
 static int cmd_read_addr(char *args) {
-  // TODO: illegal args and abstraction for different ISA
+  // TODO: illegal args and unreadable code need refinement
   unsigned n = *strtok(NULL," ") - '0';
   unsigned expr = strtoul(strtok(NULL," "),NULL,16);
   printf("%u Byte start at Mem[0x%x]\n", n, expr);
