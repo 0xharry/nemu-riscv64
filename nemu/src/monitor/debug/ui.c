@@ -59,11 +59,11 @@ static int cmd_info(char *args) {
 static int cmd_read_addr(char *args) {
   // TODO: illegal args and abstraction for different ISA
   unsigned n = *strtok(NULL," ") - '0';
-  long expr = strtol(strtok(NULL," "),NULL,16);
-  printf("%u Byte start at Mem[%lx]\n", n, expr);
+  unsigned expr = strtoul(strtok(NULL," "),NULL,16);
+  printf("%u Byte start at Mem[0x%ux]\n", n, expr);
   for(unsigned i=0; i<n; ++i)
   {
-    printf("%x\n",*(unsigned *)(guest_to_host(expr)));
+    printf("0x%ux\n",*(unsigned *)(guest_to_host(expr-PMEM_BASE)));
   }
   return 0;
 }
