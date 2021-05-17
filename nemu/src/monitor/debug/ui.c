@@ -41,6 +41,7 @@ static int cmd_help(char *args);
 
 // N步执行
 static int cmd_si(char *args) {
+  // TODO: consider if args are illegal
   args = strtok(NULL," ");
   if(!args)
     cpu_exec(1);
@@ -54,7 +55,16 @@ static int cmd_info(char *args) {
   return 0;
 }
 
+#include <memory/paddr.h>
 static int cmd_read_addr(char *args) {
+  // TODO: illegal args and abstraction for different ISA
+  unsigned n = *strtok(NULL," ") - '0';
+  long expr = strtol(strtok(NULL," "),NULL,16);
+  printf("%u Byte start at Mem[%lx]\n", n, expr);
+  for(unsigned i=0; i<n; ++i)
+  {
+    printf("%x\n",*(unsigned *)(guest_to_host(expr)));
+  }
   return 0;
 }
 
@@ -70,10 +80,10 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  { "si", "\'si [N]\'Execute next N steps", cmd_si},
-  { "info", "\'info r\'Print values of registers", cmd_info},
-  { "x", "\'x N EXPR\'Print next 4N Bytes value from address EXRP", cmd_read_addr},
-  { "p", "\'p EXPR\'Compute value of EXPR", cmd_p}
+  { "si", "\'si [N]\'\tExecute next N steps", cmd_si},
+  { "info", "Print values of all registers", cmd_info},
+  { "x", "\'x N EXPR\'\tExam next 4N Bytes value from address EXRP", cmd_read_addr},
+  { "p", "\'p EXPR\'\tCompute value of EXPR", cmd_p}
   /* TODO: Add more commands */
 
 };
