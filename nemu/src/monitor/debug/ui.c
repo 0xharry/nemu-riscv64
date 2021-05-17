@@ -60,10 +60,10 @@ static int cmd_read_addr(char *args) {
   // TODO: illegal args and abstraction for different ISA
   unsigned n = *strtok(NULL," ") - '0';
   unsigned expr = strtoul(strtok(NULL," "),NULL,16);
-  printf("%u Byte start at Mem[0x%ux]\n", n, expr);
+  printf("%u Byte start at Mem[0x%x]\n", n, expr);
   for(unsigned i=0; i<n; ++i)
   {
-    printf("0x%ux\n",*(unsigned *)(guest_to_host(expr+4*i-PMEM_BASE)));
+    printf("0x%x\n",*(unsigned *)(guest_to_host(expr+4*i-PMEM_BASE)));
   }
   return 0;
 }
