@@ -85,7 +85,7 @@ void cpu_exec(uint64_t n) {
 
     g_nr_guest_instr ++;
     // 测试si好不好使
-    printf("cpu_exec n=%lu\npc=%lux\n",n,cpu.pc);
+    printf("cpu_exec n=%lu\npc=%lx\n",n,cpu.pc);
 
 #ifdef DEBUG
     asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
