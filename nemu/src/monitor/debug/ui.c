@@ -45,7 +45,7 @@ static int cmd_si(char *args) {
   if(!args)
     cpu_exec(1);
   else
-    cpu_exec(*args);
+    cpu_exec(*args-'0');
   return 0;
 }
 
