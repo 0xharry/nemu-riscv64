@@ -178,7 +178,7 @@ bool check_parentheses(int p, int q)
   q--;
   // 双指针，相遇时退出，判断左右括号是否>0且相等
   int left=1, right=1;
-  while(p < q)
+  while(p <= q)
   {
     // 左指针
     switch (tokens[p++].type)
