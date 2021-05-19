@@ -225,20 +225,27 @@ int find_main_op(int p, int q)
   while (p <= q)
   {
     if(jmp)
+    {
+      p++;
       continue;
+    }
     switch (tokens[p].type)
     {
       // 括号一律忽略
       case TK_LP:
+        p++;
         jmp = true;
         break;
       case TK_RP:
         if(jmp)
+        {
+          p++;
           jmp = false;
+        }
         else
           Assert(0, "parenthesis not match"); // 只有右括号无左括号，有问题
         break;
-        
+
       case TK_PLUS:
       case TK_MINUS:
         return p;
