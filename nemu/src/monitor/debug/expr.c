@@ -231,7 +231,7 @@ int find_main_op(int p, int q)
 
     case TK_MUL:
     case TK_DIV:
-      ret_op = ret_op<TK_MUL?ret_op:p++;
+      ret_op = ret_op<TK_MUL?ret_op:p;
       
     default:
       p++;
@@ -271,19 +271,19 @@ word_t eval(int p, int q) {
     return eval(p + 1, q - 1);
   }
   else {
-    int op = find_main_op(p, q);
-    word_t val1 = eval(p, op - 1);
-    word_t val2 = eval(op + 1, q);
+    int op_pos = find_main_op(p, q);
+    word_t val1 = eval(p, op_pos - 1);
+    word_t val2 = eval(op_pos + 1, q);
 
-    switch (tokens[op].type) {
-      case '+': return val1 + val2;
-      case '-': return val1 - val2;
-      case '*': return val1 * val2;
-      case '/': 
+    switch (tokens[op_pos].type) {
+      case TK_PLUS: return val1 + val2;
+      case TK_MINUS: return val1 - val2;
+      case TK_MUL: return val1 * val2;
+      case TK_DIV: 
       if(val2 == 0)
         Assert(0, "divide 0 error");
       return val1 / val2;
-      default: Assert(0, "impossible main op type %d", tokens[op].type);
+      default: Assert(0, "impossible main op type %d", tokens[op_pos].type);
     }
   }
 }
