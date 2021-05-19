@@ -172,7 +172,7 @@ static bool make_token(char *e) {
 bool check_parentheses(int p, int q)
 {
   if(tokens[p].type != TK_LP\
-  && tokens[q].type != TK_RP)
+  || tokens[q].type != TK_RP)
     return false;
   p++;
   q--;
