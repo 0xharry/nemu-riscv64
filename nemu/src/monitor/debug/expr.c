@@ -191,7 +191,6 @@ bool check_parentheses(int p, int q)
       break;
 
     default:
-      return false; // bad expression
       break;
     }
     // 右指针
@@ -206,7 +205,6 @@ bool check_parentheses(int p, int q)
       break;
 
     default:
-      return false; // bad expression
       break;
     }
   }
