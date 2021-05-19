@@ -221,21 +221,35 @@ bool check_parentheses(int p, int q)
 int find_main_op(int p, int q)
 {
   int ret_op = TK_IDEC;
+  bool jmp = false;
   while (p <= q)
   {
+    if(jmp)
+      continue;
     switch (tokens[p].type)
     {
-    case TK_PLUS:
-    case TK_MINUS:
-      return p;
+      // 括号一律忽略
+      case TK_LP:
+        jmp = true;
+        break;
+      case TK_RP:
+        if(jmp)
+          jmp = false;
+        else
+          Assert(0, "parenthesis not match"); // 只有右括号无左括号，有问题
+        break;
+        
+      case TK_PLUS:
+      case TK_MINUS:
+        return p;
 
-    case TK_MUL:
-    case TK_DIV:
-      ret_op = ret_op<TK_MUL?ret_op:p;
-      
-    default:
-      p++;
-      break;
+      case TK_MUL:
+      case TK_DIV:
+        ret_op = ret_op<TK_MUL?ret_op:p;
+        
+      default:
+        p++;
+        break;
     }
   }
   
