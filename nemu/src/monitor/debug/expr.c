@@ -255,7 +255,8 @@ word_t eval(int p, int q) {
     switch (tokens[p].type)
     {
     case TK_IDEC:
-      Assert(sscanf(tokens[p].str, "%lu", &ret) != -1, "sscanf fault");
+      if(sscanf(tokens[p].str, "%lu", &ret) == -1)
+        Assert(0, "sscanf fault");
       return ret;
     
     default:
