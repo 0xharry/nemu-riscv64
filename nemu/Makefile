@@ -64,7 +64,8 @@ include Makefile.git
 CC = gcc
 LD = gcc
 INCLUDES  = $(addprefix -I, $(INC_DIR))
-CFLAGS   += -O2 -MMD -Wall -Werror -ggdb3 $(INCLUDES) \
+# 去掉了 -O2 （影响debug）
+CFLAGS   += -MMD -Wall -Werror -ggdb3 $(INCLUDES) \
             -D__ENGINE_$(ENGINE)__ \
             -D__ISA__=$(ISA) -D__ISA_$(ISA)__ -D_ISA_H_=\"isa/$(ISA).h\"
 
@@ -99,8 +100,8 @@ NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
 $(BINARY): $(OBJS)
 	$(call git_commit, "compile")
 	@echo + LD $@
-	@$(LD) -O2 -rdynamic $(SO_LDLAGS) -o $@ $^ $(LD_LIBS)
-
+	@$(LD) -rdynamic $(SO_LDLAGS) -o $@ $^ $(LD_LIBS)
+# 上面去掉了 -O2 
 run-env: $(BINARY) $(DIFF_REF_SO)
 
 run: run-env
