@@ -218,36 +218,74 @@ bool check_parentheses(int p, int q)
     return false;
 }
 
-// word_t eval(int p, int q) {
-//   if (p > q) {
-//     /* Bad expression */
-//   }
-//   else if (p == q) {
-//     /* Single token.
-//      * For now this token should be a number.
-//      * Return the value of the number.
-//      */
-//   }
-//   else if (check_parentheses(p, q) == true) {
-//     /* The expression is surrounded by a matched pair of parentheses.
-//      * If that is the case, just throw away the parentheses.
-//      */
-//     return eval(p + 1, q - 1);
-//   }
-//   else {
-//     op = the position of 主运算符 in the token expression;
-//     val1 = eval(p, op - 1);
-//     val2 = eval(op + 1, q);
+int find_main_op(int p, int q)
+{
+  int ret_op = TK_IDEC;
+  while (p <= q)
+  {
+    switch (tokens[p].type)
+    {
+    case TK_PLUS:
+    case TK_MINUS:
+      return p;
 
-//     switch (op_type) {
-//       case '+': return val1 + val2;
-//       case '-': /* ... */
-//       case '*': /* ... */
-//       case '/': /* ... */
-//       default: assert(0);
-//     }
-//   }
-// }
+    case TK_MUL:
+    case TK_DIV:
+      ret_op = ret_op<TK_MUL?ret_op:p++;
+      
+    default:
+      p++;
+      break;
+    }
+  }
+  
+  return ret_op;
+}
+
+word_t eval(int p, int q) {
+  if (p > q) {
+    Assert(0,"p > q, Bad expression"); /* Bad expression */
+  }
+  else if (p == q) {
+    /* Single token.
+     * For now this token should be a number.
+     * Return the value of the number.
+     */
+    word_t ret;
+    switch (tokens[p].type)
+    {
+    case TK_IDEC:
+      Assert(sscanf(tokens[p].str, "%lu", &ret) != -1, "sscanf fault");
+      return ret;
+    
+    default:
+      Assert(0, "a single token is not a number");
+      break;
+    }
+  }
+  else if (check_parentheses(p, q) == true) {
+    /* The expression is surrounded by a matched pair of parentheses.
+     * If that is the case, just throw away the parentheses.
+     */
+    return eval(p + 1, q - 1);
+  }
+  else {
+    int op = find_main_op(p, q);
+    word_t val1 = eval(p, op - 1);
+    word_t val2 = eval(op + 1, q);
+
+    switch (tokens[op].type) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 * val2;
+      case '/': 
+      if(val2 == 0)
+        Assert(0, "divide 0 error");
+      return val1 / val2;
+      default: Assert(0, "impossible main op type %d", tokens[op].type);
+    }
+  }
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -256,6 +294,5 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  // return eval(0,nr_token);
-  return check_parentheses(0,nr_token-1);
+  return eval(0,nr_token);
 }
