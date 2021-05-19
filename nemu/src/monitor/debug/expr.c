@@ -93,6 +93,8 @@ void init_regex() {
       regerror(ret, &re[i], error_msg, 128);
       panic("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
     }
+    else
+      printf("add rule %d",rules[i].token_type);
   }
 }
 
