@@ -107,6 +107,7 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+#include <stdbool.h> // 为了不报错而添加。。
 static bool make_token(char *e) {
   int position = 0;
   int i;
@@ -168,6 +169,83 @@ static bool make_token(char *e) {
   return true;
 }
 
+bool check_parentheses(int p, int q)
+{
+  if(tokens[p].type != TK_LP\
+  && tokens[q].type != TK_RP)
+    return false;
+
+  // 双指针，相遇时退出，判断左右括号是否>0且相等
+  int left=1, right=1;
+  while(p < q)
+  {
+    // 左指针
+    switch (tokens[p++].type)
+    {
+    case TK_LP:
+      left++;
+      break;
+
+    case TK_RP:
+      left--;
+      break;
+
+    default:
+      return false; // bad expression
+      break;
+    }
+    // 右指针
+    switch (tokens[q--].type)
+    {
+    case TK_RP:
+      right++;
+      break;
+
+    case TK_LP:
+      right--;
+      break;
+
+    default:
+      return false; // bad expression
+      break;
+    }
+  }
+  if(left>0 && left == right)
+    return true;
+  else
+    return false;
+}
+
+// word_t eval(int p, int q) {
+//   if (p > q) {
+//     /* Bad expression */
+//   }
+//   else if (p == q) {
+//     /* Single token.
+//      * For now this token should be a number.
+//      * Return the value of the number.
+//      */
+//   }
+//   else if (check_parentheses(p, q) == true) {
+//     /* The expression is surrounded by a matched pair of parentheses.
+//      * If that is the case, just throw away the parentheses.
+//      */
+//     return eval(p + 1, q - 1);
+//   }
+//   else {
+//     op = the position of 主运算符 in the token expression;
+//     val1 = eval(p, op - 1);
+//     val2 = eval(op + 1, q);
+
+//     switch (op_type) {
+//       case '+': return val1 + val2;
+//       case '-': /* ... */
+//       case '*': /* ... */
+//       case '/': /* ... */
+//       default: assert(0);
+//     }
+//   }
+// }
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -176,7 +254,6 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  // TODO();
-
-  return 0;
+  // return eval(0,nr_token);
+  return check_parentheses(0,nr_token);
 }
