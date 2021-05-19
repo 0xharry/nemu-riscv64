@@ -72,7 +72,7 @@ static int cmd_read_addr(char *args) {
 
 // 输入表达式返回值
 static int cmd_p(char *args) {
-  if(!args)
+  if(args)
   {
     bool flag = true;
     word_t res = expr(args, &flag);
