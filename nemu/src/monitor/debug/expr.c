@@ -49,7 +49,7 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},    // spaces
-  {"^\\d", TK_IDEC}, // Decimal integer
+  {"^\\d+", TK_IDEC}, // first Decimal integer
   {"\\+", TK_PLUS},     // plus
   {"\\(", TK_LP},  // left parenthesis
   {"\\)", TK_RP},  // right parenthesis
