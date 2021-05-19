@@ -194,6 +194,8 @@ bool check_parentheses(int p, int q)
     default:
       break;
     }
+    if(p>q)
+      break;
 
     // 右指针
     switch (tokens[q--].type)
