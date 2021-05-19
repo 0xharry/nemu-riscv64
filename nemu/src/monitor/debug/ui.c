@@ -27,6 +27,7 @@ static char* rl_gets() {
   return line_read;
 }
 
+// 执行(unsigned)-1次
 static int cmd_c(char *args) {
   cpu_exec(-1);
   return 0;
@@ -50,6 +51,7 @@ static int cmd_si(char *args) {
   return 0;
 }
 
+// 打印所有寄存器
 static int cmd_info(char *args) {
   isa_reg_display();
   return 0;
@@ -68,7 +70,15 @@ static int cmd_read_addr(char *args) {
   return 0;
 }
 
+// 输入表达式返回值
 static int cmd_p(char *args) {
+  if(!args)
+  {
+    bool flag = true;
+    word_t res = expr(args, &flag);
+    if(flag)
+      printf("0x%lx\n",res);
+  }
   return 0;
 }
 
@@ -127,7 +137,8 @@ void ui_mainloop() {
     char *cmd = strtok(str, " ");
     if (cmd == NULL) { continue; }
 
-    /* treat the remaining string as the arguments,
+    /* ？？？
+     * treat the remaining string as the arguments,
      * which may need further parsing
      */
     char *args = cmd + strlen(cmd) + 1;

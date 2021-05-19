@@ -6,8 +6,35 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256,
+  // 一些基本运算符号
+  TK_MINUS, // -减号
+  // TK_NEG,   // -负号
+  TK_PLUS,  // +
+  TK_MUL,   // *
+  TK_DIV,   // /
+  // TK_ZERO,  // 0可能用上
+  // // 二进制运算
+  // AND, // &
+  // OR,  // |
+  // XOR, // ^
+  // SHL, // <<
+  // SHR, // 不支持>>为好 
 
+  // 比较
+  TK_EQ,  // ==
+  // TK_NEQ, // !=
+  // TK_L,   // <
+  // TK_LE,  // <=
+  // TK_G,   // >
+  // TK_GE,  // >=
+
+  // 括号
+  TK_LP, // '(' left parenthese
+  TK_RP, // ')' right parenthese
+
+  // 操作数
+  TK_IDEC, // Decimal integer
   /* TODO: Add more token types */
 
 };
@@ -22,12 +49,34 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
+  {"\\d", TK_IDEC}, // Decimal integer
+  {"\\+", TK_PLUS},     // plus
+  {"\\(", TK_LP},  // left parenthesis
+  {"\\)", TK_RP},  // right parenthesis
+  {"\\*", TK_MUL}, // multiply
+  {"-", TK_MINUS}, // minus
+  {"\\/", TK_DIV}, // divide
   {"==", TK_EQ},        // equal
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_},
+  // {"", TK_}  
 };
 
+// 规则数量
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
 
+// 编译后的特定re格式
 static regex_t re[NR_REGEX] = {};
 
 /* Rules are used for many times.
@@ -52,6 +101,7 @@ typedef struct token {
   char str[32];
 } Token;
 
+// 32个token是否不够用？
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
@@ -62,9 +112,11 @@ static bool make_token(char *e) {
 
   nr_token = 0;
 
+  // 按顺序挨个字符（串）匹配re规则
   while (e[position] != '\0') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i ++) {
+      // 一条规则匹配成功, 并且匹配出的子串正好是position所在位置
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
@@ -80,7 +132,24 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+          case TK_IDEC:
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token++].type = TK_IDEC;
+            break;
+
+          case TK_PLUS:
+          case TK_LP:
+          case TK_RP:
+          case TK_MUL:
+          case TK_MINUS:
+          case TK_DIV:
+          case TK_EQ:
+            tokens[nr_token++].type = rules[i].token_type;
+          case TK_NOTYPE:
+            break;
+
+          default: Log("no match rules like \"%d\" type\n at position %d with len %d: %.*s"\
+          , rules[i].token_type ,position, substr_len, substr_len, substr_start);
         }
 
         break;
@@ -104,7 +173,7 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
+  // TODO();
 
   return 0;
 }
