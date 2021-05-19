@@ -171,10 +171,11 @@ static bool make_token(char *e) {
 
 bool check_parentheses(int p, int q)
 {
-  if(tokens[p++].type != TK_LP\
-  && tokens[q--].type != TK_RP)
+  if(tokens[p].type != TK_LP\
+  && tokens[q].type != TK_RP)
     return false;
-
+  p++;
+  q--;
   // 双指针，相遇时退出，判断左右括号是否>0且相等
   int left=1, right=1;
   while(p < q)
