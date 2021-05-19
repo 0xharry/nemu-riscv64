@@ -226,6 +226,8 @@ int find_main_op(int p, int q)
   {
     if(jmp)
     {
+      if(tokens[p].type == TK_RP)
+        jmp = false;
       p++;
       continue;
     }
@@ -236,15 +238,9 @@ int find_main_op(int p, int q)
         p++;
         jmp = true;
         break;
+      // 只有右括号无左括号，不可能
       case TK_RP:
-        if(jmp)
-        {
-          p++;
-          jmp = false;
-        }
-        else
-          Assert(0, "parenthesis not match"); // 只有右括号无左括号，有问题
-        break;
+        Assert(0, "parenthesis not match");
 
       case TK_PLUS:
       case TK_MINUS:
