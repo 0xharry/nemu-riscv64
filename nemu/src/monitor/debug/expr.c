@@ -253,5 +253,5 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
   // return eval(0,nr_token);
-  return check_parentheses(0,nr_token);
+  return check_parentheses(0,nr_token-1);
 }
