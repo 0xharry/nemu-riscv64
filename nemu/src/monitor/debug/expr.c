@@ -94,7 +94,7 @@ void init_regex() {
       panic("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
     }
     else
-      printf("add rule %d",rules[i].token_type);
+      printf("add rule %d\n",rules[i].token_type);
   }
 }
 
@@ -119,7 +119,8 @@ static bool make_token(char *e) {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i ++) {
       // 一条规则匹配成功, 并且匹配出的子串正好是position所在位置
-      if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
+      bool ret = regexec(&re[i], e + position, 1, &pmatch, 0);
+      if ( ret == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
