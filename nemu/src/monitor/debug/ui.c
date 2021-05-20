@@ -77,7 +77,7 @@ static int cmd_p(char *args) {
     bool flag = true;
     word_t res = expr(args, &flag);
     if(flag)
-      printf("0x%lu\n",res);
+      printf("0x%lx\n",res);
   }
   return 0;
 }
