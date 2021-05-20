@@ -65,8 +65,15 @@ static int cmd_read_addr(char *args) {
   printf("%u Byte start at Mem[0x%x]\n", n, expr);
   for(unsigned i=0; i<n; ++i)
   {
-    printf("0x%x\n",*(unsigned *)(guest_to_host(expr+4*i-PMEM_BASE)));
+    printf("0x%x: ", expr+i);
+    for(int j=0; j<4; ++j)
+      printf("%x ", (unsigned)paddr_read(expr+i+j,1));
+    putchar('\n');
   }
+  // for(unsigned i=0; i<n; ++i)
+  // {
+  //   printf("0x%x\n",*(unsigned *)(guest_to_host(expr+4*i-PMEM_BASE)));
+  // }
   return 0;
 }
 
