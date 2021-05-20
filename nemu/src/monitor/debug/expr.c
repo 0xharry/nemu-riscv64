@@ -59,12 +59,12 @@ static struct rule {
   {"-", TK_MINUS},      // minus
   {"\\/", TK_DIV},      // divide
   {"==", TK_EQ},        // equal
-  {"[0-9]+", TK_DEC},   // Decimal integer
   {"0x[0-9]+", TK_HEX}, // Hexadecimal integer
+  {"[0-9]+", TK_DEC},   // Decimal integer
   {"$..", TK_REG},  // Register
   {"!=", TK_NEQ},   // not equal
-  {"&&", TK_AND},   // and
-  {"||", TK_OR},    // or
+  {"&{2}", TK_AND},   // and
+  {"\\|{2}", TK_OR},    // or
   {"<", TK_L},      // less
   {"<=", TK_LE},    // less or equal
   {">", TK_G},      // great
