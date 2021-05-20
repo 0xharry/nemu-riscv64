@@ -58,7 +58,8 @@ static int cmd_info(char *args) {
 }
 
 #include <memory/paddr.h>
-static int cmd_read_addr(char *args) {
+// 检查指定地址附近的值
+static int cmd_exam_addr(char *args) {
   // TODO: illegal args and unreadable code need refinement
   unsigned n = *strtok(NULL," ") - '0';
   word_t expr = strtoul(strtok(NULL," "),NULL,16);
@@ -95,7 +96,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   { "si", "\'si [N]\'\tExecute next N steps", cmd_si},
   { "info", "Print values of all registers", cmd_info},
-  { "x", "\'x N EXPR\'\tExam next 4N Bytes value from address EXRP", cmd_read_addr},
+  { "x", "\'x N EXPR\'\tExam next 4N Bytes value from address EXRP", cmd_exam_addr},
   { "p", "\'p EXPR\'\tCompute value of EXPR", cmd_p}
   /* TODO: Add more commands */
 

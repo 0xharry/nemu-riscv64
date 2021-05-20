@@ -84,10 +84,9 @@ void cpu_exec(uint64_t n) {
     difftest_step(this_pc, cpu.pc);
 
     g_nr_guest_instr ++;
-    // 测试si好不好使
-    printf("cpu_exec n=%lu\npc=0x%lx\n",n,cpu.pc);
 
 #ifdef DEBUG
+    printf("cpu_exec n = %lu\tpc = 0x%lx\n", n, cpu.pc);
     asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
     /* TODO: check watchpoints here. */
