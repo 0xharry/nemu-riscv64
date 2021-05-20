@@ -61,19 +61,15 @@ static int cmd_info(char *args) {
 static int cmd_read_addr(char *args) {
   // TODO: illegal args and unreadable code need refinement
   unsigned n = *strtok(NULL," ") - '0';
-  unsigned expr = strtoul(strtok(NULL," "),NULL,16);
-  printf("%u Byte start at Mem[0x%x]\n", n, expr);
+  word_t expr = strtoul(strtok(NULL," "),NULL,16);
+  printf("%u Byte start at Mem[0x%lx]\n", n, expr);
   for(unsigned i=0; i<n; ++i)
   {
-    printf("0x%x:\t", expr+4*i);
+    printf("0x%lx:\t", expr+4*i);
     for(int j=0; j<4; ++j)
-      printf("%2x  ", (unsigned)paddr_read(expr+4*i+j,1));
+      printf("%02x  ", (uint8_t)paddr_read(expr+4*i+j,1));
     putchar('\n');
   }
-  // for(unsigned i=0; i<n; ++i)
-  // {
-  //   printf("0x%x\n",*(unsigned *)(guest_to_host(expr+4*i-PMEM_BASE)));
-  // }
   return 0;
 }
 
