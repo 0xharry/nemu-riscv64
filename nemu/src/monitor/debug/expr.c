@@ -61,7 +61,7 @@ static struct rule {
   {"==", TK_EQ},        // equal
   {"0x[0-9]+", TK_HEX}, // Hexadecimal integer
   {"[0-9]+", TK_DEC},   // Decimal integer
-  {"\\$[\\$rstag][ap0-9][01]?", TK_REG},  // Register
+  {"\\$", TK_REG},  //[\\$rstag][ap0-9][01]? Register
   {"!=", TK_NEQ},   // not equal
   {"&{2}", TK_AND},   // and
   {"\\|{2}", TK_OR},    // or
