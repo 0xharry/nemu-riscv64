@@ -4,46 +4,41 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
-
-enum {
+#include <memory/paddr.h>
+enum TK{
   TK_NOTYPE = 256,
-  // 一些基本运算符号
-  TK_MINUS, // -减号
-  
-  TK_PLUS,  // +
-
-  TK_MUL,   // *
-  TK_DIV,   // /
-  // TK_ZERO,  // 0可能用上?
-  // // 二进制运算
-  // AND, // &
-  // OR,  // |
-  // XOR, // ^
-  // SHL, // <<
-  // SHR, // >> 若实现，算数？逻辑？ 
 
   // 比较
+  TK_OR,  // ||
+
+  TK_AND, // &&
+
   TK_EQ,  // ==
   TK_NEQ, // !=
-  TK_AND, // &&
   TK_L,   // <
   TK_LE,  // <=
   TK_G,   // >
   TK_GE,  // >=
 
+  // 一些基本运算符号
+  TK_MINUS, // -
+  TK_PLUS,  // +
+
+  TK_MUL,   // *
+  TK_DIV,   // /
+
   // 括号
-  TK_LP, // '(' left parenthese
-  TK_RP, // ')' right parenthese
+  TK_LP,    // (
+  TK_RP,    // )
 
   // 操作数
-  TK_DEC, // Decimal integer
-  TK_HEX, // 0x Hexadecimal integer
-  TK_REG, // $  Register
+  TK_DEC,   // Decimal integer
+  TK_HEX,   // 0x Hexadecimal integer
+  TK_REG,   // $  Register
 
-  // // 没必要
-  // TK_DEREF, // * dereference
-  // TK_NEG,   // -负号
-  /* TODO: Add more token types */
+  // 特殊
+  TK_NEG,   // - negative
+  TK_DEREF, // * dereference
 
 };
 
@@ -69,16 +64,12 @@ static struct rule {
   {"$..", TK_REG},  // Register
   {"!=", TK_NEQ},   // not equal
   {"&&", TK_AND},   // and
-  {"<", TK_L},  // less
-  {"<=", TK_LE},  // less or equal
-  {">", TK_G},  // great
-  {">=", TK_GE},  // great or equal
+  {"||", TK_OR},    // or
+  {"<", TK_L},      // less
+  {"<=", TK_LE},    // less or equal
+  {">", TK_G},      // great
+  {">=", TK_GE},    // great or equal
   // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_}  
 };
 
 // 规则数量
@@ -111,8 +102,8 @@ typedef struct token {
   char str[32];
 } Token;
 
-// 32个token是否不够用？
-static Token tokens[32] __attribute__((used)) = {};
+// MAGIC NUMBER个token是否不够用？
+static Token tokens[64] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 
@@ -151,27 +142,28 @@ static bool make_token(char *e) {
 
           case TK_HEX:
             strncpy(tokens[nr_token].str, substr_start, substr_len);
-            tokens[nr_token++].type = TK_DEC;
+            tokens[nr_token++].type = TK_HEX;
             break;
 
           case TK_REG:
             strncpy(tokens[nr_token].str, substr_start+1, substr_len-1);
-            tokens[nr_token++].type = TK_DEC;
+            tokens[nr_token++].type = TK_REG;
             break;
 
-          case TK_PLUS:
-          case TK_LP:
-          case TK_RP:
-          case TK_MUL:
           case TK_MINUS:
+          case TK_PLUS:
+          case TK_MUL:
           case TK_DIV:
-          case TK_EQ:
           case TK_NEQ:
           case TK_AND:
-          case TK_L:
+          case TK_LP:
+          case TK_RP:
+          case TK_EQ:
+          case TK_OR:
           case TK_LE:
-          case TK_G:
           case TK_GE:
+          case TK_L:
+          case TK_G:
             tokens[nr_token++].type = rules[i].token_type;
           case TK_NOTYPE:
             break;
@@ -325,25 +317,36 @@ word_t eval(int p, int q) {
 
       Assert(0, "no op has been found");
     }
+    // 如果op是取地址或负（最高优先级的op），只剩右值
+    switch (tokens[op_pos].type) {
+      case TK_DEREF:
+        Assert(p==op_pos || tokens[op_pos-1].type >= TK_NEG,\
+         "dereference* and negative- have highest priority");
+        return paddr_read(eval(op_pos+1, q), 4);
+      case TK_NEG:
+        Assert(p==op_pos || tokens[op_pos-1].type >= TK_NEG,\
+         "dereference* and negative- have highest priority");
+        return -eval(op_pos + 1, q);
+      default: break;
+    }
     word_t val1 = eval(p, op_pos - 1);
     word_t val2 = eval(op_pos + 1, q);
 
     switch (tokens[op_pos].type) {
+      case TK_MINUS:return val1 - val2;
       case TK_PLUS: return val1 + val2;
-      case TK_MINUS: return val1 - val2;
-      case TK_MUL: return val1 * val2;
-      case TK_EQ: return val1 == val2;
-      case TK_NEQ: return val1 != val2;
-      case TK_AND: return val1 && val2;
-      case TK_L: return val1 < val2;
-      case TK_LE: return val1 <= val2;
-      case TK_G: return val1 > val2;
-      case TK_GE: return val1 >= val2;
-      case TK_DIV:
-      if(val2 == 0)
-        Assert(0, "divide 0 error");
-      return val1 / val2;
-      default: Assert(0, "impossible main op type %d", tokens[op_pos].type);
+      case TK_MUL:  return val1 * val2;
+      case TK_NEQ:  return val1 != val2;
+      case TK_AND:  return val1 && val2;
+      case TK_EQ:   return val1 == val2;
+      case TK_LE:   return val1 <= val2;
+      case TK_GE:   return val1 >= val2;
+      case TK_L:    return val1 < val2;
+      case TK_G:    return val1 > val2;
+      case TK_DIV:  if(val2 == 0) Assert(0, "divide 0 error");
+                    return val1 / val2;
+      default:      printf("impossible main op type %d", tokens[op_pos].type);
+                    return 0;
     }
   }
 }
@@ -354,6 +357,15 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  /* TODO: Insert codes to evaluate the expression. */
+  // 区分 *乘/取地址，和 -减/负号
+  for (int i = 0; i < nr_token; i ++) {
+    if (tokens[i].type == TK_MUL &&\
+     (i == 0 || tokens[i - 1].type <= TK_DIV) )
+      tokens[i].type = TK_DEREF;
+    if (tokens[i].type == TK_MINUS &&\
+     (i == 0 || tokens[i - 1].type <= TK_DIV) )
+      tokens[i].type = TK_NEG;
+  }
+
   return eval(0,nr_token-1);
 }
