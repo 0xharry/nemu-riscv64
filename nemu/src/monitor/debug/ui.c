@@ -63,11 +63,11 @@ static int cmd_read_addr(char *args) {
   unsigned n = *strtok(NULL," ") - '0';
   unsigned expr = strtoul(strtok(NULL," "),NULL,16);
   printf("%u Byte start at Mem[0x%x]\n", n, expr);
-  for(unsigned i=0; i<n; i+=4)
+  for(unsigned i=0; i<n; ++i)
   {
-    printf("0x%x: ", expr+i);
+    printf("0x%x: ", expr+4*i);
     for(int j=0; j<4; ++j)
-      printf("%x\t", (unsigned)paddr_read(expr+i+j,1));
+      printf("%x\t", (unsigned)paddr_read(expr+4*i+j,1));
     putchar('\n');
   }
   // for(unsigned i=0; i<n; ++i)
