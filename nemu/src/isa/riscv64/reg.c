@@ -19,7 +19,12 @@ void isa_reg_display() {
 word_t isa_reg_str2val(const char *s, bool *success) {
   for(int i=0; i<32; ++i)
   {
-    if(strncmp(regs[i], s, 2)==1)
+    if(strncmp("pc", s, 2))
+    {
+      *success = true;
+      return cpu.pc;
+    }
+    if(strncmp(regs[i], s, 3)==1)
     {
       *success = true;
       return cpu.gpr[i]._64;
