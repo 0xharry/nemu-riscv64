@@ -235,9 +235,44 @@ int find_main_op(int p, int q)
         Assert(level>=0, "right parenthesis cant be negative");
         break;
 
+      case TK_OR:
+        // 如果已经有更低/平级level的 OR op被登记，跳过
+        if((curr_op_level < level) ||\
+          ((curr_op_level == level) && (curr_op_type == TK_OR)))
+          break;
+        curr_op_level = level;
+        curr_op_type = tokens[p-1].type;
+        ret_op = p-1;
+        break;
+
+      case TK_AND:
+        // 如果已经有更低/平级level的 AND op被登记，跳过
+        if((curr_op_level < level) ||\
+          ((curr_op_level == level) && (curr_op_type <= TK_AND)))
+          break;
+        curr_op_level = level;
+        curr_op_type = tokens[p-1].type;
+        ret_op = p-1;
+        break;
+
+      case TK_EQ:
+      case TK_NEQ:
+      case TK_LE:
+      case TK_GE:
+      case TK_L:
+      case TK_G:
+        // 如果已经有更低/平级level的 逻辑比较 op被登记，跳过
+        if((curr_op_level < level) ||\
+          ((curr_op_level == level) && (curr_op_type <= TK_GE)))
+          break;
+        curr_op_level = level;
+        curr_op_type = tokens[p-1].type;
+        ret_op = p-1;
+        break;
+
       case TK_PLUS:
       case TK_MINUS:
-        // 如果已经有更低/平级level的加减op被登记，跳过
+        // 如果已经有更低/平级level的 加减 op被登记，跳过
         if((curr_op_level < level) ||\
           ((curr_op_level == level) && (curr_op_type <= TK_PLUS)))
           break;
@@ -248,6 +283,17 @@ int find_main_op(int p, int q)
 
       case TK_MUL:
       case TK_DIV:
+        // 如果已经有更低/平级level的 乘除 op被登记，跳过
+        if((curr_op_level < level) ||\
+          ((curr_op_level == level) && (curr_op_type <= TK_DIV)))
+          break;
+        curr_op_level = level;
+        curr_op_type = tokens[p-1].type;
+        ret_op = p-1;
+        break;
+
+      case TK_NEG:
+      case TK_DEREF:
         // 如果已经有更低/平级level的op被登记，跳过
         if(curr_op_level <= level)
           break;
