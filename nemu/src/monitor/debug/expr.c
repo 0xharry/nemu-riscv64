@@ -368,7 +368,7 @@ word_t eval(int p, int q) {
       case TK_DEREF:
         Assert(p==op_pos || tokens[op_pos-1].type >= TK_NEG,\
          "dereference* and negative- have highest priority");
-        return paddr_read(eval(op_pos+1, q), 4);
+        return paddr_read(eval(op_pos+1, q)-PMEM_BASE, 4);
       case TK_NEG:
         Assert(p==op_pos || tokens[op_pos-1].type >= TK_NEG,\
          "dereference* and negative- have highest priority");
