@@ -63,10 +63,10 @@ static int cmd_exam_addr(char *args) {
   // TODO: illegal args and unreadable code need refinement
   unsigned n = *strtok(NULL," ") - '0';
   word_t expr = strtoul(strtok(NULL," "),NULL,16);
-  printf("%u Byte start at Mem[0x%lx]\n", n, expr);
+  printf("%u Byte start at Mem[0x%16lx]\n", n, expr);
   for(unsigned i=0; i<n; ++i)
   {
-    printf("0x%lx:\t", expr+4*i);
+    printf("0x%16lx:\t", expr+4*i);
     for(int j=0; j<4; ++j)
       printf("%02x  ", (uint8_t)paddr_read(expr+4*i+j,1));
     putchar('\n');
