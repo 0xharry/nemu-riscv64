@@ -61,14 +61,14 @@ static struct rule {
   {"==", TK_EQ},        // equal
   {"0x[0-9]+", TK_HEX}, // Hexadecimal integer
   {"[0-9]+", TK_DEC},   // Decimal integer
-  {"$..", TK_REG},  // Register
+  {"\\$[\\$rstag][ap0-9][01]?", TK_REG},  // Register
   {"!=", TK_NEQ},   // not equal
   {"&{2}", TK_AND},   // and
   {"\\|{2}", TK_OR},    // or
-  {"<", TK_L},      // less
   {"<=", TK_LE},    // less or equal
-  {">", TK_G},      // great
   {">=", TK_GE},    // great or equal
+  {"<", TK_L},      // less
+  {">", TK_G},      // great
   // {"", TK_},
 };
 

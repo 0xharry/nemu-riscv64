@@ -66,7 +66,7 @@ static int cmd_exam_addr(char *args) {
   printf("%u Byte start at Mem[0x%16lx]\n", n, expr);
   for(unsigned i=0; i<n; ++i)
   {
-    printf("0x%16lx:\t", expr+4*i);
+    printf("0x%016lx:  ", expr+4*i);
     for(int j=0; j<4; ++j)
       printf("%02x  ", (uint8_t)paddr_read(expr+4*i+j,1));
     putchar('\n');
