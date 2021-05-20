@@ -9,33 +9,40 @@ enum {
   TK_NOTYPE = 256,
   // 一些基本运算符号
   TK_MINUS, // -减号
-  // TK_NEG,   // -负号
+  
   TK_PLUS,  // +
 
   TK_MUL,   // *
   TK_DIV,   // /
-  // TK_ZERO,  // 0可能用上
+  // TK_ZERO,  // 0可能用上?
   // // 二进制运算
   // AND, // &
   // OR,  // |
   // XOR, // ^
   // SHL, // <<
-  // SHR, // 不支持>>为好 
+  // SHR, // >> 若实现，算数？逻辑？ 
 
   // 比较
   TK_EQ,  // ==
-  // TK_NEQ, // !=
-  // TK_L,   // <
-  // TK_LE,  // <=
-  // TK_G,   // >
-  // TK_GE,  // >=
+  TK_NEQ, // !=
+  TK_AND, // &&
+  TK_L,   // <
+  TK_LE,  // <=
+  TK_G,   // >
+  TK_GE,  // >=
 
   // 括号
   TK_LP, // '(' left parenthese
   TK_RP, // ')' right parenthese
 
   // 操作数
-  TK_IDEC, // Decimal integer
+  TK_DEC, // Decimal integer
+  TK_HEX, // 0x Hexadecimal integer
+  TK_REG, // $  Register
+
+  // // 没必要
+  // TK_DEREF, // * dereference
+  // TK_NEG,   // -负号
   /* TODO: Add more token types */
 
 };
@@ -50,22 +57,22 @@ static struct rule {
    */
 
   {" +", TK_NOTYPE},    // spaces
-  {"[0-9]+", TK_IDEC}, // first Decimal integer
   {"\\+", TK_PLUS},     // plus
-  {"\\(", TK_LP},  // left parenthesis
-  {"\\)", TK_RP},  // right parenthesis
-  {"\\*", TK_MUL}, // multiply
-  {"-", TK_MINUS}, // minus
-  {"\\/", TK_DIV}, // divide
+  {"\\(", TK_LP},       // left parenthesis
+  {"\\)", TK_RP},       // right parenthesis
+  {"\\*", TK_MUL},      // multiply
+  {"-", TK_MINUS},      // minus
+  {"\\/", TK_DIV},      // divide
   {"==", TK_EQ},        // equal
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
-  // {"", TK_},
+  {"[0-9]+", TK_DEC},   // Decimal integer
+  {"0x[0-9]+", TK_HEX}, // Hexadecimal integer
+  {"$..", TK_REG},  // Register
+  {"!=", TK_NEQ},   // not equal
+  {"&&", TK_AND},   // and
+  {"<", TK_L},  // less
+  {"<=", TK_LE},  // less or equal
+  {">", TK_G},  // great
+  {">=", TK_GE},  // great or equal
   // {"", TK_},
   // {"", TK_},
   // {"", TK_},
@@ -108,7 +115,7 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-#include <stdbool.h> // 为了不报错而添加。。
+
 static bool make_token(char *e) {
   int position = 0;
   int i;
@@ -137,9 +144,9 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          case TK_IDEC:
+          case TK_DEC:
             strncpy(tokens[nr_token].str, substr_start, substr_len);
-            tokens[nr_token++].type = TK_IDEC;
+            tokens[nr_token++].type = TK_DEC;
             break;
 
           case TK_PLUS:
@@ -184,33 +191,18 @@ bool check_parentheses(int p, int q)
     // 左指针
     switch (tokens[p++].type)
     {
-    case TK_LP:
-      left++;
-      break;
-
-    case TK_RP:
-      left--;
-      break;
-
-    default:
-      break;
+      case TK_LP: left++; break;
+      case TK_RP: left--; break;
+      default: break;
     }
-    if(p>q)
-      break;
+    if(p>q) break;
 
     // 右指针
     switch (tokens[q--].type)
     {
-    case TK_RP:
-      right++;
-      break;
-
-    case TK_LP:
-      right--;
-      break;
-
-    default:
-      break;
+      case TK_RP: right++; break;
+      case TK_LP: right--; break;
+      default: break;
     }
   }
   if(left>0 && left == right)
@@ -219,7 +211,6 @@ bool check_parentheses(int p, int q)
     return false;
 }
 
-// 正在施工...
 #include <limits.h>
 int find_main_op(int p, int q)
 {
@@ -230,12 +221,9 @@ int find_main_op(int p, int q)
     switch (tokens[p++].type)
     {
       // 左括号可提升op优先级
-      case TK_LP:
-        level++;
-        break;
+      case TK_LP: level++; break;
       // 右括号降低接下来op优先级
-      case TK_RP:
-        level--;
+      case TK_RP: level--;
         Assert(level>=0, "right parenthesis cant be negative");
         break;
 
@@ -286,14 +274,26 @@ word_t eval(int p, int q) {
     word_t ret;
     switch (tokens[p].type)
     {
-    case TK_IDEC:
-      if(sscanf(tokens[p].str, "%lu", &ret) == -1)
-        Assert(0, "sscanf fault");
-      return ret;
-    
-    default:
-      Assert(0, "a single token is not a number");
-      break;
+      case TK_DEC:
+        if(sscanf(tokens[p].str, "%lu", &ret) == -1)
+          Assert(0, "sscanf fault");
+        return ret;
+
+      case TK_HEX:
+        if(sscanf(tokens[p].str, "%lu", &ret) == -1)
+          Assert(0, "sscanf fault");
+        return ret;
+
+      case TK_REG:;
+        bool flag=true;
+        ret = isa_reg_str2val(tokens[p].str, &flag);
+        if(flag)
+          return ret;
+        Assert(0, "read register failed");
+
+      default:
+        Assert(0, "a single token is not a number");
+        break;
     }
   }
   else if (check_parentheses(p, q) == true) {
@@ -316,7 +316,14 @@ word_t eval(int p, int q) {
       case TK_PLUS: return val1 + val2;
       case TK_MINUS: return val1 - val2;
       case TK_MUL: return val1 * val2;
-      case TK_DIV: 
+      case TK_EQ: return val1 == val2;
+      case TK_NEQ: return val1 != val2;
+      case TK_AND: return val1 && val2;
+      case TK_L: return val1 < val2;
+      case TK_LE: return val1 <= val2;
+      case TK_G: return val1 > val2;
+      case TK_GE: return val1 >= val2;
+      case TK_DIV:
       if(val2 == 0)
         Assert(0, "divide 0 error");
       return val1 / val2;
