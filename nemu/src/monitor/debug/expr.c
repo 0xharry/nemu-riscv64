@@ -248,6 +248,7 @@ int find_main_op(int p, int q)
         curr_op_level = level;
         curr_op_type = tokens[p-1].type;
         ret_op = p-1;
+        break;
 
       case TK_MUL:
       case TK_DIV:
@@ -257,6 +258,7 @@ int find_main_op(int p, int q)
         curr_op_level = level;
         curr_op_type = tokens[p-1].type;
         ret_op = p-1;
+        break;
         
       default:
         // 非op tokens
@@ -304,7 +306,7 @@ word_t eval(int p, int q) {
     int op_pos = find_main_op(p, q);
     if(op_pos == -1)
     {
-      
+
       Assert(0, "no op has been found");
     }
     word_t val1 = eval(p, op_pos - 1);
