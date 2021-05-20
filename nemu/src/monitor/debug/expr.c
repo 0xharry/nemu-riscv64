@@ -334,7 +334,7 @@ word_t eval(int p, int q) {
         return ret;
 
       case TK_HEX:
-        if(sscanf(tokens[p].str, "%lu", &ret) == -1)
+        if(sscanf(tokens[p].str, "%lx", &ret) == -1)
           Assert(0, "sscanf fault");
         return ret;
 
