@@ -1,5 +1,6 @@
-#include <isa.h>
-
+// #include <isa.h>
+typedef unsigned long word_t;
+#include <assert.h>
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
@@ -11,7 +12,6 @@ enum {
   TK_MINUS, // -减号
   // TK_NEG,   // -负号
   TK_PLUS,  // +
-
   TK_MUL,   // *
   TK_DIV,   // /
   // TK_ZERO,  // 0可能用上
@@ -92,7 +92,7 @@ void init_regex() {
     ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
     if (ret != 0) {
       regerror(ret, &re[i], error_msg, 128);
-      panic("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
+      // panic("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
     }
     else
       printf("add rule %d\n",rules[i].token_type);
@@ -104,11 +104,12 @@ typedef struct token {
   char str[32];
 } Token;
 
-// 32个token是否不够用？
-static Token tokens[32] __attribute__((used)) = {};
+// 多少token够用？使用magic_number？
+static Token tokens[1024] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 #include <stdbool.h> // 为了不报错而添加。。
+#include <string.h>
 static bool make_token(char *e) {
   int position = 0;
   int i;
@@ -126,8 +127,8 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+            // i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
@@ -153,8 +154,9 @@ static bool make_token(char *e) {
           case TK_NOTYPE:
             break;
 
-          default: Log("no match rules like \"%d\" type\n at position %d with len %d: %.*s"\
-          , rules[i].token_type ,position, substr_len, substr_len, substr_start);
+          default: printf("no match rules");
+          // default: Log("no match rules like \"%d\" type\n at position %d with len %d: %.*s"\
+          // , rules[i].token_type ,position, substr_len, substr_len, substr_start);
         }
 
         break;
@@ -219,62 +221,52 @@ bool check_parentheses(int p, int q)
     return false;
 }
 
-// 正在施工...
-#include <limits.h>
 int find_main_op(int p, int q)
 {
-  int ret_op = INT_MAX, curr_op_type = INT_MAX;
-  int level=0, curr_op_level = INT_MAX;
+  int ret_op = TK_IDEC;
+  bool jmp = false;
   while (p <= q)
   {
-    switch (tokens[p++].type)
+    if(jmp)
     {
-      // 左括号可提升op优先级
+      if(tokens[p].type == TK_RP)
+        jmp = false;
+      p++;
+      continue;
+    }
+    switch (tokens[p].type)
+    {
+      // 括号一律忽略
       case TK_LP:
-        level++;
+        p++;
+        jmp = true;
         break;
-      // 右括号降低接下来op优先级
+      // 只有右括号无左括号，不可能
       case TK_RP:
-        level--;
-        Assert(level>=0, "right parenthesis cant be negative");
-        break;
+        assert(0);
+        // Assert(0, "parenthesis not match");
 
       case TK_PLUS:
       case TK_MINUS:
-        // 如果已经有更低/平级level的加减op被登记，跳过
-        if((curr_op_level < level) ||\
-          ((curr_op_level == level) && (curr_op_type <= TK_PLUS)))
-          break;
-        curr_op_level = level;
-        curr_op_type = tokens[p-1].type;
-        ret_op = p-1;
+        return p;
 
       case TK_MUL:
       case TK_DIV:
-        // 如果已经有更低/平级level的op被登记，跳过
-        if(curr_op_level <= level)
-          break;
-        curr_op_level = level;
-        curr_op_type = tokens[p-1].type;
-        ret_op = p-1;
+        ret_op = ret_op<TK_MUL?ret_op:p;
         
       default:
-        // 非op tokens
+        p++;
         break;
     }
   }
   
-  if(ret_op == INT_MAX)
-  {
-    // 未匹配到任何op
-    return -1;
-  }
   return ret_op;
 }
 
 word_t eval(int p, int q) {
   if (p > q) {
-    Assert(0,"p > q, Bad expression"); /* Bad expression */
+    assert(0);
+    // Assert(0,"p > q, Bad expression"); /* Bad expression */
   }
   else if (p == q) {
     /* Single token.
@@ -286,11 +278,11 @@ word_t eval(int p, int q) {
     {
     case TK_IDEC:
       if(sscanf(tokens[p].str, "%lu", &ret) == -1)
-        Assert(0, "sscanf fault");
+        assert(0);// Assert(0, "sscanf fault");
       return ret;
     
     default:
-      Assert(0, "a single token is not a number");
+      assert(0);// Assert(0, "a single token is not a number");
       break;
     }
   }
@@ -302,11 +294,6 @@ word_t eval(int p, int q) {
   }
   else {
     int op_pos = find_main_op(p, q);
-    if(op_pos == -1)
-    {
-      
-      Assert(0, "no op has been found");
-    }
     word_t val1 = eval(p, op_pos - 1);
     word_t val2 = eval(op_pos + 1, q);
 
@@ -316,9 +303,9 @@ word_t eval(int p, int q) {
       case TK_MUL: return val1 * val2;
       case TK_DIV: 
       if(val2 == 0)
-        Assert(0, "divide 0 error");
+        assert(0);// Assert(0, "divide 0 error");
       return val1 / val2;
-      default: Assert(0, "impossible main op type %d", tokens[op_pos].type);
+      default: assert(0);// Assert(0, "impossible main op type %d", tokens[op_pos].type);
     }
   }
 }
