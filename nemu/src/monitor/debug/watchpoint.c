@@ -82,7 +82,7 @@ bool wp_set(char* input_expr)
   }
 
   bool init;
-  wp->pre_state_val = expr(wp->expr, &init);
+  wp->pre_state_val = expr(input_expr, &init);
   if(init)
     return true;
   else
