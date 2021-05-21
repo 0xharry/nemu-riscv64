@@ -9,9 +9,10 @@ typedef struct watchpoint {
 
   /* TODO: Add more members if necessary */
   // bool status;
-  char expr[32];
+  char expr[128];
   word_t pre_state_val;
 } WP;
+
 WP* wp_new();
 bool wp_set(char* expr);
 void wp_delete(int n);

@@ -68,7 +68,7 @@ void wp_free(WP *wp)
   assert(0);
 }
 
-bool wp_set(char* expr)
+bool wp_set(char* input_expr)
 {
   WP* wp = wp_new();
   if(!wp)
@@ -76,11 +76,17 @@ bool wp_set(char* expr)
     printf("wp_new failed\n");
     return false;
   }
-  if(!strcpy(wp->expr, expr))
+  if(!strcpy(wp->expr, input_expr))
   {
     return false;
   }
-  return true;
+
+  bool init;
+  wp->pre_state_val = expr(wp->expr, &init);
+  if(init)
+    return true;
+  else
+    return false;
 }
 
 void wp_delete(int n)
@@ -128,16 +134,16 @@ bool wp_check()
 
 void wp_display()
 {
-  if(!head)
+  if(head)
   {
-    printf("\tNum\tWhat\n");
+    printf("Num\tWhat\n");
     for(WP* p = head; p != NULL; p=p->next)
     {
-      printf("\t%d\t%s\n", p->NO, p->expr);
+      printf("%d\t%s\n", p->NO, p->expr);
     }
   }
   else
   {
-    printf("No watchpoints.");
+    printf("No watchpoints.\n");
   }
 }
