@@ -25,7 +25,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
 
   for(int i=0; i<32; ++i)
   {
-    if(strncmp(regs[i], s, 2)==0)
+    if(strncmp(regs[i], s, 3)==0)
     {
       *success = true;
       return cpu.gpr[i]._64;

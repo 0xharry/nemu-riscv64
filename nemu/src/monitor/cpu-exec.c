@@ -90,6 +90,11 @@ void cpu_exec(uint64_t n) {
     asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
     /* TODO: check watchpoints here. */
+#include "/home/harry/ics2020/nemu/src/monitor/debug/watchpoint.h"
+    if(!wp_check())
+    {
+      nemu_state.state = NEMU_STOP;
+    }
 #endif
 
 #ifdef HAS_IOE

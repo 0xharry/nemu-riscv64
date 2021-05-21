@@ -9,6 +9,13 @@
 void cpu_exec(uint64_t);
 int is_batch_mode();
 
+enum return_status{
+  QUIT=-1,
+  SUCCESS,
+  FAILURE,
+  ILLEGAL_ARGS,
+};
+
 /* 读一行char*返回,并保存历史. We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -30,12 +37,12 @@ static char* rl_gets() {
 // 执行(unsigned)-1次
 static int cmd_c(char *args) {
   cpu_exec(-1);
-  return 0;
+  return SUCCESS;
 }
 
 // 返回-1触发主循环退出条件
 static int cmd_q(char *args) {
-  return -1;
+  return QUIT;
 }
 
 static int cmd_help(char *args);
@@ -48,13 +55,57 @@ static int cmd_si(char *args) {
     cpu_exec(1);
   else
     cpu_exec(*args-'0');
-  return 0;
+  return SUCCESS;
 }
 
-// 打印所有寄存器
+// 设置监视点
+static int cmd_w(char *args)
+{
+  if(args)
+  {
+    if(wp_set(args))
+    {
+      printf("set %s\n", args);
+      return SUCCESS;
+    }
+    else
+      return FAILURE;
+  }
+  return ILLEGAL_ARGS;
+}
+
+// 删除监视点
+static int cmd_d(char *args)
+{
+  args = strtok(NULL," ");
+  if(args)
+  {
+    int n;
+    if(sscanf(args, "%d", &n) == -1)
+      Assert(0, "sscanf fault");
+    wp_delete(n);
+    return SUCCESS;
+  }
+  return ILLEGAL_ARGS;
+}
+
+// 打印所有寄存器/WP
 static int cmd_info(char *args) {
-  isa_reg_display();
-  return 0;
+  args = strtok(NULL," ");
+  if (args)
+  {
+    if(*args=='r')
+    {
+      isa_reg_display();
+      return SUCCESS;
+    }
+    else if(*args=='w')
+    {
+      wp_display();
+      return SUCCESS;
+    }
+  }
+  return FAILURE;
 }
 
 #include <memory/paddr.h>
@@ -82,8 +133,9 @@ static int cmd_p(char *args) {
     word_t res = expr(args, &flag);
     if(flag)
       printf("0x%lx\n",res);
+    return SUCCESS;
   }
-  return 0;
+  return ILLEGAL_ARGS;
 }
 
 static struct {
@@ -94,10 +146,12 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  { "si", "\'si [N]\'\tExecute next N steps", cmd_si},
-  { "info", "Print values of all registers", cmd_info},
-  { "x", "\'x N EXPR\'\tExam next 4N Bytes value from address EXRP", cmd_exam_addr},
-  { "p", "\'p EXPR\'\tCompute value of EXPR", cmd_p}
+  { "si", "\t\t\'si [N]\'Execute next N steps", cmd_si},
+  { "info", "\t\t\'info r/w\'Print values of all registers/watchpoints", cmd_info},
+  { "x", "\t\t\'x N EXPR\'Exam next 4N Bytes value from address EXRP", cmd_exam_addr},
+  { "p", "\t\t\'p EXPR\'Compute value of EXPR", cmd_p},
+  { "d", "\t\t\'d [N]\'Delete watchpoint N", cmd_d},
+  { "w", "\t\t\'w EXPR\'set expression to stop program running when its value changes", cmd_w},
   /* TODO: Add more commands */
 
 };
@@ -156,10 +210,21 @@ void ui_mainloop() {
 #endif
 
     int i;
-    // 顺序查找匹配的命令，匹配调用handler，返回<0值退出
+    // 顺序查找匹配的命令，匹配调用handler，返回QUIT退出主循环
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
-        if (cmd_table[i].handler(args) < 0) { return; }
+        switch (cmd_table[i].handler(args))
+        {
+        case QUIT:
+          return;
+
+        case ILLEGAL_ARGS:
+          printf("Illegal arguments, try \"help\"");
+        case FAILURE:
+        case SUCCESS:
+        default:
+          break;
+        }
         break;
       }
     }
