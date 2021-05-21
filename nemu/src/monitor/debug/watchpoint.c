@@ -1,6 +1,6 @@
 #include "watchpoint.h"
 #include "expr.h"
-
+#include <stdlib.h>
 #define NR_WP 32
 
 static WP wp_pool[NR_WP] = {};
@@ -44,7 +44,7 @@ void wp_free(WP *wp)
   // edge case: wp == head
   if(wp == head)
   {
-    memset(wp->expr, '\0', sizeof(WP)*NR_WP);
+    free(wp->expr);
     head = head->next;
     wp->next = free_;
     free_ = wp;
@@ -56,7 +56,7 @@ void wp_free(WP *wp)
   {
     if(curr->next == wp)
     {
-      memset(wp->expr, '\0', sizeof(WP)*NR_WP);
+      free(wp->expr);
       curr->next = wp->next;
       wp->next = free_;
       free_ = wp;
@@ -76,13 +76,14 @@ bool wp_set(char* input_expr)
     printf("wp_new failed\n");
     return false;
   }
-  if(!strcpy(wp->expr, input_expr))
-  {
-    return false;
-  }
+  char *wp_expr;
+  wp_expr = (char*)malloc(sizeof(input_expr));
+  if(!wp_expr)  assert(0);
+  strcpy(wp_expr, input_expr);
+  wp->expr = wp_expr;
 
   bool init;
-  wp->pre_state_val = expr(input_expr, &init);
+  wp->pre_state_val = expr(wp_expr, &init);
   if(init)
     return true;
   else
@@ -103,13 +104,20 @@ void wp_delete(int n)
       {
         wp_free(head);
       }
+      return;
     }
     else
+    {
       printf("No action, continue\n");
+      return;
+    }
   }
 
   if(n<-1 || n>NR_WP-1)
+  {
     printf("watchpoint %d do not exist\n", n);
+    return;
+  }
 
   wp_free(wp_pool+n);
 }

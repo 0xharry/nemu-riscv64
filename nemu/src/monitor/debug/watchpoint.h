@@ -9,7 +9,7 @@ typedef struct watchpoint {
 
   /* TODO: Add more members if necessary */
   // bool status;
-  char expr[128];
+  char* expr;
   word_t pre_state_val;
 } WP;
 
