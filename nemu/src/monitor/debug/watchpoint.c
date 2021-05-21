@@ -130,7 +130,7 @@ void wp_display()
 {
   if(!head)
   {
-    printf("\tNum\tWhat");
+    printf("\tNum\tWhat\n");
     for(WP* p = head; p != NULL; p=p->next)
     {
       printf("\t%d\t%s\n", p->NO, p->expr);
