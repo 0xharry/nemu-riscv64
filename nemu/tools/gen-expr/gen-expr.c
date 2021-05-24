@@ -27,10 +27,10 @@ void gen_num()
   buf[count++] = '0'+rand()%10;
 }
 
-// 20%几率生成空格
+// 25%几率生成空格
 void gen_space()
 {
-  while (!rand()%5)
+  while (!rand()%4)
     buf[count++] = ' ';
 }
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
   srand(seed);
   int loop = 1;
   // 生成的表达式个数
-  if (argc > 1) {
+  if (argc > 10) {
     sscanf(argv[1], "%d", &loop);
   }
   int i;

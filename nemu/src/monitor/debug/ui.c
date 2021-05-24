@@ -49,12 +49,16 @@ static int cmd_help(char *args);
 
 // N步执行
 static int cmd_si(char *args) {
-  // TODO: consider if args are illegal
   args = strtok(NULL," ");
+  
   if(!args)
     cpu_exec(1);
-  else
-    cpu_exec(*args-'0');
+
+  int steps = -1;
+  if (sscanf(args,"%d",&steps)==-1 || steps <= 0)
+    return ILLEGAL_ARGS;
+
+  cpu_exec(steps);
   return SUCCESS;
 }
 
@@ -69,7 +73,10 @@ static int cmd_w(char *args)
       return SUCCESS;
     }
     else
+    {
+      printf("Set watchpoint failed\n");
       return FAILURE;
+    }
   }
   return ILLEGAL_ARGS;
 }
@@ -80,9 +87,9 @@ static int cmd_d(char *args)
   args = strtok(NULL," ");
   if(args)
   {
-    int n;
-    if(sscanf(args, "%d", &n) == -1)
-      Assert(0, "sscanf fault");
+    int n = -1;
+    if(sscanf(args,"%d",&n) == -1 || n < 0)
+      return ILLEGAL_ARGS;
     wp_delete(n);
     return SUCCESS;
   }
@@ -105,37 +112,98 @@ static int cmd_info(char *args) {
       return SUCCESS;
     }
   }
-  return FAILURE;
+  return ILLEGAL_ARGS;
 }
 
-#include <memory/paddr.h>
-// 检查指定地址附近的值
-static int cmd_exam_addr(char *args) {
-  // TODO: illegal args and unreadable code need refinement
-  unsigned n = *strtok(NULL," ") - '0';
-  word_t expr = strtoul(strtok(NULL," "),NULL,16);
-  printf("%u Byte start at Mem[0x%16lx]\n", n, expr);
-  for(unsigned i=0; i<n; ++i)
-  {
-    printf("0x%016lx:  ", expr+4*i);
-    for(int j=0; j<4; ++j)
-      printf("%02x  ", (uint8_t)paddr_read(expr+4*i+j,1));
-    putchar('\n');
-  }
-  return 0;
-}
 
 // 输入表达式返回值
 static int cmd_p(char *args) {
   if(args)
   {
-    bool flag = true;
-    word_t res = expr(args, &flag);
-    if(flag)
+    int state = VALID_RET;
+    /* 
+     * expr错误处理（state返回值）:
+     * VALID_RET 正常计算，有效返回值
+     * DIV_BY_0  除零错误
+     * MAKE_FAIL 非法表达式，正则表达式匹配失败
+     * PARE_FAIL 非法表达式，括号失配
+     * FIND_OP_FAIL 寻找主op出现错误
+     * BAD_EXPR  非法表达式，无法计算的表达式
+     * SSCANF_FAIL sscanf发生错误
+     * REG_FAIL  不存在的寄存器
+     */ 
+    word_t res = expr(args, &state);
+    switch (state)
+    {
+    case VALID_RET:
       printf("0x%lx\n",res);
-    return SUCCESS;
+      return SUCCESS;
+    
+    case DIV_BY_0:
+      printf("Illegal expression, divided by 0\n");
+      return FAILURE;
+
+    case MAKE_FAIL:
+      printf("Illegal expression, make_token failed\n");
+      return FAILURE;
+
+    case PARE_FAIL:
+      printf("Illegal expression, invalid parentheses\n");
+      return FAILURE;
+
+    case BAD_EXPR:
+      printf("Illegal expression, bad expression\n");
+
+    case SSCANF_FAIL:
+      printf("Function call sscanf() failed\n");
+      return FAILURE;
+    
+    case REG_FAIL:
+      printf("Illegal expression, no such register\n");
+      return FAILURE;
+    
+    case FIND_OP_FAIL:
+      printf("Illegal expression, cannot find (main) op\n");
+      return FAILURE;
+    default:
+      break;
+    }
   }
   return ILLEGAL_ARGS;
+}
+
+
+#include <memory/paddr.h>
+// 求出表达式EXPR的值, 将结果作为起始内存地址
+// 以十六进制形式输出连续的N个4字节
+static int cmd_exam_addr(char *args) {
+  char* arg1 = strtok(NULL," ");
+  char* arg2 = strtok(NULL," ");
+
+  // 取数字
+  int n=-1;
+  if (sscanf(arg1,"%d",&n) == -1 || n < 0)
+      return ILLEGAL_ARGS;
+  
+  // 取表达式结果
+  int state = VALID_RET;
+  word_t addr = expr(arg2, &state);
+  if(state != VALID_RET)
+  {
+    printf("Failure while calling expr()\n");
+    return FAILURE;
+  }
+
+  // 打印地址
+  printf("%u Byte start at Mem[0x%16lx]\n", n, addr);
+  for(unsigned i=0; i<n; ++i)
+  {
+    printf("0x%016lx:  ", addr+4*i);
+    for(int j=0; j<4; ++j)
+      printf("%02x  ", (uint8_t)paddr_read(addr+4*i+j,1));
+    putchar('\n');
+  }
+  return 0;
 }
 
 static struct {
@@ -146,12 +214,12 @@ static struct {
   { "help", "Display informations about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  { "si", "\t\t\'si [N]\'Execute next N steps", cmd_si},
-  { "info", "\t\t\'info r/w\'Print values of all registers/watchpoints", cmd_info},
-  { "x", "\t\t\'x N EXPR\'Exam next 4N Bytes value from address EXRP", cmd_exam_addr},
-  { "p", "\t\t\'p EXPR\'Compute value of EXPR", cmd_p},
-  { "d", "\t\t\'d [N]\'Delete watchpoint N", cmd_d},
-  { "w", "\t\t\'w EXPR\'set expression to stop program running when its value changes", cmd_w},
+  { "si", "\'si [N]\'\tExecute next N steps", cmd_si},
+  { "info", "\'info r/w\'\tPrint values of all registers/watchpoints", cmd_info},
+  { "x", "\'x N EXPR\'\tExam next 4N Bytes value from address EXRP", cmd_exam_addr},
+  { "p", "\'p EXPR\'\tCompute value of EXPR", cmd_p},
+  { "d", "\'d [N]\'\tDelete watchpoint N", cmd_d},
+  { "w", "\'w EXPR\'\tset expression to stop program running when its value changes", cmd_w},
   /* TODO: Add more commands */
 
 };
@@ -169,6 +237,7 @@ static int cmd_help(char *args) {
     for (i = 0; i < NR_CMD; i ++) {
       printf("%s\t- %s\n", cmd_table[i].name, cmd_table[i].description);
     }
+    return SUCCESS;
   }
   else {
     for (i = 0; i < NR_CMD; i ++) {
@@ -177,9 +246,8 @@ static int cmd_help(char *args) {
         return 0;
       }
     }
-    printf("Unknown command '%s'\n", arg);
+    return ILLEGAL_ARGS;
   }
-  return 0;
 }
 
 void ui_mainloop() {

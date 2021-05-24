@@ -23,7 +23,8 @@ WP* wp_new()
 {
   if(!free_)
   {
-    return NULL; // personally, no need to call assert(0);
+    printf("Watch point pool is dried. ");
+    return NULL;
   }
   WP* curr = free_;
   free_ = free_->next;
@@ -78,16 +79,23 @@ bool wp_set(char* input_expr)
   }
   char *wp_expr;
   wp_expr = (char*)malloc(sizeof(input_expr));
-  if(!wp_expr)  assert(0);
+  if(!wp_expr)
+  {
+    printf("malloc for expression failed\n");
+    return false;
+  }
   strcpy(wp_expr, input_expr);
   wp->expr = wp_expr;
 
-  bool init;
-  wp->pre_state_val = expr(wp_expr, &init);
-  if(init)
+  int state;
+  wp->pre_state_val = expr(wp_expr, &state);
+  if(state == VALID_RET)
     return true;
   else
+  {
+    wp_free(wp);
     return false;
+  }
 }
 
 void wp_delete(int n)
@@ -124,7 +132,7 @@ void wp_delete(int n)
 
 bool wp_check()
 {
-  bool all_clear = true;
+  int all_clear = VALID_RET;
   word_t curr_val;
   for(WP* curr=head; curr!=NULL; curr=curr->next)
   {
@@ -137,7 +145,7 @@ bool wp_check()
       all_clear = false;
     }
   }
-  return all_clear;
+  return (bool)all_clear;
 }
 
 void wp_display()
