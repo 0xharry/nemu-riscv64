@@ -475,6 +475,7 @@ word_t eval(int p, int q, int *state)
 
 word_t expr(char *e, int *state)
 {
+  *state = VALID_RET;
   if (!make_token(e))
   {
     *state = MAKE_FAIL;
