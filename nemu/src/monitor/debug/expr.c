@@ -439,6 +439,7 @@ word_t eval(int p, int q, int *state)
 
     word_t val1 = eval(p, op_pos - 1, state);
     word_t val2 = eval(op_pos + 1, q, state);
+    if (*state != VALID_RET)  return 1;
 
     switch (tokens[op_pos].type)
     {

@@ -153,6 +153,7 @@ static int cmd_p(char *args) {
 
     case BAD_EXPR:
       printf("Illegal expression, bad expression\n");
+      return FAILURE;
 
     case SSCANF_FAIL:
       printf("Function call sscanf() failed\n");
