@@ -71,31 +71,28 @@ void wp_free(WP *wp)
 
 bool wp_set(char* input_expr)
 {
+  int state;
+  word_t expr_val = expr(input_expr, &state);
+  if(state != VALID_RET)
+    return false;
+
   WP* wp = wp_new();
   if(!wp)
   {
     printf("wp_new failed\n");
     return false;
   }
-  char *wp_expr;
-  wp_expr = (char*)malloc(sizeof(input_expr));
+  char *wp_expr = (char*)malloc(sizeof(input_expr));
   if(!wp_expr)
   {
+    wp_free(wp);
     printf("malloc for expression failed\n");
     return false;
   }
   strcpy(wp_expr, input_expr);
   wp->expr = wp_expr;
-
-  int state;
-  wp->pre_state_val = expr(wp_expr, &state);
-  if(state == VALID_RET)
-    return true;
-  else
-  {
-    wp_free(wp);
-    return false;
-  }
+  wp->pre_state_val = expr_val;
+  return true;
 }
 
 void wp_delete(int n)

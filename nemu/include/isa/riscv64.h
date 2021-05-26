@@ -43,7 +43,7 @@ typedef struct {
       uint32_t rd        : 5;
       int32_t  simm31_12 :20;
     } u;
-    uint32_t val; // PC?
+    uint32_t val; // instruction (binary)
   } instr;
 } riscv64_ISADecodeInfo;
 

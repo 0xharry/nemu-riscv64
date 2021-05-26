@@ -288,7 +288,7 @@ void ui_mainloop() {
           return;
 
         case ILLEGAL_ARGS:
-          printf("Illegal arguments, try \"help\"");
+          printf("Illegal arguments, try \"help\"\n");
         case FAILURE:
         case SUCCESS:
         default:
