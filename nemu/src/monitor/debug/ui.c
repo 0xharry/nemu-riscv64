@@ -53,12 +53,14 @@ static int cmd_si(char *args) {
   
   if(!args)
     cpu_exec(1);
-
-  int steps = -1;
-  if (sscanf(args,"%d",&steps)==-1 || steps <= 0)
-    return ILLEGAL_ARGS;
-
-  cpu_exec(steps);
+  else
+  {
+    int steps = -1;
+    if (sscanf(args,"%d",&steps)==-1 || steps <= 0)
+      return ILLEGAL_ARGS;
+    cpu_exec(steps);
+  }
+  
   return SUCCESS;
 }
 
