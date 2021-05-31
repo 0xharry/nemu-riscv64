@@ -29,6 +29,8 @@ static inline void fetch_decode_exec(DecodeExecState *s) {
     IDEX (0b01000, S, store) // case 0b01000: set_width(s, 0); decode_S(s); exec_store(s); break;
     IDEX (0b01101, U, lui)   // case 0b01101: set_width(s, 0); decode_U(s); exec_lui(s); break;
     IDEX (0b00101, U, auipc) // case 0b00101: set_width(s, 0); decode_U(s); exec_auipc(s); break;
+    IDEX (0b11011, U, jal)
+    IDEX (0b11001, I, jalr)
     EX   (0b11010, nemu_trap)
     // TODO(); more instructions id+ex
     default: exec_inv(s);

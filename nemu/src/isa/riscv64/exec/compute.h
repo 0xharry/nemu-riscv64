@@ -12,17 +12,23 @@ static inline def_EHelper(addi)
   print_asm_template2(addi);
 }
 
-// x[rd] = immediate
-// expands to instr sequence: lui, addi, slli, addi, slli, addi ,slli, addi
-static inline def_EHelper(li)
-{
-  // rtl_li(s, ddest, id_src1->imm);
-  // print_asm_template2(li);
-}
+// // mv expands to addi rd, rs1, 0
+// static inline def_EHelper(mv)
+// {
+//   // x[rd] = x[rs1]
+//   print_asm_template2(mv);
+// }
 
-// x[rd] = pc + sext(immediate[31:12] << 12)
+// // expands to instr sequence: lui, addi, slli, addi, slli, addi ,slli, addi (start with addi)
+// static inline def_EHelper(li)
+// {
+//   // x[rd] = immediate
+//   print_asm_template2(li);
+// }
+
+// U-type: x[rd] = pc + sext(immediate[31:12] << 12)
 static inline def_EHelper(auipc)
 {
-  rtl_li(s, ddest, id_src1->imm); // 'pc' in "pc+imm" means cpu.pc or seq_pc (has been + 4) ???
+  rtl_li(s, ddest, cpu.pc + id_src1->imm); // 'pc' in "pc+imm" means cpu.pc or seq_pc (has been + 4) ???
   print_asm_template2(auipc);
 }

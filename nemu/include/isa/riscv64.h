@@ -8,7 +8,6 @@
 #define riscv64_PMEM_BASE 0x80000000
 
 // reg
-
 typedef struct {
   union {
     rtlreg_t _64;
