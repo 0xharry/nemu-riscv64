@@ -22,7 +22,7 @@ static inline def_EHelper(jal)
 {
   rtl_addi(s, ddest, &s->seq_pc, 0); // x[rd] = pc+4
   sword_t simm = jal_offset_decode(id_src1->imm);
-  printf("offset = %lx\n", simm);
+  printf("imm = %lx, offset = %lx\n", id_src1->imm, simm);
   rtl_j(s, cpu.pc + simm);   // pc += sext(offset)
   // printf("cpu.pc=%lx, seq_pc=%lx, jump_pc %lx\n", cpu.pc, s->seq_pc, s->jmp_pc);
   print_asm_template2(jal);
