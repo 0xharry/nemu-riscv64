@@ -25,6 +25,7 @@ static inline void fetch_decode_exec(DecodeExecState *s) {
   Assert(s->isa.instr.i.opcode1_0 == 0x3, "Invalid instruction");
   switch (s->isa.instr.i.opcode6_2) {
     IDEX (0b00000, I, load)  // case 0b00000: set_width(s, 0); decode_I(s); exec_load(s); break;
+    IDEX (0b00100, I, addi)  // case 0b00000: set_width(s, 0); decode_I(s); exec_addi(s); break;
     IDEX (0b01000, S, store) // case 0b01000: set_width(s, 0); decode_S(s); exec_store(s); break;
     IDEX (0b01101, U, lui)   // case 0b01101: set_width(s, 0); decode_U(s); exec_lui(s); break;
     IDEX (0b00101, U, auipc) // case 0b00101: set_width(s, 0); decode_U(s); exec_auipc(s); break;

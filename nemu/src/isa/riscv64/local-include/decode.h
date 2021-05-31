@@ -8,7 +8,7 @@
 static inline def_DopHelper(i) {
   op->type = OP_TYPE_IMM;
   op->imm = val;
-
+  // op->val = op->imm after calling rtl_li();
   print_Dop(op->str, OP_STR_SIZE, "%ld", op->imm);
 }
 
