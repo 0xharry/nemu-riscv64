@@ -1,5 +1,23 @@
 // J(U)-type:
 // x[rd] = pc+4; pc += sext(offset)
+static inline sword_t jal_offset_decode(word_t imm)
+{
+  sword_t simm = (unsigned long)(
+                ((imm & (unsigned long)0x00080000)<<1 ) |\
+                ((imm & (unsigned long)0x000000FF)<<12) |\
+                ((imm & (unsigned long)0x00000100)<<3 ) |\
+                ((imm & (unsigned long)0x0007FE00)>>8 ) );
+  return simm;
+}
+/* offset[20|10:1|11|19:12]
+ * 20   16   12   8    4    0
+ * 0 0000 0000 0000 0000 0000
+ * 0                1111 1111 << 12
+ * 0              1 0000 0000 << 3
+ * 0  111 1111 1110 0000 0000 >> 8
+ * 0 1                        << 1
+ */
+
 static inline def_EHelper(jal)
 {
   rtl_addi(s, ddest, &s->seq_pc, 0); // x[rd] = pc+4
