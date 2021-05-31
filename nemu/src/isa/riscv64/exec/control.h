@@ -3,7 +3,7 @@
 static inline def_EHelper(jal)
 {
   rtl_addi(s, ddest, &s->seq_pc, 0); // x[rd] = pc+4
-  rtl_j(s, id_src1->imm);   // pc += sext(offset)
+  rtl_j(s, cpu.pc + id_src1->imm);   // pc += sext(offset)
   print_asm_template2(jal);
 }
 
