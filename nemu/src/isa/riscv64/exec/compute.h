@@ -1,7 +1,7 @@
 // U-type: x[rd] = sext(immediate[31:12] << 12)
 static inline def_EHelper(lui)
 {
-  rtl_li(s, ddest, *dsrc1); // id_src1->imm 'imm' cannot be substituted by dsrc1/2 before calling rtl_li() // actually not???
+  rtl_li(s, ddest, id_src1->imm); // id_src1->imm 'imm' cannot be substituted by dsrc1/2 before calling rtl_li() // actually not???
   print_asm_template2(lui);
 }
 
