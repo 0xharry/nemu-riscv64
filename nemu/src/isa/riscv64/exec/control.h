@@ -21,10 +21,7 @@ static inline sword_t jal_offset_decode(word_t imm)
 static inline def_EHelper(jal)
 {
   rtl_addi(s, ddest, &s->seq_pc, 0); // x[rd] = pc+4
-  sword_t simm = jal_offset_decode(id_src1->imm);
-  printf("imm = %lx, offset = %lx\n", id_src1->imm, simm);
-  rtl_j(s, cpu.pc + simm);   // pc += sext(offset)
-  // printf("cpu.pc=%lx, seq_pc=%lx, jump_pc %lx\n", cpu.pc, s->seq_pc, s->jmp_pc);
+  rtl_j(s, cpu.pc + jal_offset_decode(id_src1->imm));   // pc += sext(offset)
   print_asm_template2(jal);
 }
 
