@@ -2,11 +2,11 @@
 // x[rd] = pc+4; pc += sext(offset)
 static inline sword_t jal_offset_decode(word_t imm)
 {
-  sword_t simm = (unsigned long)(
-                ((imm & (unsigned long)0x00080000)<<1 ) |\
-                ((imm & (unsigned long)0x000000FF)<<12) |\
-                ((imm & (unsigned long)0x00000100)<<3 ) |\
-                ((imm & (unsigned long)0x0007FE00)>>8 ) );
+  sword_t simm = ((sword_t)(
+                ((imm & (word_t)0x00080000)<<1 ) |\
+                ((imm & (word_t)0x000000FF)<<12) |\
+                ((imm & (word_t)0x00000100)<<3 ) |\
+                ((imm & (word_t)0x0007FE00)>>8 )))<<43>>43;
   return simm;
 }
 /* offset[20|10:1|11|19:12]
