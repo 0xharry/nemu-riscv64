@@ -36,7 +36,7 @@ static char* rl_gets() {
 
 // 执行(unsigned)-1次
 static int cmd_c(char *args) {
-  cpu_exec(-1);
+  cpu_exec(20);
   return SUCCESS;
 }
 
