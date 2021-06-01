@@ -2,11 +2,12 @@
 // x[rd] = pc+4; pc += sext(offset)
 static inline sword_t jal_offset_decode(word_t imm)
 {
-  sword_t simm = ((sword_t)(
-                ((imm & (word_t)0x00080000)<<1 ) |\
-                ((imm & (word_t)0x000000FF)<<12) |\
-                ((imm & (word_t)0x00000100)<<3 ) |\
-                ((imm & (word_t)0x0007FE00)>>8 )))<<43>>43;
+  sword_t simm = ((sword_t)(((imm & (word_t)0x00080000) << 1) |
+                            ((imm & (word_t)0x000000FF) << 12) |
+                            ((imm & (word_t)0x00000100) << 3) |
+                            ((imm & (word_t)0x0007FE00) >> 8)))
+                     << 43 >>
+                 43; //sizeof(word_t)-21 = 64-21 = 43
   return simm;
 }
 /* offset[20|10:1|11|19:12]
@@ -20,9 +21,8 @@ static inline sword_t jal_offset_decode(word_t imm)
 
 static inline def_EHelper(jal)
 {
-  rtl_addi(s, ddest, &s->seq_pc, 0); // x[rd] = pc+4
-  rtl_j(s, cpu.pc + jal_offset_decode(id_src1->imm));   // pc += sext(offset)
-  printf("%lx\t%lx\t%lx\n",jal_offset_decode(id_src1->imm), cpu.pc, s->jmp_pc);
+  rtl_addi(s, ddest, &s->seq_pc, 0);                  // x[rd] = pc+4
+  rtl_j(s, cpu.pc + jal_offset_decode(id_src1->imm)); // pc += sext(offset)
   print_asm_template2(jal);
 }
 
@@ -39,7 +39,7 @@ static inline def_EHelper(jal)
 // x[rd]=t
 static inline def_EHelper(jalr)
 {
-  rtl_j(s, (*dsrc1+id_src2->imm)&~1);
+  rtl_j(s, (*dsrc1 + id_src2->imm) & ~1);
   rtl_addi(s, ddest, rz, s->seq_pc);
   print_asm_template2(jalr);
 }
