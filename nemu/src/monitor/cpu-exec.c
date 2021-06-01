@@ -86,7 +86,7 @@ void cpu_exec(uint64_t n) {
     g_nr_guest_instr ++;
 
 #ifdef DEBUG
-    printf("cpu.pc = 0x%lx\n", cpu.pc);
+    // printf("cpu.pc = 0x%lx\t", cpu.pc);
     asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
     /* TODO: check watchpoints here. */

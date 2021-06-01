@@ -61,8 +61,8 @@ static inline void fetch_decode_exec(DecodeExecState *s) {
     IDEX (0b00000, I, load)  // case 0b00000: set_width(s, 0); decode_I(s); exec_load(s); break;
     IDEX (0b00100, I, I_type)  // case 0b00000: set_width(s, 0); decode_I(s); exec_I_type(s); //second decode; break;
     IDEX (0b00110, I, addiw)
-    IDEX (0b01110, S, addw)
-    IDEX (0b01100, S, sub)
+    IDEX (0b01110, R, addw)
+    IDEX (0b01100, R, sub)
     IDEX (0b11000, B, bne)
     IDEX (0b01000, S, store) // case 0b01000: set_width(s, 0); decode_S(s); exec_store(s); break;
     IDEX (0b01101, U, lui)   // case 0b01101: set_width(s, 0); decode_U(s); exec_lui(s); break;

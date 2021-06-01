@@ -26,14 +26,14 @@ static inline def_EHelper(addiw)
   print_asm_template2(addiw);
 }
 
-// R(S)-type: x[rd] = sext((x[rs1] + x[rs2])[31:0])
+// R-type: x[rd] = sext((x[rs1] + x[rs2])[31:0])
 static inline def_EHelper(addw)
 {
   rtl_addw(s, ddest, dsrc1, dsrc1);
   print_asm_template2(addw);
 }
 
-// R(S)-type: x[rd] = x[rs1] − x[rs2]
+// R-type: x[rd] = x[rs1] − x[rs2]
 static inline def_EHelper(sub)
 {
   rtl_sub(s, ddest, dsrc1, dsrc2);
