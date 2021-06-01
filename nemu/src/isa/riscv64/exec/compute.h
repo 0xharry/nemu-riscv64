@@ -5,6 +5,13 @@ static inline def_EHelper(lui)
   print_asm_template2(lui);
 }
 
+// I-type: x[rd] = (x[rs1] < 𝑢 sext(immediate))
+static inline def_EHelper(sltiu)
+{
+  *ddest = ((word_t)*dsrc1 < (word_t)id_src2->simm);
+  print_asm_template2(sltiu);
+}
+
 // I-type: x[rd] = x[rs1] + sext(immediate)
 static inline def_EHelper(addi)
 {
@@ -12,19 +19,26 @@ static inline def_EHelper(addi)
   print_asm_template2(addi);
 }
 
-// // mv expands to addi rd, rs1, 0
-// static inline def_EHelper(mv)
-// {
-//   // x[rd] = x[rs1]
-//   print_asm_template2(mv);
-// }
+// I-type: x[rd] = sext((x[rs1] + sext(immediate))[31:0])
+static inline def_EHelper(addiw)
+{
+  rtl_addwi(s, ddest, dsrc1, id_src2->imm);
+  print_asm_template2(addiw);
+}
 
-// // expands to instr sequence: lui, addi, slli, addi, slli, addi ,slli, addi (start with addi)
-// static inline def_EHelper(li)
-// {
-//   // x[rd] = immediate
-//   print_asm_template2(li);
-// }
+// R(S)-type: x[rd] = sext((x[rs1] + x[rs2])[31:0])
+static inline def_EHelper(addw)
+{
+  rtl_addw(s, ddest, dsrc1, dsrc1);
+  print_asm_template2(addw);
+}
+
+// R(S)-type: x[rd] = x[rs1] − x[rs2]
+static inline def_EHelper(sub)
+{
+  rtl_sub(s, ddest, dsrc1, dsrc2);
+  print_asm_template2(sub);
+}
 
 // U-type: x[rd] = pc + sext(immediate[31:12] << 12)
 static inline def_EHelper(auipc)
@@ -32,3 +46,12 @@ static inline def_EHelper(auipc)
   rtl_li(s, ddest, cpu.pc + id_src1->imm); // 'pc' in "pc+imm" means cpu.pc or seq_pc (has been + 4) ???
   print_asm_template2(auipc);
 }
+
+// mv: expands to addi rd, rs1, 0
+// x[rd] = x[rs1]
+
+// li: expands to instr sequence: lui, addi, slli, addi, slli, addi ,slli, addi (start with addi)
+// x[rd] = immediate
+
+// seqz: expands to sltiu rd, rs1, 1
+// x[rd] = (x[rs1] == 0)
