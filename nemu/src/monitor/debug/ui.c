@@ -255,7 +255,7 @@ static int cmd_help(char *args) {
 
 void ui_mainloop() {
   if (is_batch_mode()) {
-    cmd_c(NULL);
+    printf("BATCH MODE, remember to use \"cmd_c\"");// cmd_c(NULL);
     return;
   }
 
