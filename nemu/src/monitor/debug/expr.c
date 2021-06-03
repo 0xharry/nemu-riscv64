@@ -8,11 +8,12 @@
 enum TK {
   TK_NOTYPE = 256,
 
-  // 比较    // 优先级最低
+  // 关系运算：
+  // 优先级最低
   TK_OR,    // ||
-
+  // 优先级++
   TK_AND,   // &&
-
+  // 优先级++
   TK_EQ,    // ==
   TK_NEQ,   // !=
   TK_L,     // <
@@ -20,23 +21,27 @@ enum TK {
   TK_G,     // >
   TK_GE,    // >=
 
-  // 加减乘除
-  TK_MINUS, // -
-  TK_PLUS,  // +
+  // 加减乘除：
+  // 优先级++
+  TK_MINUS,   // -
+  TK_PLUS,    // +
+  // 优先级++
+  TK_MUL,     // *
+  TK_DIV,     // /
 
-  TK_MUL,   // *
-  TK_DIV,   // /
+  // 括号：
+  // 优先级++
+  TK_LP,      // (
+  TK_RP,      // )
 
-  // 括号
-  TK_LP,    // (
-  TK_RP,    // )
+  // 操作数：
+  // 优先级++
+  TK_DEC,     // Decimal integer
+  TK_HEX,     // 0x Hexadecimal integer
+  TK_REG,     // $  Register
 
-  // 操作数
-  TK_DEC,   // Decimal integer
-  TK_HEX,   // 0x Hexadecimal integer
-  TK_REG,   // $  Register
-
-  // 特殊    // 优先级最高
+  // 特殊：
+  // 优先级最高
   TK_NEG,   // - negative
   TK_DEREF, // * dereference
 };
@@ -93,8 +98,9 @@ typedef struct token {
   char str[32];
 } Token;
 
-// MAGIC NUMBER个token是否不够用？
-static Token tokens[64] __attribute__((used)) = {};
+// TK_NUM 个token是否不够用？
+#define TK_NUM 64
+static Token tokens[TK_NUM] __attribute__((used)) = {};
 static int nr_token __attribute__((used)) = 0;
 
 static bool make_token(char *e) {
@@ -180,6 +186,7 @@ bool check_parentheses(int p, int q) {
       default:            break;
     }
   }
+
   if (left > 0 && left == right)
     return true;
   else
@@ -187,8 +194,26 @@ bool check_parentheses(int p, int q) {
 }
 
 #include <limits.h>
-#define BAD_RET(msg,st,ret) do{printf(msg); *state=st; return ret;}while(0)
+#define BAD_RET(msg,st,ret) do{                                     \
+          printf(msg);                                              \
+          *state=st;                                                \
+          return ret;                                               \
+        }while(0)
+
+#define BREAK_WHILE_OP_LEVEL_BELOW(op) do{                          \
+          if ((curr_op_level < level)||                             \
+              ((curr_op_level == level) && (curr_op_type == op)))   \
+            break;                                                  \
+          }while(0)
+
+#define OP_STATE_UPDATE() do{                                       \
+          curr_op_level = level;                                    \
+          curr_op_type = tokens[p - 1].type;                        \
+          ret_op = p - 1;                                           \
+        }while(0)
+
 #define BAD_OP INT_MAX
+
 int find_main_op(int p, int q, int* state) {
   int ret_op = BAD_OP;
   int curr_op_type = BAD_OP;  // 当前op类型
@@ -208,66 +233,43 @@ int find_main_op(int p, int q, int* state) {
 
     case TK_OR:
       // 如果已经有更低/平级level的 OR op被登记，跳过
-      if ((curr_op_level < level) ||
-          ((curr_op_level == level) && (curr_op_type == TK_OR)))
-        break;
-      curr_op_level = level;
-      curr_op_type = tokens[p - 1].type;
-      ret_op = p - 1;
+      BREAK_WHILE_OP_LEVEL_BELOW(TK_OR);
+      OP_STATE_UPDATE();
       break;
 
     case TK_AND:
       // 如果已经有更低/平级level的 AND op被登记，跳过
-      if ((curr_op_level < level) ||
-          ((curr_op_level == level) && (curr_op_type <= TK_AND)))
-        break;
-      curr_op_level = level;
-      curr_op_type = tokens[p - 1].type;
-      ret_op = p - 1;
+      BREAK_WHILE_OP_LEVEL_BELOW(TK_AND);
+      OP_STATE_UPDATE();
       break;
 
     case TK_EQ: case TK_NEQ:
     case TK_LE: case TK_GE:
     case TK_L:  case TK_G:
       // 如果已经有更低/平级level的 逻辑比较 op被登记，跳过
-      if ((curr_op_level < level) ||
-          ((curr_op_level == level) && (curr_op_type <= TK_GE)))
-        break;
-      curr_op_level = level;
-      curr_op_type = tokens[p - 1].type;
-      ret_op = p - 1;
+      BREAK_WHILE_OP_LEVEL_BELOW(TK_GE);
+      OP_STATE_UPDATE();
       break;
 
     case TK_PLUS:
     case TK_MINUS:
       // 如果已经有更低/平级level的 加减 op被登记，跳过
-      if ((curr_op_level < level) ||
-          ((curr_op_level == level) && (curr_op_type <= TK_PLUS)))
-        break;
-      curr_op_level = level;
-      curr_op_type = tokens[p - 1].type;
-      ret_op = p - 1;
+      BREAK_WHILE_OP_LEVEL_BELOW(TK_PLUS);
+      OP_STATE_UPDATE();
       break;
 
     case TK_MUL:
     case TK_DIV:
       // 如果已经有更低/平级level的 乘除 op被登记，跳过
-      if ((curr_op_level < level) ||
-          ((curr_op_level == level) && (curr_op_type <= TK_DIV)))
-        break;
-      curr_op_level = level;
-      curr_op_type = tokens[p - 1].type;
-      ret_op = p - 1;
+      BREAK_WHILE_OP_LEVEL_BELOW(TK_DIV);
+      OP_STATE_UPDATE();
       break;
 
     case TK_NEG:
     case TK_DEREF:
-      // 如果已经有更低/平级level的op被登记，跳过
-      if (curr_op_level <= level)
-        break;
-      curr_op_level = level;
-      curr_op_type = tokens[p - 1].type;
-      ret_op = p - 1;
+      // 如果已经有更低/平级level的 任意 op被登记，跳过
+      if (curr_op_level <= level) break;
+      OP_STATE_UPDATE();
       break;
 
     default:
@@ -284,7 +286,7 @@ int find_main_op(int p, int q, int* state) {
 
 word_t eval(int p, int q, int *state)
 {
-  // 错误返回
+  // 错误返回main_loop
   if (*state != VALID_RET)  return -1;
 
   if (p > q) {
@@ -296,8 +298,7 @@ word_t eval(int p, int q, int *state)
      * Return the value of the number.
      */
     word_t ret;
-    switch (tokens[p].type)
-    {
+    switch (tokens[p].type) {
     case TK_DEC:
       if (sscanf(tokens[p].str, "%lu", &ret) == -1)
         BAD_RET("eval(): TK_DEC, SSCANF_FAIL\n",SSCANF_FAIL,1);
@@ -311,13 +312,12 @@ word_t eval(int p, int q, int *state)
     case TK_REG:;
       bool flag = true;
       ret = isa_reg_str2val(tokens[p].str, &flag);
-      if (flag)
-        return ret;
-      else 
+      if (!flag)
         BAD_RET("eval(): REG_FAIL, SSCANF_FAIL\n",REG_FAIL,1);
+      return ret;
 
     default:
-      BAD_RET("eval(): REG_FAIL, SSCANF_FAIL\n",REG_FAIL,1);
+      BAD_RET("eval(): invalid (single)token type\n",BAD_EXPR,1);
       break;
     }
   }
@@ -376,15 +376,13 @@ word_t eval(int p, int q, int *state)
   }
 }
 
-word_t expr(char *e, int *state)
-{
+word_t expr(char *e, int *state) {
   *state = VALID_RET;
   if (!make_token(e))
     BAD_RET("expr(): make_token fail\n",MAKE_FAIL,0);
 
   // 区分 *乘/取地址，和 -减/负号
-  for (int i = 0; i < nr_token; i++)
-  {
+  for (int i = 0; i < nr_token; i++) {
     if ((tokens[i].type == TK_MUL) &&
         (i == 0 || tokens[i - 1].type <= TK_DIV))
       tokens[i].type = TK_DEREF;

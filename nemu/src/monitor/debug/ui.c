@@ -51,13 +51,12 @@ static int cmd_help(char *args);
 static int cmd_si(char *args) {
   args = strtok(NULL," ");
   
-  if(!args)
+  if(!args) {
     cpu_exec(1);
-  else
-  {
+  }
+  else {
     int steps = -1;
-    if (sscanf(args,"%d",&steps)==-1 || steps <= 0)
-      return ILLEGAL_ARGS;
+    if (sscanf(args,"%d",&steps)==-1 || steps <= 0) {return ILLEGAL_ARGS;}
     cpu_exec(steps);
   }
   
@@ -65,17 +64,13 @@ static int cmd_si(char *args) {
 }
 
 // 设置监视点
-static int cmd_w(char *args)
-{
-  if(args)
-  {
-    if(wp_set(args))
-    {
+static int cmd_w(char *args) {
+  if(args) {
+    if(wp_set(args)) {
       printf("set %s\n", args);
       return SUCCESS;
     }
-    else
-    {
+    else {
       printf("Set watchpoint failed\n");
       return FAILURE;
     }
@@ -84,32 +79,27 @@ static int cmd_w(char *args)
 }
 
 // 删除监视点
-static int cmd_d(char *args)
-{
+static int cmd_d(char *args) {
   args = strtok(NULL," ");
-  if(args)
-  {
+  if(args) {
     int n = -1;
-    if(sscanf(args,"%d",&n) == -1 || n < 0)
-      return ILLEGAL_ARGS;
+    if(sscanf(args,"%d",&n) == -1 || n < 0) {return ILLEGAL_ARGS;}
     wp_delete(n);
     return SUCCESS;
   }
+
   return ILLEGAL_ARGS;
 }
 
 // 打印所有寄存器/WP
 static int cmd_info(char *args) {
   args = strtok(NULL," ");
-  if (args)
-  {
-    if(*args=='r')
-    {
+  if (args) {
+    if(*args=='r') {
       isa_reg_display();
       return SUCCESS;
     }
-    else if(*args=='w')
-    {
+    else if(*args=='w') {
       wp_display();
       return SUCCESS;
     }
@@ -117,59 +107,32 @@ static int cmd_info(char *args) {
   return ILLEGAL_ARGS;
 }
 
-
 // 输入表达式返回值
 static int cmd_p(char *args) {
-  if(args)
-  {
+  if(args) {
     int state = VALID_RET;
     /* 
      * expr错误处理（state返回值）:
-     * VALID_RET 正常计算，有效返回值
-     * DIV_BY_0  除零错误
-     * MAKE_FAIL 非法表达式，正则表达式匹配失败
-     * PARE_FAIL 非法表达式，括号失配
-     * FIND_OP_FAIL 寻找主op出现错误
-     * BAD_EXPR  非法表达式，无法计算的表达式
-     * SSCANF_FAIL sscanf发生错误
-     * REG_FAIL  不存在的寄存器
+     * VALID_RET       正常计算，有效返回值
+     * DIV_BY_0        除零错误
+     * MAKE_FAIL       非法表达式，正则表达式匹配失败
+     * PARE_FAIL       非法表达式，括号失配
+     * FIND_OP_FAIL    寻找主op出现错误
+     * BAD_EXPR        非法表达式，无法计算的表达式
+     * SSCANF_FAIL     sscanf发生错误
+     * REG_FAIL        不存在的寄存器
      */ 
     word_t res = expr(args, &state);
-    switch (state)
-    {
-    case VALID_RET:
-      printf("0x%lx\n",res);
-      return SUCCESS;
-    
-    case DIV_BY_0:
-      printf("Illegal expression, divided by 0\n");
-      return FAILURE;
-
-    case MAKE_FAIL:
-      printf("Illegal expression, make_token failed\n");
-      return FAILURE;
-
-    case PARE_FAIL:
-      printf("Illegal expression, invalid parentheses\n");
-      return FAILURE;
-
-    case BAD_EXPR:
-      printf("Illegal expression, bad expression\n");
-      return FAILURE;
-
-    case SSCANF_FAIL:
-      printf("Function call sscanf() failed\n");
-      return FAILURE;
-    
-    case REG_FAIL:
-      printf("Illegal expression, no such register\n");
-      return FAILURE;
-    
-    case FIND_OP_FAIL:
-      printf("Illegal expression, cannot find (main) op\n");
-      return FAILURE;
-    default:
-      break;
+    switch (state) {
+    case VALID_RET:    printf("0x%lx\n",res);                                 return SUCCESS;
+    case DIV_BY_0:     printf("Illegal expression, divided by 0\n");          return FAILURE;
+    case MAKE_FAIL:    printf("Illegal expression, make_token failed\n");     return FAILURE;
+    case PARE_FAIL:    printf("Illegal expression, invalid parentheses\n");   return FAILURE;
+    case BAD_EXPR:     printf("Illegal expression, bad expression\n");        return FAILURE;
+    case SSCANF_FAIL:  printf("Function call sscanf() failed\n");             return FAILURE;
+    case REG_FAIL:     printf("Illegal expression, no such register\n");      return FAILURE;
+    case FIND_OP_FAIL: printf("Illegal expression, cannot find (main) op\n"); return FAILURE;
+    default:           break;
     }
   }
   return ILLEGAL_ARGS;
@@ -185,27 +148,25 @@ static int cmd_exam_addr(char *args) {
 
   // 取数字
   int n=-1;
-  if (sscanf(arg1,"%d",&n) == -1 || n < 0)
-      return ILLEGAL_ARGS;
-  
+  if (sscanf(arg1,"%d",&n) == -1 || n < 0) {return ILLEGAL_ARGS;}
+
   // 取表达式结果
   int state = VALID_RET;
   word_t addr = expr(arg2, &state);
-  if(state != VALID_RET)
-  {
+  if(state != VALID_RET) {
     printf("Failure while calling expr()\n");
     return FAILURE;
   }
 
   // 打印地址
   printf("%u Byte start at Mem[0x%16lx]\n", n, addr);
-  for(unsigned i=0; i<n; ++i)
-  {
+  for(unsigned i=0; i<n; ++i) {
     printf("0x%016lx:  ", addr+4*i);
     for(int j=0; j<4; ++j)
       printf("%02x  ", (uint8_t)paddr_read(addr+4*i+j,1));
     putchar('\n');
   }
+
   return 0;
 }
 
@@ -222,9 +183,7 @@ static struct {
   { "x", "\'x N EXPR\'\tExam next 4N Bytes value from address EXRP", cmd_exam_addr},
   { "p", "\'p EXPR\'\tCompute value of EXPR", cmd_p},
   { "d", "\'d [N]\'\tDelete watchpoint N", cmd_d},
-  { "w", "\'w EXPR\'\tset expression to stop program running when its value changes", cmd_w},
-  /* TODO: Add more commands */
-
+  { "w", "\'w EXPR\'\tset expression to stop program running when its value changes", cmd_w}
 };
 
 // number of cmds
@@ -267,7 +226,7 @@ void ui_mainloop() {
     char *cmd = strtok(str, " ");
     if (cmd == NULL) { continue; }
 
-    /* ？？？
+    /* 
      * treat the remaining string as the arguments,
      * which may need further parsing
      */
@@ -285,23 +244,18 @@ void ui_mainloop() {
     // 顺序查找匹配的命令，匹配调用handler，返回QUIT退出主循环
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
-        switch (cmd_table[i].handler(args))
-        {
-        case QUIT:
-          return;
-
-        case ILLEGAL_ARGS:
-          printf("Illegal arguments, try \"help\"\n");
+        switch (cmd_table[i].handler(args)) {
+        case QUIT:          return;
+        case ILLEGAL_ARGS:  printf("Illegal arguments, try \"help\"\n");
         case FAILURE:
         case SUCCESS:
-        default:
-          break;
+        default:            break;
         }
         break;
       }
     }
 
-    // 没找到那就有问题
+    // 没找到说明输入有问题
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
   }
 }
