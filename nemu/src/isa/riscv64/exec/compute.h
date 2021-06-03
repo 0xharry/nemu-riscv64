@@ -5,7 +5,7 @@ static inline def_EHelper(lui)
   print_asm_template2(lui);
 }
 
-// I-type: x[rd] = (x[rs1] < 𝑢 sext(immediate))
+// I-type: x[rd] = (x[rs1] <𝑢 sext(immediate))
 static inline def_EHelper(sltiu)
 {
   *ddest = ((word_t)*dsrc1 < (word_t)id_src2->simm);

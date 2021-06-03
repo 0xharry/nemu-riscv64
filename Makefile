@@ -3,6 +3,13 @@ include nemu/Makefile.git
 default:
 	@echo "Please run 'make' under any subprojects to compile."
 
+temp:
+	gcc -g temp/temp.c -o temp/tg
+
+temprun:
+	gcc -g temp/temp.c -o temp/t
+	./temp/t
+
 clean:
 	-$(MAKE) -s -C nemu clean
 	-$(MAKE) -s -C abstract-machine clean-all
