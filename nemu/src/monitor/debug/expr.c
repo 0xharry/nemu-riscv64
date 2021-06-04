@@ -251,7 +251,7 @@ int find_main_op(int p, int q, int* state) {
 
     case TK_MINUS:
     case TK_PLUS:
-      OP_STATE_UPDATE(TK_MINUS); break;
+      OP_STATE_UPDATE(TK_PLUS); break;
 
     case TK_MUL:
     case TK_DIV:
