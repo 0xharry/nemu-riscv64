@@ -29,7 +29,7 @@ static inline def_EHelper(addiw)
 // R-type: x[rd] = sext((x[rs1] + x[rs2])[31:0])
 static inline def_EHelper(addw)
 {
-  rtl_addw(s, ddest, dsrc1, dsrc1);
+  rtl_addw(s, ddest, dsrc1, dsrc2);
   print_asm_template2(addw);
 }
 
