@@ -203,9 +203,9 @@ bool check_parentheses(int p, int q) {
           return ret;                                               \
         }while(0)
 
-// 如果当前op优先级更低，登记
+// 如果当前op优先级更低，登记；如果优先级相同，取最后出现的同级op
 #define OP_STATE_UPDATE(op) do{                                     \
-          if(ret_op_type > op) {                                    \
+          if(ret_op_type >= op) {                                   \
             ret_op_type = tokens[p-1].type;                         \
             ret_op_pos = p-1;                                       \
           }                                                         \
@@ -247,19 +247,19 @@ int find_main_op(int p, int q, int* state) {
     case TK_EQ: case TK_NEQ:
     case TK_L:  case TK_LE:
     case TK_G:  case TK_GE:
-      OP_STATE_UPDATE(TK_GE);    break;
+      OP_STATE_UPDATE(TK_EQ);    break;
 
     case TK_MINUS:
     case TK_PLUS:
-      OP_STATE_UPDATE(TK_PLUS); break;
+      OP_STATE_UPDATE(TK_MINUS); break;
 
     case TK_MUL:
     case TK_DIV:
-      OP_STATE_UPDATE(TK_DIV);   break;
+      OP_STATE_UPDATE(TK_MUL);   break;
 
     case TK_NEG:
     case TK_DEREF:
-      OP_STATE_UPDATE(TK_DEREF); break;
+      OP_STATE_UPDATE(TK_NEG); break;
 
     // 非op tokens，跳过
     default:                     break;
