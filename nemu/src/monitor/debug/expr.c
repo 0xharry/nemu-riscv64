@@ -227,7 +227,7 @@ int find_main_op(int p, int q, int* state) {
         case TK_RP: num_parentheses--; break;
         default:                       break;
         }
-      } while (num_parentheses > 0);
+      } while ((p <= q) && (num_parentheses > 0));
     }
 
     switch (tokens[p++].type) {
