@@ -126,14 +126,17 @@ static bool make_token(char *e) {
         // 十进制、十六进制、寄存器需要保存，单独处理
         case TK_DEC:
           strncpy(tokens[nr_token].str, substr_start, substr_len);
+          tokens[nr_token].str[substr_len] = '\0';
           tokens[nr_token++].type = TK_DEC;
           break;
         case TK_HEX:
           strncpy(tokens[nr_token].str, substr_start, substr_len);
+          tokens[nr_token].str[substr_len] = '\0';
           tokens[nr_token++].type = TK_HEX;
           break;
         case TK_REG:
           strncpy(tokens[nr_token].str, substr_start + 1, substr_len - 1);
+          tokens[nr_token].str[substr_len-1] = '\0';
           tokens[nr_token++].type = TK_REG;
           break;
 
