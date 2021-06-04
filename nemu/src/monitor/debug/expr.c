@@ -228,6 +228,7 @@ int find_main_op(int p, int q, int* state) {
         default:                       break;
         }
       } while ((p <= q) && (num_parentheses > 0));
+      continue;
     }
 
     switch (tokens[p++].type) {
