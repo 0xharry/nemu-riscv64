@@ -200,88 +200,72 @@ bool check_parentheses(int p, int q) {
           return ret;                                               \
         }while(0)
 
-#define BREAK_WHILE_OP_LEVEL_BELOW(op) do{                          \
-          if ((curr_op_level < level)||                             \
-              ((curr_op_level == level) && (curr_op_type == op)))   \
-            break;                                                  \
-          }while(0)
-
-#define OP_STATE_UPDATE() do{                                       \
-          curr_op_level = level;                                    \
-          curr_op_type = tokens[p - 1].type;                        \
-          ret_op = p - 1;                                           \
+// 如果当前op优先级更低，登记
+#define OP_STATE_UPDATE(op) do{                                     \
+          if(ret_op_type > op) {                                    \
+            ret_op_type = tokens[p-1].type;                         \
+            ret_op_pos = p-1;                                       \
+          }                                                         \
         }while(0)
 
 #define BAD_OP INT_MAX
 
 int find_main_op(int p, int q, int* state) {
-  int ret_op = BAD_OP;
-  int curr_op_type = BAD_OP;  // 当前op类型
-  int level = 0;              // 当前最高op优先级
-  int curr_op_level = BAD_OP; // 当前op优先级
+  int ret_op_type = BAD_OP;  // 当前op类型
+  int num_parentheses = 0;    // 当前嵌套在几层括号中
+  int ret_op_pos = BAD_OP;    // 最低op优先级下标
 
   while (p <= q) {
+    // 跳过括号中的所有op
+    if(tokens[p].type == TK_LP) {
+      do {
+        switch (tokens[p++].type) {
+        case TK_LP: num_parentheses++; break;
+        case TK_RP: num_parentheses--; break;
+        default:                       break;
+        }
+      } while (num_parentheses > 0);
+    }
+
     switch (tokens[p++].type) {
+    // 此处不应该出现任何括号
+    case TK_LP:
+    case TK_RP:
+      BAD_RET("find_main_op(): Invalid parenthesis\n",FIND_OP_FAIL,-1); break;
 
-    // 左括号可提升op优先级
-    case TK_LP: level++; break;
-    // 右括号降低接下来op优先级
-    case TK_RP: level--;
-      if(level < 0) 
-        BAD_RET("find_main_op(): Too many left parenthesis\n",FIND_OP_FAIL,-1);
-      break;
-
+    // 优先级依次提升
     case TK_OR:
-      // 如果已经有更低/平级level的 OR op被登记，跳过
-      BREAK_WHILE_OP_LEVEL_BELOW(TK_OR);
-      OP_STATE_UPDATE();
-      break;
+      OP_STATE_UPDATE(TK_OR);    break;
 
     case TK_AND:
-      // 如果已经有更低/平级level的 AND op被登记，跳过
-      BREAK_WHILE_OP_LEVEL_BELOW(TK_AND);
-      OP_STATE_UPDATE();
-      break;
+      OP_STATE_UPDATE(TK_AND);   break;
 
     case TK_EQ: case TK_NEQ:
-    case TK_LE: case TK_GE:
-    case TK_L:  case TK_G:
-      // 如果已经有更低/平级level的 逻辑比较 op被登记，跳过
-      BREAK_WHILE_OP_LEVEL_BELOW(TK_GE);
-      OP_STATE_UPDATE();
-      break;
+    case TK_L:  case TK_LE:
+    case TK_G:  case TK_GE:
+      OP_STATE_UPDATE(TK_GE);    break;
 
     case TK_PLUS:
     case TK_MINUS:
-      // 如果已经有更低/平级level的 加减 op被登记，跳过
-      BREAK_WHILE_OP_LEVEL_BELOW(TK_PLUS);
-      OP_STATE_UPDATE();
-      break;
+      OP_STATE_UPDATE(TK_MINUS); break;
 
     case TK_MUL:
     case TK_DIV:
-      // 如果已经有更低/平级level的 乘除 op被登记，跳过
-      BREAK_WHILE_OP_LEVEL_BELOW(TK_DIV);
-      OP_STATE_UPDATE();
-      break;
+      OP_STATE_UPDATE(TK_DIV);   break;
 
     case TK_NEG:
     case TK_DEREF:
-      // 如果已经有更低/平级level的 任意 op被登记，跳过
-      if (curr_op_level <= level) break;
-      OP_STATE_UPDATE();
-      break;
+      OP_STATE_UPDATE(TK_DEREF); break;
 
-    default:
-      // 非op tokens，跳过
-      break;
+    // 非op tokens，跳过
+    default:                     break;
     }
   }
 
-  if (ret_op == BAD_OP)
+  if (ret_op_pos == BAD_OP)
     BAD_RET("find_main_op(): find no valid op\n", FIND_OP_FAIL,-1);
   else
-    return ret_op;
+    return ret_op_pos;
 }
 
 word_t eval(int p, int q, int *state)
