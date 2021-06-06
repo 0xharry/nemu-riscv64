@@ -25,14 +25,6 @@ static inline def_EHelper(jal)
   print_asm_template2(jal);
 }
 
-// B(S)-type: if (rs1 ≠ rs2) pc += sext(offset)
-static inline def_EHelper(bne)
-{
-  if(*ddest != *dsrc1)
-    rtl_j(s, cpu.pc + id_src2->simm);
-  print_asm_template2(bne);
-}
-
 // J(I)-type:
 // t =pc+4
 // pc=(x[rs1]+sext(offset))&~1
@@ -44,6 +36,26 @@ static inline def_EHelper(jalr)
   print_asm_template2(jalr);
 }
 
+
+
+// B_TYPE:
+// B(S)-type: if (rs1 ≠ rs2) pc += sext(offset)
+static inline def_EHelper(bne)
+{
+  if(*ddest != *dsrc1)
+    rtl_j(s, cpu.pc + id_src2->simm);
+  print_asm_template2(bne);
+}
+
+// B(S)-type: if (rs1 == rs2) pc += sext(offset)
+static inline def_EHelper(beq)
+{
+  if(*ddest == *dsrc1)
+    rtl_j(s, cpu.pc + id_src2->simm);
+  print_asm_template2(beq);
+}
+
+// EXTENDS:
 // j: expands to jal x[$0], offset
 // pc += sext(offset)
 

@@ -9,9 +9,9 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
-  printf("| pc\t0x%16lx |\n",cpu.pc);
+  printf("cpu.pc = 0x%16lx\n",cpu.pc);
   for(int i=0; i<32; ++i)
-    printf("| %s\t0x%16lx |\n",regs[i],cpu.gpr[i]._64);
+    printf("| %d\t%s\t0x%16lx |\n", i,regs[i],cpu.gpr[i]._64);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

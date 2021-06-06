@@ -77,7 +77,7 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 static void checkregs(CPU_state *ref, vaddr_t pc) {
-  printf("ref_pc=%lx, cpu_pc=%lx\n", ref->pc, cpu.pc);
+  // printf("ref_pc=%lx, cpu_pc=%lx\n", ref->pc, cpu.pc);
   if (!isa_difftest_checkregs(ref, pc)) {
     isa_reg_display();
     nemu_state.state = NEMU_ABORT;
