@@ -38,7 +38,7 @@ void wp_free(WP *wp)
   // edge case: free NULL
   if(!head || !wp)
   {
-    printf("No action, NULL wp / no active wp");
+    printf("No action, NULL wp / no active wp\n");
     return;
   }
 
