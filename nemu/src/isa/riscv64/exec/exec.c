@@ -30,23 +30,20 @@ static inline def_EHelper(store) {
 }
 
 
-// static inline def_EHelper(srxl) {
-//   switch (id_src2->imm>>5)
-//   {
-//     EX(0b0000000, srli)
-//     EX(0b0100000, srai)
-//     default: exec_inv(s);
-//   }
-// }
-static inline def_EHelper(I_type)
-{
-  switch (s->isa.instr.i.funct3)
-  {
+static inline def_EHelper(srxl) {
+  switch (id_src2->imm>>5) {
+    EX(0b0000000, srli)
+    EX(0b0100000, srai)
+    default: exec_inv(s);
+  }
+}
+static inline def_EHelper(I_type) {
+  switch (s->isa.instr.i.funct3) {
     EX(0b000, addi)
     // EX(0b010, slli)
     EX(0b011, sltiu)
     // EX(0b100, xori)
-    // EX(0b101, srxl) // srli or srai
+    EX(0b101, srxl) // srli or srai
     // EX(0b110, ori)
     // EX(0b111, andi)
     default: exec_inv(s);
@@ -54,10 +51,8 @@ static inline def_EHelper(I_type)
 }
 
 
-static inline def_EHelper(B_type)
-{
-  switch (s->isa.instr.b.funct3)
-  {
+static inline def_EHelper(B_type) {
+  switch (s->isa.instr.b.funct3) {
     EX(0b000, beq)
     EX(0b001, bne)
     // EX(0b100, blt)

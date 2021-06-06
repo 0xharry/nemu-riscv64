@@ -1,3 +1,4 @@
+// U-TYPE:
 // U-type: x[rd] = sext(immediate[31:12] << 12)
 static inline def_EHelper(lui)
 {
@@ -5,6 +6,15 @@ static inline def_EHelper(lui)
   print_asm_template2(lui);
 }
 
+// U-type: x[rd] = pc + sext(immediate[31:12] << 12)
+static inline def_EHelper(auipc)
+{
+  rtl_li(s, ddest, cpu.pc + id_src1->imm); // 'pc' in "pc+imm" means cpu.pc or seq_pc (has been + 4) ???
+  print_asm_template2(auipc);
+}
+
+
+// I-TYPE:
 // I-type: x[rd] = (x[rs1] <𝑢 sext(immediate))
 static inline def_EHelper(sltiu)
 {
@@ -26,6 +36,23 @@ static inline def_EHelper(addiw)
   print_asm_template2(addiw);
 }
 
+// x[rd] = (x[rs1] ≫ 𝑠 shamt)
+static inline def_EHelper(srai)
+{
+  // shamt[5]=0 时指令有效
+  // rtl_sari自带mask
+  rtl_sari(s, ddest, dsrc1, id_src2->imm);
+  print_asm_template2(srai);
+}
+
+// x[rd] = (x[rs1] ≫ 𝑠 shamt)
+static inline def_EHelper(srli)
+{
+  rtl_shli(s, ddest, dsrc1, id_src2->imm);
+  print_asm_template2(srli);
+}
+
+// R-TYPE
 // R-type: x[rd] = sext((x[rs1] + x[rs2])[31:0])
 static inline def_EHelper(addw)
 {
@@ -40,12 +67,7 @@ static inline def_EHelper(sub)
   print_asm_template2(sub);
 }
 
-// U-type: x[rd] = pc + sext(immediate[31:12] << 12)
-static inline def_EHelper(auipc)
-{
-  rtl_li(s, ddest, cpu.pc + id_src1->imm); // 'pc' in "pc+imm" means cpu.pc or seq_pc (has been + 4) ???
-  print_asm_template2(auipc);
-}
+
 
 // mv: expands to addi rd, rs1, 0
 // x[rd] = x[rs1]

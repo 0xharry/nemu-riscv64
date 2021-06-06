@@ -16,6 +16,7 @@ static inline sword_t jal_offset_decode(word_t imm)
  * 0 1                        << 1
  */
 
+// J-TYPE:
 // J(U)-type:
 // x[rd] = pc+4; pc += sext(offset)
 static inline def_EHelper(jal)
@@ -39,7 +40,7 @@ static inline def_EHelper(jalr)
 
 
 // B_TYPE:
-// B(S)-type: if (rs1 ≠ rs2) pc += sext(offset)
+// if (rs1 ≠ rs2) pc += sext(offset)
 static inline def_EHelper(bne)
 {
   if(*ddest != *dsrc1)
@@ -47,7 +48,7 @@ static inline def_EHelper(bne)
   print_asm_template2(bne);
 }
 
-// B(S)-type: if (rs1 == rs2) pc += sext(offset)
+// if (rs1 == rs2) pc += sext(offset)
 static inline def_EHelper(beq)
 {
   if(*ddest == *dsrc1)
