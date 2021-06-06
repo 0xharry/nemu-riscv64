@@ -66,7 +66,7 @@ static inline def_EHelper(B_type) {
 
 static inline def_EHelper(add_sub) {
   switch (s->isa.instr.r.funct7) {
-    // EX(0x00, add)
+    EX(0x00, add)
     EX(0x20, sub)
   default: exec_inv(s);
   }

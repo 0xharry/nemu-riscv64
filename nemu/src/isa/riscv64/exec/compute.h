@@ -67,6 +67,12 @@ static inline def_EHelper(sub)
   print_asm_template2(sub);
 }
 
+// R-type: x[rd] = x[rs1] + x[rs2]
+static inline def_EHelper(add)
+{
+  rtl_add(s, ddest, dsrc1, dsrc2);
+  print_asm_template2(add);
+}
 
 
 // mv: expands to addi rd, rs1, 0
