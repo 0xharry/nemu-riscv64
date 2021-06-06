@@ -39,7 +39,9 @@ static inline def_EHelper(jalr)
 
 
 
-// B_TYPE:
+// B_TYPE: -------------------------------
+// id_src1=rs1, id_src2=simm, id_dest=rs2
+
 // if (rs1 ≠ rs2) pc += sext(offset)
 static inline def_EHelper(bne)
 {
@@ -54,6 +56,38 @@ static inline def_EHelper(beq)
   if(*ddest == *dsrc1)
     rtl_j(s, cpu.pc + id_src2->simm);
   print_asm_template2(beq);
+}
+
+// if (rs1 < s rs2) pc += sext(offset)
+static inline def_EHelper(blt)
+{
+  if((int32_t)*dsrc1 < (int32_t)*ddest)
+    rtl_j(s, cpu.pc + id_src2->simm);
+  print_asm_template2(blt);
+}
+
+// if (rs1 < u rs2) pc += sext(offset)
+static inline def_EHelper(bltu)
+{
+  if((uint32_t)*dsrc1 < (uint32_t)*ddest)
+    rtl_j(s, cpu.pc + id_src2->simm);
+  print_asm_template2(bltu);
+}
+
+// if (rs1 ≥ s rs2) pc += sext(offset)
+static inline def_EHelper(bge)
+{
+  if((int32_t)*dsrc1 >= (int32_t)*ddest)
+    rtl_j(s, cpu.pc + id_src2->simm);
+  print_asm_template2(bge);
+}
+
+// if (rs1 ≥ u rs2) pc += sext(offset)
+static inline def_EHelper(bgeu)
+{
+  if((uint32_t)*dsrc1 >= (uint32_t)*ddest)
+    rtl_j(s, cpu.pc + id_src2->simm);
+  print_asm_template2(bgeu);
 }
 
 // EXTENDS:
