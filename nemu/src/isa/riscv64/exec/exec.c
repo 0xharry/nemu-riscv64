@@ -11,7 +11,7 @@ static inline def_EHelper(load) {
     EXW  (0b000, ld, 1) // lb
     EXW  (0b001, ld, 2) // lh
     EXW  (0b010, ld, 4) // lw
-    EXW  (0b011, ld, 8) // ld
+    EXW  (0b011, ldu,8) // ld
     EXW  (0b100, ldu,1) // lbu
     EXW  (0b101, ldu,2) // lhu
     EXW  (0b110, ldu,4) // lwu
