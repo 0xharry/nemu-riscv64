@@ -104,6 +104,7 @@ static inline def_EHelper(R_type_a) {
 static inline def_EHelper(addw_subw) {
   switch (s->isa.instr.r.funct7) {
     EX(0x00, addw)
+    EX(0b01, mulw)
     EX(0x20, subw)
   default: exec_inv(s);
   }
@@ -111,6 +112,7 @@ static inline def_EHelper(addw_subw) {
 static inline def_EHelper(srlw_sraw) {
   switch (s->isa.instr.r.funct7) {
     EX(0x00, srlw)
+    EX(0x01, divuw)
     EX(0x20, sraw)
   default: exec_inv(s);
   }
@@ -118,8 +120,11 @@ static inline def_EHelper(srlw_sraw) {
 static inline def_EHelper(R_type_b) {
   switch (s->isa.instr.r.funct3) {
     EX(0b000, addw_subw)
-    EX(0x1, sllw)
-    EX(0x5, srlw_sraw)
+    EX(0b001, sllw)
+    EX(0b100, divw)
+    EX(0b101, srlw_sraw)
+    EX(0b110, remw)
+    EX(0b111, remuw)
     default: exec_inv(s);
   }
 }
@@ -132,8 +137,8 @@ static inline void fetch_decode_exec(DecodeExecState *s) {
     IDEX (0b00000, I, load)  // case 0b00000: set_width(s, 0); decode_I(s); exec_load(s); break;
     IDEX (0b00100, I, I_type_a)  // case 0b00000: set_width(s, 0); decode_I(s); exec_I_type_a(s); //second decode; break;
     IDEX (0b00110, I, I_type_b)
-    IDEX (0b01110, R, R_type_b)
     IDEX (0b01100, R, R_type_a)
+    IDEX (0b01110, R, R_type_b)
     IDEX (0b11000, B, B_type)
     IDEX (0b01000, S, store)
     IDEX (0b01101, U, lui)

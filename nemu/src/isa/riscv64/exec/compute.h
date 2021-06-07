@@ -214,6 +214,42 @@ static inline def_EHelper(and)
   print_asm_template3(and);
 }
 
+// x[rd] = sext(x[rs1][31:0] ÷ u x[rs2][31:0])
+static inline def_EHelper(divuw)
+{
+  rtl_divuw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(divuw);
+}
+
+// x[rd] = sext(x[rs1][31:0] ÷ s x[rs2][31:0])
+static inline def_EHelper(divw)
+{
+  rtl_divw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(divw);
+}
+
+// x[rd] = sext((x[rs1] × x[rs2])[31: 0])
+static inline def_EHelper(mulw)
+{
+  rtl_mulw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(mulw);
+}
+
+// x[rd] = sext(x[rs1][31: 0] % 𝑢 x[rs2][31: 0])
+static inline def_EHelper(remuw)
+{
+  rtl_remuw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(remuw);
+}
+
+// x[rd] = sext(x[rs1][31: 0] % 𝑢 x[rs2][31: 0])
+static inline def_EHelper(remw)
+{
+  rtl_remw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(remw);
+}
+
+
 // mv: expands to addi rd, rs1, 0
 // x[rd] = x[rs1]
 
