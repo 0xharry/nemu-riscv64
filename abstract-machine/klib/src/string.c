@@ -14,9 +14,13 @@ size_t strlen(const char *s) {
  * copy.
  */
 char *strcpy(char* dst,const char* src) {
-  if(dst != NULL && src != NULL) do{
-    *dst = *src;
-  } while(*src!='\0');
+  if(dst == NULL || src == NULL) return dst;
+  char* p_dst = dst;
+  const char* p_src = src;
+  for(; *p_src!='\0'; ++p_src, ++p_dst) {
+    *p_dst = *p_src;
+  }
+  *p_dst = '\0';
   return dst;
 }
 
@@ -69,8 +73,9 @@ int strncmp(const char* s1, const char* s2, size_t n) {
  * by s with the constant byte c.
  */
 void* memset(void* v,int c,size_t n) {
-  for(int i=0; i<n; ++i) {
-    *(char *)v = (char) c;
+  char* p_v = (char*)v;
+  for(int i=0; i<n; ++i, ++p_v) {
+    *p_v = (char) c;
   }
   return v;
 }
