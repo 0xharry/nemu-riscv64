@@ -16,7 +16,7 @@ size_t strlen(const char *s) {
 char *strcpy(char* dst,const char* src) {
   if(dst != NULL && src != NULL) do{
     *dst = *src;
-  } while(src!='\0');
+  } while(*src!='\0');
   return dst;
 }
 
@@ -33,7 +33,7 @@ char* strncpy(char* dst, const char* src, size_t n) {
  */
 char* strcat(char* dst, const char* src) {
   char* end_of_dst=dst;
-  char* p_src = src;
+  const char* p_src = src;
   for(; *end_of_dst != '\0'; ++end_of_dst);
   for(; *p_src != '\0'; ++end_of_dst, ++p_src) {
     *end_of_dst = *p_src;
