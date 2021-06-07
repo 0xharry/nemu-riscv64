@@ -32,8 +32,8 @@ static inline def_EHelper(store) {
 
 static inline def_EHelper(srxl) {
   switch (id_src2->imm>>6) {
-    EX(0b0000000, srli)
-    EX(0b0100000, srai)
+    EX(0b000000, srli)
+    EX(0b010000, srai)
     default: exec_inv(s);
   }
 }
@@ -52,8 +52,8 @@ static inline def_EHelper(I_type_a) {
 }
 static inline def_EHelper(slra_liw) {
   switch (id_src2->imm>>6) {
-    EX(0x00, srliw)
-    EX(0x20, sraiw)
+    EX(0b000000, srliw)
+    EX(0b010000, sraiw)
     default: exec_inv(s);
   }
 }
