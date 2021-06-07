@@ -58,7 +58,7 @@ static struct rule {
     {"-",                           TK_MINUS},   // minus
     {"\\/",                         TK_DIV},     // divide
     {"==",                          TK_EQ},      // equal
-    {"0x[0-9]+",                    TK_HEX},     // Hexadecimal integer
+    {"0x[0-9a-fA-F]+",              TK_HEX},     // Hexadecimal integer
     {"[0-9]+",                      TK_DEC},     // Decimal integer
     {"\\$[\\$rstagp][apc0-9][01]?", TK_REG},     // Register
     {"!=",                          TK_NEQ},     // not equal
