@@ -82,21 +82,71 @@ static inline def_EHelper(B_type) {
 
 static inline def_EHelper(add_sub) {
   switch (s->isa.instr.r.funct7) {
-    EX(0x00, add)
-    EX(0x20, sub)
+    EX(0b0000000, add)
+    EX(0b0000001, mul)
+    EX(0b0100000, sub)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(xor_div) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0b0000000, xor)
+    EX(0b0000001, div)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(srl_divu) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0b0000000, srl)
+    EX(0b0000001, divu)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(or_rem) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0b0000000, or)
+    EX(0b0000001, rem)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(and_remu) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0b0000000, and)
+    EX(0b0000001, remu)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(sll_mulh) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0b0000000, sll)
+    EX(0b0000001, mulh)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(slt_mulhsu) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0b0000000, slt)
+    EX(0b0000001, mulhsu)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(sltu_mulhu) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0b0000000, sltu)
+    EX(0b0000001, mulhu)
   default: exec_inv(s);
   }
 }
 static inline def_EHelper(R_type_a) {
   switch (s->isa.instr.r.funct3) {
     EX(0b000, add_sub)
-    EX(0x1, sll)
-    EX(0x2, slt)
-    EX(0x3, sltu)
-    EX(0x4, xor)
-    EX(0x5, srl)
-    EX(0x6, or)
-    EX(0x7, and)
+    EX(0b001, sll_mulh)
+    EX(0b010, slt_mulhsu)
+    EX(0b011, sltu_mulhu)
+    EX(0b100, xor_div)
+    EX(0b101, srl_divu)
+    EX(0b110, or_rem)
+    EX(0b111, and_remu)
     default: exec_inv(s);
   }
 }

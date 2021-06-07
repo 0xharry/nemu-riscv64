@@ -31,6 +31,7 @@
 #define c_imul_lo(a, b) ((sword_t)(a) * (sword_t)(b))
 #ifdef ISA64
 # define c_mul_hi(a, b) (((__uint128_t)(a) * (__uint128_t)(b)) >> 64)
+# define c_iumul_hi(a, b) (((__int128_t)((__uint128_t)(sword_t)(a) * (__uint128_t)(b))) >> 64)
 # define c_imul_hi(a, b) (((__int128_t)(sword_t)(a) * (__int128_t)(sword_t)(b)) >> 64)
 # define c_mulw(a, b) c_sext32to64((a) * (b))
 # define c_divw(a, b)  c_sext32to64(( int32_t)(a) / ( int32_t)(b))

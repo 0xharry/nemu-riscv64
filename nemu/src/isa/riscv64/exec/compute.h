@@ -214,6 +214,55 @@ static inline def_EHelper(and)
   print_asm_template3(and);
 }
 
+// x[rd] = x[rs1] × x[rs2]
+static inline def_EHelper(mul)
+{
+  rtl_mul_lo(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(mul);
+}
+
+// x[rd] = sext((x[rs1] × x[rs2])[31: 0])
+static inline def_EHelper(mulw)
+{
+  rtl_mulw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(mulw);
+}
+
+// x[rd] = (x[rs1] 𝑠 × 𝑠 x[rs2]) ≫ 𝑠 XLEN(64)
+static inline def_EHelper(mulh)
+{
+  rtl_imul_hi(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(mulh);
+}
+
+// x[rd] = (x[rs1] 𝑠 × 𝑢 x[rs2]) ≫ 𝑠 XLEN
+static inline def_EHelper(mulhsu)
+{
+  rtl_iumul_hi(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(mulhsu);
+}
+
+// x[rd] = (x[rs1] 𝑢 × 𝑢 x[rs2]) ≫ 𝑢 XLEN
+static inline def_EHelper(mulhu)
+{
+  rtl_mul_hi(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(mulhu);
+}
+
+// x[rd] = sext((x[rs1] × x[rs2])[31: 0])
+static inline def_EHelper(div)
+{
+  rtl_idiv_q(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(div);
+}
+
+// x[rd] = sext((x[rs1] × x[rs2])[31: 0])
+static inline def_EHelper(divu)
+{
+  rtl_div_q(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(divu);
+}
+
 // x[rd] = sext(x[rs1][31:0] ÷ u x[rs2][31:0])
 static inline def_EHelper(divuw)
 {
@@ -228,11 +277,18 @@ static inline def_EHelper(divw)
   print_asm_template3(divw);
 }
 
-// x[rd] = sext((x[rs1] × x[rs2])[31: 0])
-static inline def_EHelper(mulw)
+// x[rd] = x[rs1] % 𝑠 x[rs2]
+static inline def_EHelper(rem)
 {
-  rtl_mulw(s, ddest, dsrc1, dsrc2);
-  print_asm_template3(mulw);
+  rtl_idiv_r(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(rem);
+}
+
+// x[rd] = x[rs1] % 𝑢 x[rs2]
+static inline def_EHelper(remu)
+{
+  rtl_div_r(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(remu);
 }
 
 // x[rd] = sext(x[rs1][31: 0] % 𝑢 x[rs2][31: 0])
