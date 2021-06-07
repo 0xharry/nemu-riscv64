@@ -2,14 +2,14 @@
 // U-type: x[rd] = sext(immediate[31:12] << 12)
 static inline def_EHelper(lui)
 {
-  rtl_li(s, ddest, id_src1->imm); // id_src1->imm 'imm' cannot be substituted by dsrc1/2 before calling rtl_li() // actually not???
+  rtl_li(s, ddest, id_src1->simm); // id_src1->imm 'imm' cannot be substituted by dsrc1/2 before calling rtl_li() // actually not???
   print_asm_template2(lui);
 }
 
 // U-type: x[rd] = pc + sext(immediate[31:12] << 12)
 static inline def_EHelper(auipc)
 {
-  rtl_li(s, ddest, cpu.pc + id_src1->imm); // 'pc' in "pc+imm" means cpu.pc or seq_pc (has been + 4) ???
+  rtl_li(s, ddest, cpu.pc + id_src1->simm); // 'pc' in "pc+imm" means cpu.pc or seq_pc (has been + 4) ???
   print_asm_template2(auipc);
 }
 
@@ -27,14 +27,14 @@ static inline def_EHelper(sltiu)
 // I-type: x[rd] = x[rs1] + sext(immediate)
 static inline def_EHelper(addi)
 {
-  rtl_addi(s, ddest, dsrc1, id_src2->imm);
+  rtl_addi(s, ddest, dsrc1, id_src2->simm);
   print_asm_template2(addi);
 }
 
 // I-type: x[rd] = sext((x[rs1] + sext(immediate))[31:0])
 static inline def_EHelper(addiw)
 {
-  rtl_addwi(s, ddest, dsrc1, id_src2->imm);
+  rtl_addwi(s, ddest, dsrc1, id_src2->simm);
   print_asm_template2(addiw);
 }
 
@@ -43,15 +43,31 @@ static inline def_EHelper(srai)
 {
   // shamt[5]=0 时指令有效
   // rtl_sari自带mask
-  rtl_sari(s, ddest, dsrc1, id_src2->imm);
+  rtl_sari(s, ddest, dsrc1, id_src2->simm);
   print_asm_template2(srai);
 }
 
-// x[rd] = (x[rs1] ≫ 𝑠 shamt)
+// x[rd] = sext(x[rs1][31: 0] ≫ 𝑠 shamt)
+static inline def_EHelper(sraiw)
+{
+  // shamt[5]=0 时指令有效
+  // rtl_sari自带mask
+  rtl_sarwi(s, ddest, dsrc1, id_src2->simm);
+  print_asm_template2(sraiw);
+}
+
+// x[rd] = (x[rs1] ≫ 𝑢 shamt)
 static inline def_EHelper(srli)
 {
-  rtl_shli(s, ddest, dsrc1, id_src2->imm);
+  rtl_shri(s, ddest, dsrc1, id_src2->imm);
   print_asm_template2(srli);
+}
+
+// x[rd] = sext(x[rs1][31: 0] ≫ 𝑢 shamt)
+static inline def_EHelper(srliw)
+{
+  rtl_shrwi(s, ddest, dsrc1, id_src2->imm);
+  print_asm_template2(srliw);
 }
 
 // x[rd] = x[rs1] ≪ shamt
@@ -59,6 +75,13 @@ static inline def_EHelper(slli)
 {
   rtl_shli(s, ddest, dsrc1, id_src2->imm);
   print_asm_template2(slli);
+}
+
+// x[rd] = sext((x[rs1] ≪ shamt)[31: 0])
+static inline def_EHelper(slliw)
+{
+  rtl_shlwi(s, ddest, dsrc1, id_src2->imm);
+  print_asm_template2(slliw);
 }
 
 // x[rd] = x[rs1] ^ sext(immediate)
@@ -94,6 +117,13 @@ static inline def_EHelper(addw)
 }
 
 // R-type: x[rd] = x[rs1] − x[rs2]
+static inline def_EHelper(subw)
+{
+  rtl_subw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(subw);
+}
+
+// R-type: x[rd] = x[rs1] − x[rs2]
 static inline def_EHelper(sub)
 {
   rtl_sub(s, ddest, dsrc1, dsrc2);
@@ -114,6 +144,13 @@ static inline def_EHelper(sll)
   print_asm_template3(sll);
 }
 
+// x[rd] = sext((x[rs1] ≪ x[rs2][4: 0])[31: 0])
+static inline def_EHelper(sllw)
+{
+  rtl_shlw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(sllw);
+}
+
 // x[rd] = (x[rs1] < 𝑠 x[rs2])
 static inline def_EHelper(slt)
 {
@@ -128,6 +165,13 @@ static inline def_EHelper(sltu)
   print_asm_template3(sltu);
 }
 
+// x[rd] = sext(x[rs1][31: 0] ≫ 𝑠 x[rs2][4: 0])
+static inline def_EHelper(sraw)
+{
+  rtl_sarw(s, ddest, dsrc1, dsrc2);
+  print_asm_template2(sraw);
+}
+
 // x[rd] = x[rs1] ^ x[rs2]
 static inline def_EHelper(xor)
 {
@@ -140,6 +184,13 @@ static inline def_EHelper(srl)
 {
   rtl_shr(s, ddest, dsrc1, dsrc2);
   print_asm_template3(srl);
+}
+
+// x[rd] = sext(x[rs1][31: 0] ≫ 𝑢 x[rs2][4: 0])
+static inline def_EHelper(srlw)
+{
+  rtl_shrw(s, ddest, dsrc1, dsrc2);
+  print_asm_template3(srlw);
 }
 
 // x[rd] = x[rs1] | 𝑥[𝑟𝑠2]

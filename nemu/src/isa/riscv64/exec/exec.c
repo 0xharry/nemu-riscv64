@@ -37,7 +37,7 @@ static inline def_EHelper(srxl) {
     default: exec_inv(s);
   }
 }
-static inline def_EHelper(I_type) {
+static inline def_EHelper(I_type_a) {
   switch (s->isa.instr.i.funct3) {
     EX(0b000, addi)
     EX(0b010, slli)
@@ -46,6 +46,21 @@ static inline def_EHelper(I_type) {
     EX(0b101, srxl) // srli or srai
     EX(0b110, ori)
     EX(0b111, andi)
+    default: exec_inv(s);
+  }
+}
+static inline def_EHelper(slra_liw) {
+  switch (id_src2->imm>>5) {
+    EX(0x00, srliw)
+    EX(0x20, sraiw)
+    default: exec_inv(s);
+  }
+}
+static inline def_EHelper(I_type_b) {
+  switch (s->isa.instr.i.funct3) {
+    EX(0b000, addiw)
+    EX(0b001, slliw)
+    EX(0b101, slra_liw)
     default: exec_inv(s);
   }
 }
@@ -71,7 +86,7 @@ static inline def_EHelper(add_sub) {
   default: exec_inv(s);
   }
 }
-static inline def_EHelper(R_type) {
+static inline def_EHelper(R_type_a) {
   switch (s->isa.instr.r.funct3) {
     EX(0b000, add_sub)
     EX(0x1, sll)
@@ -85,16 +100,39 @@ static inline def_EHelper(R_type) {
   }
 }
 
+static inline def_EHelper(addw_subw) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0x00, addw)
+    EX(0x20, subw)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(srlw_sraw) {
+  switch (s->isa.instr.r.funct7) {
+    EX(0x00, srlw)
+    EX(0x20, sraw)
+  default: exec_inv(s);
+  }
+}
+static inline def_EHelper(R_type_b) {
+  switch (s->isa.instr.r.funct3) {
+    EX(0b000, addw_subw)
+    EX(0x1, sllw)
+    EX(0x5, srlw_sraw)
+    default: exec_inv(s);
+  }
+}
+
 
 static inline void fetch_decode_exec(DecodeExecState *s) {
   s->isa.instr.val = instr_fetch(&s->seq_pc, 4);
   Assert(s->isa.instr.i.opcode1_0 == 0x3, "Invalid instruction");
   switch (s->isa.instr.i.opcode6_2) {
     IDEX (0b00000, I, load)  // case 0b00000: set_width(s, 0); decode_I(s); exec_load(s); break;
-    IDEX (0b00100, I, I_type)  // case 0b00000: set_width(s, 0); decode_I(s); exec_I_type(s); //second decode; break;
-    IDEX (0b00110, I, addiw)
-    IDEX (0b01110, R, addw)
-    IDEX (0b01100, R, R_type)
+    IDEX (0b00100, I, I_type_a)  // case 0b00000: set_width(s, 0); decode_I(s); exec_I_type_a(s); //second decode; break;
+    IDEX (0b00110, I, I_type_b)
+    IDEX (0b01110, R, R_type_b)
+    IDEX (0b01100, R, R_type_a)
     IDEX (0b11000, B, B_type)
     IDEX (0b01000, S, store)
     IDEX (0b01101, U, lui)

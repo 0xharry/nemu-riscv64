@@ -40,7 +40,7 @@ static inline def_EHelper(jalr)
 
 
 // B_TYPE: -------------------------------
-// id_src1=rs1, id_src2=simm, id_dest=rs2
+// id_src1=rs1, id_src2=imm, id_dest=rs2
 
 // if (rs1 ≠ rs2) pc += sext(offset)
 static inline def_EHelper(bne)
