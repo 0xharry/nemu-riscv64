@@ -52,7 +52,7 @@ char* strcat(char* dst, const char* src) {
 int strcmp(const char* s1, const char* s2) {
   int ret = 0;
   while(*s1!='\0' || *s2!='\0') {
-    ret = *s1-*s2;
+    ret = *s1++-*s2++;
     if(ret != 0)
       return ret;
   }
