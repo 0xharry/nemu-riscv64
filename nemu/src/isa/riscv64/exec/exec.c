@@ -40,7 +40,8 @@ static inline def_EHelper(srxl) {
 static inline def_EHelper(I_type_a) {
   switch (s->isa.instr.i.funct3) {
     EX(0b000, addi)
-    EX(0b010, slli)
+    EX(0b001, slli)
+    EX(0b010, slti)
     EX(0b011, sltiu)
     EX(0b100, xori)
     EX(0b101, srxl) // srli or srai

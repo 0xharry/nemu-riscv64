@@ -17,10 +17,17 @@ static inline def_EHelper(auipc)
 // I-TYPE:---------------------------------------
 // ddest, dsrc1, id_src2=simm
 
-// I-type: x[rd] = (x[rs1] <𝑢 sext(immediate))
+// x[rd] = (x[rs1] < 𝑠 sext(immediate))
+static inline def_EHelper(slti)
+{
+  *ddest = ((sword_t)*dsrc1 < id_src2->simm);
+  print_asm_template3(slti);
+}
+
+// x[rd] = (x[rs1] <𝑢 sext(immediate))
 static inline def_EHelper(sltiu)
 {
-  *ddest = ((word_t)*dsrc1 < (word_t)id_src2->simm);
+  *ddest = ((word_t)*dsrc1 < id_src2->imm);
   print_asm_template2(sltiu);
 }
 
@@ -87,21 +94,21 @@ static inline def_EHelper(slliw)
 // x[rd] = x[rs1] ^ sext(immediate)
 static inline def_EHelper(xori)
 {
-  rtl_xori(s, ddest, dsrc1, id_src2->imm);
+  rtl_xori(s, ddest, dsrc1, id_src2->simm);
   print_asm_template2(xori);
 }
 
 // x[rd] = x[rs1] | sext(immediate)
 static inline def_EHelper(ori)
 {
-  rtl_ori(s, ddest, dsrc1, id_src2->imm);
+  rtl_ori(s, ddest, dsrc1, id_src2->simm);
   print_asm_template2(ori);
 }
 
 // x[rd] = x[rs1] & sext(immediate)
 static inline def_EHelper(andi)
 {
-  rtl_andi(s, ddest, dsrc1, id_src2->imm);
+  rtl_andi(s, ddest, dsrc1, id_src2->simm);
   print_asm_template2(andi);
 }
 
