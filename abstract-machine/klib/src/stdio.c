@@ -117,7 +117,8 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
   char* s = NULL;
   int str_len;
   int d;
-  char d_buf[12];
+  char buf_for_num[12];
+  char* d_buf = buf_for_num;
   va_start(p_fmt, fmt);
   while(*fmt != '\0') {
     if(*fmt == '%') {
@@ -144,7 +145,13 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
 
         case 'd':
           d=va_arg(p_fmt, int);
-          str_len = strlen(itos_dec(d, out));
+          str_len = strlen(itos_dec(d, d_buf));
+          if(ret_wordcount + str_len > n) {
+            d = n - ret_wordcount;
+            memcpy(out, d_buf, d);
+            return n;
+          }
+          memcpy(out, d_buf, str_len);
           out += str_len;
           ret_wordcount += str_len;
           break;
