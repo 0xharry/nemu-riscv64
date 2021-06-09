@@ -4,7 +4,9 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 size_t strlen(const char *s) {
-  return 0;
+  size_t len=0;
+  while(s[len++]!='\0');
+  return len;
 }
 
 /* strcpy, strncpy - copy a string
@@ -17,15 +19,16 @@ char *strcpy(char* dst,const char* src) {
   if(dst == NULL || src == NULL) return dst;
   char* p_dst = dst;
   const char* p_src = src;
-  for(; *p_src!='\0'; ++p_src, ++p_dst) {
-    *p_dst = *p_src;
-  }
-  *p_dst = '\0';
+  while((bool)(*p_dst++ = *p_src++));
   return dst;
 }
 
 char* strncpy(char* dst, const char* src, size_t n) {
-  return NULL;
+  if(dst == NULL || src == NULL || n <= 0) return dst;
+  char* p_dst = dst;
+  const char* p_src = src;
+  while((bool)(*p_dst++ = *p_src++) && n--);
+  return dst;
 }
 
 /* strcat - concatenate two strings
@@ -38,11 +41,8 @@ char* strncpy(char* dst, const char* src, size_t n) {
 char* strcat(char* dst, const char* src) {
   char* end_of_dst=dst;
   const char* p_src = src;
-  for(; *end_of_dst != '\0'; ++end_of_dst);
-  for(; *p_src != '\0'; ++end_of_dst, ++p_src) {
-    *end_of_dst = *p_src;
-  }
-  *(end_of_dst+1) = '\0';
+  for(;*end_of_dst != '\0'; ++end_of_dst);
+  while((bool)(*end_of_dst++ = *p_src++));
   return dst;
 }
 
@@ -64,6 +64,12 @@ int strcmp(const char* s1, const char* s2) {
 }
 
 int strncmp(const char* s1, const char* s2, size_t n) {
+  int ret = 0;
+  while((*s1!='\0' || *s2!='\0') && n--) {
+    ret = *s1++-*s2++;
+    if(ret != 0)
+      return ret;
+  }
   return 0;
 }
 
@@ -74,21 +80,56 @@ int strncmp(const char* s1, const char* s2, size_t n) {
  */
 void* memset(void* v,int c,size_t n) {
   char* p_v = (char*)v;
-  for(int i=0; i<n; ++i, ++p_v) {
-    *p_v = (char) c;
+  while(n--) {
+    *p_v++ = (char) c;
   }
   return v;
 }
 
-void* memmove(void* dst,const void* src,size_t n) {
-  return NULL;
-}
-
+/* 
+ * memcpy - copy memory area
+ * The  memcpy()  function  copies  n bytes from memory area  in to memory
+ * out  out.  The memory areas must not overlap.  Use memmove(3)  if  the
+ * memory areas do overlap.
+ */
 void* memcpy(void* out, const void* in, size_t n) {
-  return NULL;
+  char* p_out;
+  while(n--){
+    *p_out++ = *(char*)in++;
+  }
+  return out;
 }
 
+/* memmove - copy memory area
+ * The  memmove()  function  copies n bytes from memory area src to memory
+ * area dest.  The memory areas may overlap: copying takes place as though
+ * the  bytes in src are first copied into a temporary array that does not
+ * overlap src or dest, and the bytes are then copied from  the  temporary
+ * array to dest.
+ */
+void* memmove(void* dst,const void* src,size_t n) {
+  if((dst+n-src)*(dst-src+n)>0) {
+    memcpy(dst, src, n);
+    return dst;
+  }
+  char temp[n];
+  memcpy(temp, src, n);
+  memcpy(dst, temp, n);
+  return dst;
+}
+
+/* 
+ * memcmp - compare memory areas
+ * The  memcmp()  function compares the first n bytes (each interpreted as
+ * unsigned char) of the memory areas s1 and s2.
+ */
 int memcmp(const void* s1, const void* s2, size_t n) {
+  int ret = 0;
+  while(n--) {
+    ret = *(char*)s1++-*(char*)s2++;
+    if(ret != 0)
+      return ret;
+  }
   return 0;
 }
 
