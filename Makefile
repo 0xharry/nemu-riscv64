@@ -7,7 +7,7 @@ temp:
 	gcc -g -Wall -Werror temp/temp.c -o temp/tg
 
 temprun:
-	gcc -g -Wall -Werror temp/temp.c -o temp/t
+	gcc -g temp/temp.c -o temp/t
 	./temp/t
 
 clean:
