@@ -61,7 +61,7 @@ char* itos_dec(int num, char* str) {
 }
 // sprintf()  write output  to  the  given  output  stream
 int sprintf(char *out, const char *fmt, ...) {
-  if(out == NULL || fmt == NULL) return 0;
+  if(out == NULL) return 0;
   int ret_wordcount=0;
   va_list p_fmt; 
   char* s = NULL;
@@ -112,7 +112,7 @@ int sprintf(char *out, const char *fmt, ...) {
  * cluding the terminating null byte ('\0')) to out.
  */
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  if(out == NULL || fmt == NULL || n-- <=0) return 0;
+  if(out == NULL || n-- <=0) return 0;
   int ret_wordcount=0;
   va_list p_fmt; 
   char* s = NULL;
