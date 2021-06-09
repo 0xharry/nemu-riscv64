@@ -136,6 +136,7 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
           if(ret_wordcount + str_len > n) {
             d = n - ret_wordcount;
             memcpy(out, s, d);
+            *(out+d+1) = '\0';
             return n;
           }
           memcpy(out, s, str_len);
@@ -149,6 +150,7 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
           if(ret_wordcount + str_len > n) {
             d = n - ret_wordcount;
             memcpy(out, d_buf, d);
+            *(out+d+1) = '\0';
             return n;
           }
           memcpy(out, d_buf, str_len);
@@ -164,8 +166,10 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
       *out++ = *fmt++;
       ++ret_wordcount;
     }
-    if(ret_wordcount >= n)
+    if(ret_wordcount >= n) {
+      *out = '\0';
       return ret_wordcount;
+    }
   }
   va_end(p_fmt);
   *out = '\0';
