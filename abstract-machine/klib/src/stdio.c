@@ -117,7 +117,6 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
   char* s = NULL;
   int str_len;
   int d;
-  // char buf_for_num[12];
   char d_buf[12];
   va_start(p_fmt, fmt);
   while(*fmt != '\0') {
