@@ -11,6 +11,7 @@ int printf(const char *fmt, ...) {
   return 0;
 }
 
+/* convert decimal integer to string */
 char* itos_dec(int num, char* str) {
   if(str == NULL) {
     // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
