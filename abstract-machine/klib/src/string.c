@@ -5,7 +5,7 @@
 
 size_t strlen(const char *s) {
   size_t len=0;
-  while(s[len++]!='\0');
+  for(;s[len]!='\0'; ++len);
   return len;
 }
 
@@ -39,7 +39,7 @@ char* strncpy(char* dst, const char* src, size_t n) {
  * result.  If dest is not large enough, program behavior  is  unpredictable;
  */
 char* strcat(char* dst, const char* src) {
-  char* end_of_dst=dst;
+  char* end_of_dst = dst;
   const char* p_src = src;
   for(;*end_of_dst != '\0'; ++end_of_dst);
   while((bool)(*end_of_dst++ = *p_src++));
@@ -93,7 +93,7 @@ void* memset(void* v,int c,size_t n) {
  * memory areas do overlap.
  */
 void* memcpy(void* out, const void* in, size_t n) {
-  char* p_out;
+  char* p_out = out;
   while(n--){
     *p_out++ = *(char*)in++;
   }

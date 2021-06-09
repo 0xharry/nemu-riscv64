@@ -4,10 +4,10 @@ default:
 	@echo "Please run 'make' under any subprojects to compile."
 
 temp:
-	gcc -g temp/temp.c -o temp/tg
+	gcc -g -Wall -Werror temp/temp.c -o temp/tg
 
 temprun:
-	gcc -g temp/temp.c -o temp/t
+	gcc -g -Wall -Werror temp/temp.c -o temp/t
 	./temp/t
 
 clean:

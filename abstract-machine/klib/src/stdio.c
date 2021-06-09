@@ -57,19 +57,18 @@ int sprintf(char *out, const char *fmt, ...) {
   char* s = NULL;
   int str_len;
   int d;
-  char temp;
   va_start(p_fmt, fmt);
   while(*fmt != '\0') {
     if(*fmt == '%') {
       switch (*(++fmt)) {
         case 'c':
-          s = va_arg(p_fmt, char);
-          memcpy(out, s, 1);
+          d = va_arg(p_fmt, int);
+          memcpy(out, (char*)&d, 1);
           ++out;
           break;
 
         case 's':
-          s = va_arg(p_fmt, char *);
+          s = va_arg(p_fmt, char*);
           str_len = strlen(s);
           memcpy(out, s, str_len);
           out += str_len;
@@ -83,13 +82,14 @@ int sprintf(char *out, const char *fmt, ...) {
 
         default: break;
       }
+      fmt++;
     }
     else {
       *out++ = *fmt++;
     }
-    fmt++;
   }
   va_end(p_fmt);
+  *out = '\0';
   return 0;
 }
 
