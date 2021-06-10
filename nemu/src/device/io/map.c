@@ -1,3 +1,4 @@
+// map.c 端口/内存映射IO管理
 #include <isa.h>
 #include <memory/paddr.h>
 #include <memory/vaddr.h>
@@ -29,22 +30,27 @@ static inline void invoke_callback(io_callback_t c, paddr_t offset, int len, boo
   if (c != NULL) { c(offset, len, is_write); }
 }
 
+// 将地址addr映射到map所指示的目标空间, 并进行访问.
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
-  invoke_callback(map->callback, offset, len, false); // prepare data to read
+  // 回调函数, 可能需要对设备和目标空间的状态进行更新
+  // prepare data to read
+  invoke_callback(map->callback, offset, len, false);
 
+  // read data from addr (小端)
   word_t data = *(word_t *)(map->space + offset) & (~0Lu >> ((8 - len) << 3));
   return data;
 }
 
+// 将data写入地址addr映射的map所指示的目标IO空间.
 void map_write(paddr_t addr, word_t data, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
 
   memcpy(map->space + offset, &data, len);
-
+  // 回调函数, 可能需要对设备和目标空间的状态进行更新(如serial, 调用putc()输出到输出流)
   invoke_callback(map->callback, offset, len, true);
 }
