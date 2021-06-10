@@ -54,13 +54,16 @@ void sdl_clear_event_queue() {
 }
 
 void init_device() {
+  // 初始化串口, 时钟, 键盘, VGA和声卡
   init_serial();
   init_timer();
   init_vga();
   init_i8042();
   init_audio();
 
+  // 注册callback定时器处理函数 set_device_update_flag()
   add_alarm_handle(set_device_update_flag);
+  // 注册一个60Hz的定时器, 每隔1/60秒调用 alarm_sig_handler()
   init_alarm();
 }
 #else

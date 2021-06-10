@@ -89,16 +89,19 @@ void cpu_exec(uint64_t n) {
     // printf("cpu.pc = 0x%lx\t", cpu.pc);
     asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
-    /* TODO: check watchpoints here. */
+    /* check watchpoints here. */
 #include "/home/harry/ics2020/nemu/src/monitor/debug/watchpoint.h"
-    if(!wp_check())
-    {
+    if(!wp_check()) {
       nemu_state.state = NEMU_STOP;
     }
 #endif
 
 #ifdef HAS_IOE
     extern void device_update();
+    // 检查设备更新标志是否被设置
+    // 若是, 则会尝试刷新屏幕, 并进一步检查是否有按键按下/释放
+    //      以及是否点击了窗口的X按钮
+    // 否则则直接返回
     device_update();
 #endif
 
