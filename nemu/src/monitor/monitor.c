@@ -44,8 +44,8 @@ static inline long load_img() {
 
   Log("The image is %s", img_file);
 
-  fseek(fp, 0, SEEK_END);
-  long size = ftell(fp);
+  fseek(fp, 0, SEEK_END); // fp指向文件尾部
+  long size = ftell(fp);  // fp相较文件头的偏移（文件大小）
 
   fseek(fp, 0, SEEK_SET);
   int ret = fread(guest_to_host(IMAGE_START), size, 1, fp);

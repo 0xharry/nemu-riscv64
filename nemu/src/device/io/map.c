@@ -4,10 +4,12 @@
 #include <device/map.h>
 
 #define IO_SPACE_MAX (2 * 1024 * 1024)
-
+// 用于映射的IO空间(io_space)大小为：IO_SPACE_MAX
 static uint8_t io_space[IO_SPACE_MAX] PG_ALIGN = {};
+// 当前IO空间指针
 static uint8_t *p_space = io_space;
 
+// 在IO空间开辟 size 大小，按PAGE_SIZE对齐
 uint8_t* new_space(int size) {
   uint8_t *p = p_space;
   // page aligned;

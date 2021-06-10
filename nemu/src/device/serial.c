@@ -25,6 +25,7 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
 
 
 void init_serial() {
+  // // 在IO空间io_space[]开辟 8字节 大小，串口本身地址为 serial_base
   serial_base = new_space(8);
   add_pio_map("serial", SERIAL_PORT, serial_base, 8, serial_io_handler);
   add_mmio_map("serial", SERIAL_MMIO, serial_base, 8, serial_io_handler);
