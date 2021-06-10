@@ -54,7 +54,7 @@ void sdl_clear_event_queue() {
 }
 
 void init_device() {
-  // 初始化串口, 时钟, 键盘, VGA和声卡
+  // 初始化串口, 时钟, VGA, 键盘和声卡
   init_serial();
   init_timer();
   init_vga();
