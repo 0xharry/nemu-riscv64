@@ -102,7 +102,7 @@ void wp_delete(int n)
   {
     printf("Delete all breakpoints? (y or n) ");
     char ans = 'n';
-    scanf("%c", &ans);
+    if(scanf("%c", &ans)==EOF) assert(0);
     if(ans=='y'||ans=='Y')
     {
       while(!head)

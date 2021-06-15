@@ -6,58 +6,6 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 // formatted output conversion
 
-
-int vprintf(const char *fmt, va_list p_fmt) {
-  int ret_wordcount=0;
-  char* s = NULL;
-  char num[12];
-  int str_len;
-  int d;
-  while(*fmt != '\0') {
-    if(*fmt == '%') {
-      switch (*(++fmt)) {
-        case 'c':
-          d = va_arg(p_fmt, int);
-          putch((char*)&d);
-          ++ret_wordcount;
-          break;
-
-        case 's':
-          s = va_arg(p_fmt, char*);
-          str_len = strlen(s);
-          for (d=0; d<str_len; ++d) putch(*s++);
-          ret_wordcount += str_len;
-          break;
-
-        case 'd':
-          d=va_arg(p_fmt, int);
-          str_len = strlen(itos_dec(d, num));
-          for (d=0, s=num; d<str_len; ++d) putch(*s++);
-          ret_wordcount += str_len;
-          break;
-
-        default: break;
-      }
-      fmt++;
-    }
-    else {
-      putch(*fmt++);
-      ++ret_wordcount;
-    }
-  }
-  putch('\0');
-  return ret_wordcount;
-}
-
-int printf(const char *fmt, ...) {
-  // putch(char ch);
-  va_list p_fmt; 
-  va_start(p_fmt, fmt);
-  int ret = vprintf(fmt, p_fmt);
-  va_end(p_fmt);
-  return ret;
-}
-
 /* convert decimal integer to string */
 char* itos_dec(int num, char* str) {
   if(str == NULL) {
@@ -95,6 +43,58 @@ char* itos_dec(int num, char* str) {
     p[i-j-1] = temp;
   }
   return str;
+}
+
+
+int vprintf(const char *fmt, va_list p_fmt) {
+  int ret_wordcount=0;
+  char* s = NULL;
+  char num[12];
+  int str_len;
+  int d;
+  while(*fmt != '\0') {
+    if(*fmt == '%') {
+      switch (*(++fmt)) {
+        case 'c':
+          d = va_arg(p_fmt, int);
+          putch((char)d);
+          ++ret_wordcount;
+          break;
+
+        case 's':
+          s = va_arg(p_fmt, char*);
+          str_len = strlen(s);
+          for (d=0; d<str_len; ++d) putch(*s++);
+          ret_wordcount += str_len;
+          break;
+
+        case 'd':
+          d=va_arg(p_fmt, int);
+          str_len = strlen(itos_dec(d, num));
+          for (d=0, s=num; d<str_len; ++d) putch(*s++);
+          ret_wordcount += str_len;
+          break;
+
+        default: break;
+      }
+      fmt++;
+    }
+    else {
+      putch(*fmt++);
+      ++ret_wordcount;
+    }
+  }
+  putch('\0');
+  return ret_wordcount;
+}
+
+int printf(const char *fmt, ...) {
+  // putch(char ch);
+  va_list p_fmt; 
+  va_start(p_fmt, fmt);
+  int ret = vprintf(fmt, p_fmt);
+  va_end(p_fmt);
+  return ret;
 }
 
 /* 
