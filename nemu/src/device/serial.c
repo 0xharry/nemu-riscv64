@@ -28,6 +28,7 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
 void init_serial() {
   // 在IO空间io_space[]开辟 8字节 大小，串口本身地址为 serial_base
   serial_base = new_space(8);
+  // 无论从端口还是内存访问串口，实际上都从 serial_base 读
   // 初始化端口映射IO
   add_pio_map("serial", SERIAL_PORT, serial_base, 8, serial_io_handler);
   // 初始化内存映射IO

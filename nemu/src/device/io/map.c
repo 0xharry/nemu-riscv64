@@ -44,13 +44,13 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
   return data;
 }
 
-// 将data写入地址addr映射的map所指示的目标IO空间.
+// 将data写入地址addr映射的(map指示的)IO设备空间.
 void map_write(paddr_t addr, word_t data, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
 
   memcpy(map->space + offset, &data, len);
-  // 回调函数, 可能需要对设备和目标空间的状态进行更新(如serial, 调用putc()输出到输出流)
+  // 回调函数, 可能需要对设备和目标空间的状态进行更新(如serial, 调用 putc()输出到输出流)
   invoke_callback(map->callback, offset, len, true);
 }

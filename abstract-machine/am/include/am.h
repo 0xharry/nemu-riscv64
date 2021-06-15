@@ -1,3 +1,4 @@
+// AM设备接口
 #ifndef AM_H__
 #define AM_H__
 

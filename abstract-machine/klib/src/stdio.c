@@ -7,8 +7,55 @@
 // formatted output conversion
 
 
+int vprintf(const char *fmt, va_list p_fmt) {
+  int ret_wordcount=0;
+  char* s = NULL;
+  char num[12];
+  int str_len;
+  int d;
+  while(*fmt != '\0') {
+    if(*fmt == '%') {
+      switch (*(++fmt)) {
+        case 'c':
+          d = va_arg(p_fmt, int);
+          putch((char*)&d);
+          ++ret_wordcount;
+          break;
+
+        case 's':
+          s = va_arg(p_fmt, char*);
+          str_len = strlen(s);
+          for (d=0; d<str_len; ++d) putch(*s++);
+          ret_wordcount += str_len;
+          break;
+
+        case 'd':
+          d=va_arg(p_fmt, int);
+          str_len = strlen(itos_dec(d, num));
+          for (d=0, s=num; d<str_len; ++d) putch(*s++);
+          ret_wordcount += str_len;
+          break;
+
+        default: break;
+      }
+      fmt++;
+    }
+    else {
+      putch(*fmt++);
+      ++ret_wordcount;
+    }
+  }
+  putch('\0');
+  return ret_wordcount;
+}
+
 int printf(const char *fmt, ...) {
-  return 0;
+  // putch(char ch);
+  va_list p_fmt; 
+  va_start(p_fmt, fmt);
+  int ret = vprintf(fmt, p_fmt);
+  va_end(p_fmt);
+  return ret;
 }
 
 /* convert decimal integer to string */
@@ -61,7 +108,6 @@ char* itos_dec(int num, char* str) {
 int vsprintf(char *out, const char *fmt, va_list p_fmt) {
   if(out == NULL) return 0;
   int ret_wordcount=0;
-  // va_list p_fmt; 
   char* s = NULL;
   int str_len;
   int d;
@@ -105,120 +151,14 @@ int vsprintf(char *out, const char *fmt, va_list p_fmt) {
 
 // sprintf()  write output  to  the  given  output  stream
 int sprintf(char *out, const char *fmt, ...) {
-  if(out == NULL) return 0;
-  int ret_wordcount=0;
   va_list p_fmt; 
-  char* s = NULL;
-  int str_len;
-  int d;
   va_start(p_fmt, fmt);
-  while(*fmt != '\0') {
-    if(*fmt == '%') {
-      switch (*(++fmt)) {
-        case 'c':
-          d = va_arg(p_fmt, int);
-          memcpy(out, (char*)&d, 1);
-          ++out;
-          ++ret_wordcount;
-          break;
-
-        case 's':
-          s = va_arg(p_fmt, char*);
-          str_len = strlen(s);
-          memcpy(out, s, str_len);
-          out += str_len;
-          ret_wordcount += str_len;
-          break;
-
-        case 'd':
-          d=va_arg(p_fmt, int);
-          str_len = strlen(itos_dec(d, out));
-          out += str_len;
-          ret_wordcount += str_len;
-          break;
-
-        default: break;
-      }
-      fmt++;
-    }
-    else {
-      *out++ = *fmt++;
-      ++ret_wordcount;
-    }
-  }
+  int ret = vsprintf(out, fmt, p_fmt);
   va_end(p_fmt);
-  *out = '\0';
-  return ret_wordcount;
+  return ret;
 }
 
-/* snprintf
- * The  functions snprintf() and vsnprintf() write at most n bytes (in‐
- * cluding the terminating null byte ('\0')) to out.
- */
-int snprintf(char *out, size_t n, const char *fmt, ...) {
-  if(out == NULL || n-- <=0) return 0;
-  int ret_wordcount=0;
-  va_list p_fmt; 
-  char* s = NULL;
-  int str_len;
-  int d;
-  char d_buf[12];
-  va_start(p_fmt, fmt);
-  while(*fmt != '\0') {
-    if(*fmt == '%') {
-      switch (*(++fmt)) {
-        case 'c':
-          d = va_arg(p_fmt, int);
-          memcpy(out, (char*)&d, 1);
-          ++out;
-          ++ret_wordcount;
-          break;
-
-        case 's':
-          s = va_arg(p_fmt, char*);
-          str_len = strlen(s);
-          if(ret_wordcount + str_len > n) {
-            d = n - ret_wordcount;
-            memcpy(out, s, d);
-            *(out+d+1) = '\0';
-            return n;
-          }
-          memcpy(out, s, str_len);
-          out += str_len;
-          ret_wordcount += str_len;
-          break;
-
-        case 'd':
-          d=va_arg(p_fmt, int);
-          str_len = strlen(itos_dec(d, d_buf));
-          if(ret_wordcount + str_len > n) {
-            d = n - ret_wordcount;
-            memcpy(out, d_buf, d);
-            *(out+d+1) = '\0';
-            return n;
-          }
-          memcpy(out, d_buf, str_len);
-          out += str_len;
-          ret_wordcount += str_len;
-          break;
-
-        default: break;
-      }
-      fmt++;
-    }
-    else {
-      *out++ = *fmt++;
-      ++ret_wordcount;
-    }
-    if(ret_wordcount >= n) {
-      *out = '\0';
-      return ret_wordcount;
-    }
-  }
-  va_end(p_fmt);
-  *out = '\0';
-  return ret_wordcount;
-}
+// int tail()
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list p_fmt) {
   if(out == NULL || n-- <=0) return 0;
@@ -280,6 +220,18 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list p_fmt) {
   }
   *out = '\0';
   return ret_wordcount;
+}
+
+/* snprintf
+ * The  functions snprintf() and vsnprintf() write at most n bytes (in‐
+ * cluding the terminating null byte ('\0')) to out.
+ */
+int snprintf(char *out, size_t n, const char *fmt, ...) {
+  va_list p_fmt; 
+  va_start(p_fmt, fmt);
+  int ret = vsnprintf(out, n, fmt, p_fmt);
+  va_end(p_fmt);
+  return ret;
 }
 
 #endif
