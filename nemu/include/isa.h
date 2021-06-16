@@ -3,8 +3,7 @@
 
 // The macro `_ISA_H_` is defined in $(CFLAGS).
 // It will be expanded as "isa/x86.h" or "isa/mips32.h" ...
-// #include _ISA_H_ // c_cpp_properties.json 的 compilerArgs 无法显示双引号，故直接修改
-#include "isa/riscv64.h"
+#include _ISA_H_
 
 // The macro `__ISA__` is defined in $(CFLAGS).
 // It will be expanded as "x86" or "mips32" ...
