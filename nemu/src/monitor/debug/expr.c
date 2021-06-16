@@ -235,7 +235,8 @@ int find_main_op(int p, int q, int* state) {
     // 此处不应该出现任何括号
     case TK_LP:
     case TK_RP:
-      BAD_RET("find_main_op(): Invalid parenthesis\n",FIND_OP_FAIL,-1); break;
+      // BAD_RET("find_main_op(): Invalid parenthesis\n",FIND_OP_FAIL,-1); 
+      break;
 
     // 优先级依次提升
     case TK_OR:
