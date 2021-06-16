@@ -1,10 +1,11 @@
 APP=ge
+GE_PATH = /home/harry/ics2020/nemu/tools/gen-expr/
 
 $(APP): gen-expr.c
 	gcc -g -Wall -Werror -o $@ $<
 
-tmp : /home/harry/ics2020/nemu/temp/.code.c
-	gcc -g /home/harry/ics2020/nemu/temp/.code.c -o /home/harry/ics2020/nemu/temp/.expr
+tmp : $(GE_PATH).code.c
+	gcc -g $(GE_PATH).code.c -o $(GE_PATH).expr
 
 .PHONY: clean
 clean:

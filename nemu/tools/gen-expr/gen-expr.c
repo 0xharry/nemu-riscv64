@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     sprintf(code_buf, code_format, buf);
 
     // code_buf中的代码写入code.c文件
-    FILE *fp = fopen("/home/harry/ics2020/nemu/temp/.code.c", "w");
+    FILE *fp = fopen("/home/harry/ics2020/nemu/tools/gen-expr/.code.c", "w");
     assert(fp != NULL);
     fputs(code_buf, fp);
     fclose(fp);
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
     if (ret != 0) continue;
 
     // 打开可执行文件
-    fp = popen("/home/harry/ics2020/nemu/temp/.expr", "r");
+    fp = popen("/home/harry/ics2020/nemu/tools/gen-expr/.expr", "r");
     assert(fp != NULL);
 
     // 将表达式计算结果保存，连同表达式一起输出到屏幕
