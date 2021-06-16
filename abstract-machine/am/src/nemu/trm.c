@@ -1,3 +1,4 @@
+// TRM(Turing Machine) - 图灵机, 最简单的运行时环境, 为程序提供基本的计算能力
 #include <am.h>
 #include <nemu.h>
 

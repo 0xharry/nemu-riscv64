@@ -1,3 +1,4 @@
+// CTE(Context Extension) - 上下文扩展, 为程序提供上下文管理的能力
 #include <am.h>
 #include <nemu.h>
 #include <klib.h>
