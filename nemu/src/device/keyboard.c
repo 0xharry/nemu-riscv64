@@ -42,6 +42,7 @@ void send_key(uint8_t scancode, bool is_keydown) {
       keymap[scancode] != _KEY_NONE) {
     uint32_t am_scancode = keymap[scancode] | (is_keydown ? KEYDOWN_MASK : 0);
     key_queue[key_r] = am_scancode;
+    printf("key_queue[key_r(%d)] = am_scancode(%u)\n", key_r, am_scancode);
     key_r = (key_r + 1) % KEY_QUEUE_LEN; // rear入队
     Assert(key_r != key_f, "key queue overflow!");
   }
