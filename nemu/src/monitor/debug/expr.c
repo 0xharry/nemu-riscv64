@@ -167,7 +167,7 @@ static bool make_token(char *e) {
   return true;
 }
 
-bool check_parentheses(int p, int q) {
+bool check_parentheses(int p, int q) {// need to repair
   if (tokens[p].type != TK_LP || tokens[q].type != TK_RP)
     return false;
   // 双指针，相遇时退出，判断左右括号是否>0且相等
@@ -180,14 +180,14 @@ bool check_parentheses(int p, int q) {
       case TK_RP: left--; if(left < 0) return false;
       default:            break;
     }
-    // 相遇时退出
-    if (p > q) break;
-    // 右指针
-    switch (tokens[q--].type) {
-      case TK_LP: left++; break;
-      case TK_RP: left--; if(left < 0) return false;
-      default:            break;
-    }
+    // // 相遇时退出
+    // if (p > q) break;
+    // // 右指针
+    // switch (tokens[q--].type) {
+    //   case TK_LP: left++; break;
+    //   case TK_RP: left--; if(left < 0) return false;
+    //   default:            break;
+    // }
   }
 
   if (left == right)
