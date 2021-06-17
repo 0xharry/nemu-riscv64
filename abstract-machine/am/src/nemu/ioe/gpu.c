@@ -14,8 +14,13 @@
 
 void __am_gpu_init() {
   int i;
+#ifdef MODE_800x600
   int w = W;
   int h = H;
+#else
+  int w = W * 2;
+  int h = H * 2;
+#endif
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
   for (i = 0; i < w * h; i ++) fb[i] = i;
   outl(SYNC_ADDR, 1);
