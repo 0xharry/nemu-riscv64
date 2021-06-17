@@ -16,7 +16,7 @@ int main() {  \
   static char exp[65536] = \"%s\"; \
   bool flag=true; \
   unsigned result = expr(exp,&flag);  \
-  if(flag) printf(\"%%u\", result);  \
+  if(flag) printf(\"res=%%u\", result);  \
   return 0;  \
 }";
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
     ret = fscanf(fp, "%d", &result);
     pclose(fp);
 
-    printf("%u %s\n", result, buf);
+    printf("result=%u, expr=%s\n", result, buf);
   }
   return 0;
 }
