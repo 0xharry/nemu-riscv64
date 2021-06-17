@@ -21,14 +21,13 @@ f(UP) f(DOWN) f(LEFT) f(RIGHT) f(INSERT) f(DELETE) f(HOME) f(END) f(PAGEUP) f(PA
 
 enum {
   _KEY_NONE = 0,
+  // _KEY_ESCAPE, _KEY_F1, ...
   MAP(_KEYS, _KEY_NAME)
-  // #define MAP(c, f) c(f)
-  // ==> _KEYS(_KEY_NAME) ==> _KEY_NAME(ESCAPE) _KEY_NAME(F1) ... _KEY_NAME(PAGEDOWN) ==>
-  // _KEY_ESCAPE, _KEY_F1, ... _KEY_PAGEDOWN
 };
 
 #define SDL_KEYMAP(k) [concat(SDL_SCANCODE_, k)] = concat(_KEY_, k),
 static uint32_t keymap[256] = {
+  // [SDL_SCANCODE_ESCAPE] = _KEY_ESCAPE, [SDL_SCANCODE_F1] = _KEY_F1, ...
   MAP(_KEYS, SDL_KEYMAP)
 };
 
