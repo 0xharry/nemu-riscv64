@@ -1,9 +1,24 @@
 #include <am.h>
 #include <nemu.h>
 
+//#define MODE_800x600
+#ifdef MODE_800x600
+# define W    800
+# define H    600
+#else
+# define W    400
+# define H    300
+#endif
+
 #define SYNC_ADDR (VGACTL_ADDR + 4)
 
 void __am_gpu_init() {
+  int i;
+  int w = W;
+  int h = H;
+  uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  for (i = 0; i < w * h; i ++) fb[i] = i;
+  outl(SYNC_ADDR, 1);
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
