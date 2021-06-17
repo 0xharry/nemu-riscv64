@@ -5,13 +5,12 @@ uint32_t boot_sec, boot_usec;
 
 void __am_timer_init() {
   boot_usec = inl(RTC_ADDR);
-  boot_sec = inl(RTC_ADDR+4);
+  // boot_sec = inl(RTC_ADDR+4);
 }
 
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
-  // uptime->us = 0;
   uint32_t usec = inl(RTC_ADDR)-boot_usec;
-  uint32_t sec = inl(RTC_ADDR+4)-boot_sec;
+  uint32_t sec = inl(RTC_ADDR+4);//-boot_sec;
   uptime->us = sec * 1000000 + usec;
 }
 
