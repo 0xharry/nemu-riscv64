@@ -4,7 +4,6 @@
 uint32_t boot_sec, boot_usec;
 
 void __am_timer_init() {
-  inl(RTC_ADDR);
   boot_usec = inl(RTC_ADDR);
   boot_sec = inl(RTC_ADDR+4);
 }
