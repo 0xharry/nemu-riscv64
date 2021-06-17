@@ -51,8 +51,8 @@ printf("keybord.c: %s\tkey_queue[key_r(%d)] = am_scancode(%u)\n", am_scancode & 
 static void i8042_data_io_handler(uint32_t offset, int len, bool is_write) {
   assert(!is_write);
   assert(offset == 0);
-printf("call keyboard handler\n");
   if (key_f != key_r) {
+printf("call keyboard handler\n");
     i8042_data_port_base[0] = key_queue[key_f];
     key_f = (key_f + 1) % KEY_QUEUE_LEN; // front出队
   }
