@@ -177,7 +177,7 @@ bool check_parentheses(int p, int q) {
     // 左指针
     switch (tokens[p++].type) {
       case TK_LP: left++; break;
-      case TK_RP: left--; break;
+      case TK_RP: left--; if(left < 0) return false;
       default:            break;
     }
     // 相遇时退出
@@ -185,7 +185,7 @@ bool check_parentheses(int p, int q) {
     // 右指针
     switch (tokens[q--].type) {
       case TK_LP: left++; break;
-      case TK_RP: left--; if(left <= 0) return false;
+      case TK_RP: left--; if(left < 0) return false;
       default:            break;
     }
   }
