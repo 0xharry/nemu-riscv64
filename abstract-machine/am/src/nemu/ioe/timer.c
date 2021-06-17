@@ -1,7 +1,7 @@
 #include <am.h>
 #include <nemu.h>
 
-uint32_t boot_sec, boot_usec;
+uint32_t boot_sec;//, boot_usec;
 
 void __am_timer_init() {
   // boot_usec = inl(RTC_ADDR);
