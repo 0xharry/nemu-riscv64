@@ -10,7 +10,7 @@ static uint8_t io_space[IO_SPACE_MAX] PG_ALIGN = {};
 // 当前IO空间指针
 static uint8_t *p_space = io_space;
 
-// 在IO空间开辟 size 大小，按PAGE_SIZE对齐
+// 在IO空间开辟 size Byte 大小，按PAGE_SIZE对齐
 uint8_t* new_space(int size) {
   uint8_t *p = p_space;
   // page aligned;

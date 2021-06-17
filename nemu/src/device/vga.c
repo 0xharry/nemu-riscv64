@@ -58,7 +58,7 @@ void init_vga() {
       SDL_TEXTUREACCESS_STATIC, SCREEN_W, SCREEN_H);
 #endif
 
-  vgactl_port_base = (void *)new_space(8);
+  vgactl_port_base = (void *)new_space(8); // int x, y; void *pixels; int w, h; bool sync
   vgactl_port_base[0] = ((SCREEN_W) << 16) | (SCREEN_H);
   add_pio_map("screen", VGACTL_PORT, (void *)vgactl_port_base, 8, NULL);
   add_mmio_map("screen", VGACTL_MMIO, (void *)vgactl_port_base, 8, NULL);
