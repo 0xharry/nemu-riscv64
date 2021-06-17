@@ -185,12 +185,12 @@ bool check_parentheses(int p, int q) {
     // 右指针
     switch (tokens[q--].type) {
       case TK_LP: left++; break;
-      case TK_RP: left--; break;
+      case TK_RP: left--; if(left <= 0) return false;
       default:            break;
     }
   }
 
-  if (left > 0 && left == right)
+  if (left == right)
     return true;
   else
     return false;
