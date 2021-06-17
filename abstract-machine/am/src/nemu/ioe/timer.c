@@ -7,7 +7,7 @@ void __am_timer_init() {
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
   uptime->us = 0;
   // uptime->us = seconds * 1000000 + (useconds + 500);
-  putch((char) uptime->us);
+  outb(RTC_ADDR,1);
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
