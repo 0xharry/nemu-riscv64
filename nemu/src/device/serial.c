@@ -26,6 +26,7 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
 
 
 void init_serial() {
+printf("init_serial\n");
   // 在IO空间io_space[]开辟 8字节 大小，串口本身地址为 serial_base
   serial_base = new_space(8);
   // 无论从端口还是内存访问串口，实际上都从 serial_base 读
