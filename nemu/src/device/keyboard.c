@@ -32,7 +32,7 @@ static uint32_t keymap[256] = {
 };
 
 #define KEY_QUEUE_LEN 1024
-static int key_queue[KEY_QUEUE_LEN] = {};
+static int key_queue[KEY_QUEUE_LEN] = {}; // 循环数组链表
 static int key_f = 0, key_r = 0;
 
 #define KEYDOWN_MASK 0x8000
@@ -42,7 +42,7 @@ void send_key(uint8_t scancode, bool is_keydown) {
       keymap[scancode] != _KEY_NONE) {
     uint32_t am_scancode = keymap[scancode] | (is_keydown ? KEYDOWN_MASK : 0);
     key_queue[key_r] = am_scancode;
-    key_r = (key_r + 1) % KEY_QUEUE_LEN;
+    key_r = (key_r + 1) % KEY_QUEUE_LEN; // rear入队
     Assert(key_r != key_f, "key queue overflow!");
   }
 }
@@ -52,7 +52,7 @@ static void i8042_data_io_handler(uint32_t offset, int len, bool is_write) {
   assert(offset == 0);
   if (key_f != key_r) {
     i8042_data_port_base[0] = key_queue[key_f];
-    key_f = (key_f + 1) % KEY_QUEUE_LEN;
+    key_f = (key_f + 1) % KEY_QUEUE_LEN; // front出队
   }
   else {
     i8042_data_port_base[0] = _KEY_NONE;
