@@ -177,9 +177,11 @@ bool check_parentheses(int p, int q) {// need to repair
     // 左指针
     switch (tokens[p++].type) {
       case TK_LP: left++; break;
-      case TK_RP: left--; if(left < 0) return false;
+      case TK_RP: left--; break;
       default:            break;
     }
+    if(p <= q && left <= 0) 
+      return false;
     // // 相遇时退出
     // if (p > q) break;
     // // 右指针
