@@ -40,8 +40,8 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
     int cp_bytes = sizeof(uint32_t) * min(w, W - x);
     for (int j = 0; j < h && y + j < H; j ++) {
       // memcpy(&fb[(y + j) * W + x], pixels, cp_bytes);
-      for(int count=0; count<cp_bytes; ++count) {
-        outl((uintptr_t)&fb[(y + j) * W + x], pixels[(y + j) * W + x]);
+      for(int bias=0; bias<cp_bytes; ++bias) {
+        outl((uintptr_t)&fb[(y + j) * W + x + bias], pixels[(y + j) * W + x + bias]);
       }
       pixels += w;
     }
