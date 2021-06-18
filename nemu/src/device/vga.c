@@ -38,9 +38,9 @@ static inline void update_screen() {
 }
 
 void vga_update_screen() {
-  if(vgactl_port_base[5]&1) {
+  if(vgactl_port_base[1]) {
     update_screen();
-    vgactl_port_base[5] = 0;
+    vgactl_port_base[1] = 0;
   }
   // TODO: call `update_screen()` when the sync register is non-zero,
   // then zero out the sync register
@@ -61,13 +61,15 @@ void init_vga() {
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
       SDL_TEXTUREACCESS_STATIC, SCREEN_W, SCREEN_H);
 #endif
-
-  vgactl_port_base = (void *)new_space(8); // int x, y; void *pixels; int w, h; bool sync
+  // vgactl_port_base {int x, y; void *pixels; int w, h; bool sync;}
+  vgactl_port_base = (void *)new_space(8); 
   vgactl_port_base[0] = ((SCREEN_W) << 16) | (SCREEN_H);
   add_pio_map("screen", VGACTL_PORT, (void *)vgactl_port_base, 8, NULL);
   add_mmio_map("screen", VGACTL_MMIO, (void *)vgactl_port_base, 8, NULL);
 
   vmem = (void *)new_space(SCREEN_SIZE);
   add_mmio_map("vmem", VMEM, (void *)vmem, SCREEN_SIZE, NULL);
+
+printf("0x%ux\n0x%p", VGACTL_MMIO+4, &vgactl_port_base[1]);
 }
 #endif	/* HAS_IOE */
