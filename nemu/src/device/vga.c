@@ -70,6 +70,6 @@ void init_vga() {
   vmem = (void *)new_space(SCREEN_SIZE);
   add_mmio_map("vmem", VMEM, (void *)vmem, SCREEN_SIZE, NULL);
 
-printf("0x%ux\n%p", VGACTL_MMIO+4, &vgactl_port_base[1]);
+printf("0x%x\n%p", VGACTL_MMIO+4, &vgactl_port_base[1]);
 }
 #endif	/* HAS_IOE */
