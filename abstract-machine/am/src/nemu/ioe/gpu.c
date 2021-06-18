@@ -15,12 +15,12 @@ uint32_t *fb;
 static inline int min(int x, int y) { return (x < y) ? x : y; }
 
 void __am_gpu_init() {
-  int i;
-  int w = W;
-  int h = H;
-  fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  for (i = 0; i < w * h; i ++) fb[i] = i;
-  outl(SYNC_ADDR, 1);
+  // int i;
+  // int w = W;
+  // int h = H;
+  // fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  // for (i = 0; i < w * h; i ++) fb[i] = i;
+  // outl(SYNC_ADDR, 1);
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
