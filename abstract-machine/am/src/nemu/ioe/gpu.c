@@ -11,6 +11,8 @@
 #endif
 
 #define SYNC_ADDR (VGACTL_ADDR + 4)
+uint32_t *fb;
+static inline int min(int x, int y) { return (x < y) ? x : y; }
 
 void __am_gpu_init() {
   int i;
@@ -24,16 +26,25 @@ void __am_gpu_init() {
 void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   *cfg = (AM_GPU_CONFIG_T) {
     .present = true, .has_accel = false,
-    .width = 0, .height = 0,
+    .width = W, .height = H,
     .vmemsz = 0
   };
 }
 
+// sync==1时，向屏幕(x,y)坐标处绘制w*h的矩形图像。
+// 图像像素按行优先方式存储在pixels中, 每个像素用32位整数以00RRGGBB的方式描述颜色.
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   if (ctl->sync) {
-    // int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
-    // uint32_t *pixels = ctl->pixels;
-
+    int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
+    uint32_t *pixels = ctl->pixels;
+    int cp_bytes = sizeof(uint32_t) * min(w, W - x);
+    for (int j = 0; j < h && y + j < H; j ++) {
+      // memcpy(&fb[(y + j) * W + x], pixels, cp_bytes);
+      for(int count=0; count<cp_bytes; ++count) {
+        outl((uintptr_t)&fb[(y + j) * W + x], pixels[(y + j) * W + x]);
+      }
+      pixels += w;
+    }
     outl(SYNC_ADDR, 1);
   }
 }
