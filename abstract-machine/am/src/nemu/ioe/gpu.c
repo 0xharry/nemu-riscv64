@@ -6,8 +6,8 @@
 # define W    800
 # define H    600
 #else
-# define W    400
-# define H    300
+# define W    400*2
+# define H    300*2
 #endif
 
 #define SYNC_ADDR (VGACTL_ADDR + 4)
