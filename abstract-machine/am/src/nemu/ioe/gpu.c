@@ -36,9 +36,9 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   uint32_t *pixels = ctl->pixels;
-  int cp_bytes = sizeof(uint32_t) * min(w, W - x); // pixels一行的大小
-  for (int j = 0; j < h && y + j < H*2; j ++) {      // copy h行
-    for(int bias=0; bias<cp_bytes; ++bias) {
+  int pixels_w = min(w, W - x); // pixels 一行的大小
+  for (int j = 0; j < h && y + j < H; j ++) { // copy h行
+    for(int bias=0; bias<pixels_w; ++bias) {
       outl(FB_ADDR + (y + j) * W + x + bias, pixels[bias]);
     }
     pixels += w;
