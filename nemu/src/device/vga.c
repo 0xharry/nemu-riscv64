@@ -38,9 +38,9 @@ static inline void update_screen() {
 }
 
 void vga_update_screen() {
-  if(vgactl_port_base[1]) {
+  if(*(vgactl_port_base+4)) {
     update_screen();
-    vgactl_port_base[1] = 0;
+    *(vgactl_port_base+4) = 0;
   }
   // TODO: call `update_screen()` when the sync register is non-zero,
   // then zero out the sync register
@@ -69,7 +69,5 @@ void init_vga() {
 
   vmem = (void *)new_space(SCREEN_SIZE);
   add_mmio_map("vmem", VMEM, (void *)vmem, SCREEN_SIZE, NULL);
-
-printf("0x%x\n%p", VGACTL_MMIO+4, &vgactl_port_base[1]);
 }
 #endif	/* HAS_IOE */
