@@ -37,11 +37,10 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   if (ctl->sync) {
     int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
     uint32_t *pixels = ctl->pixels;
-    int cp_bytes = sizeof(uint32_t) * min(w, W - x);
-    for (int j = 0; j < h && y + j < H; j ++) {
-      // memcpy(&fb[(y + j) * W + x], pixels, cp_bytes);
+    int cp_bytes = sizeof(uint32_t) * min(w, W - x); // pixels一行的大小
+    for (int j = 0; j < h && y + j < H; j ++) {      // copy h行
       for(int bias=0; bias<cp_bytes; ++bias) {
-        outl((uintptr_t)&fb[(y + j) * W + x + bias], pixels[(y + j) * W + x + bias]);
+        outl((uintptr_t)&fb[(y + j) * W + x + bias], pixels[bias]);
       }
       pixels += w;
     }
