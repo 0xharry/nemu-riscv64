@@ -36,10 +36,10 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   uint32_t *pixels = ctl->pixels;
-  int pixels_w = min(w, W - x); // 输入 pixels 一行的大小(*32bit)
+  int pixels_w = 4*min(w, W - x); // 输入 pixels 一行的大小(*32bit)
   for (int j = 0; j < h && y + j < H; j ++) { // copy h行
     for(int bias=0; bias<pixels_w; ++bias) {
-      outl(FB_ADDR + (y + j) * W + x + bias, pixels[bias]);
+      outb(FB_ADDR + (y + j) * W + x + bias, pixels[bias]);
     }
     pixels += w;
   }
