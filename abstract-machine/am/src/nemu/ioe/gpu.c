@@ -6,8 +6,8 @@
 # define W    800
 # define H    600
 #else
-# define W    400*2
-# define H    300*2
+# define W    400
+# define H    300
 #endif
 
 #define SYNC_ADDR (VGACTL_ADDR + 4)
@@ -31,12 +31,12 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
   };
 }
 
-// sync==1时，向屏幕(x,y)坐标处绘制w*h的矩形图像。
+// sync==1时，向屏幕(x,y)坐标处绘制w*h*像素的矩形图像。
 // 图像像素按行优先方式存储在pixels中, 每个像素用32位整数以00RRGGBB的方式描述颜色.
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   uint32_t *pixels = ctl->pixels;
-  int pixels_w = min(w, W - x); // pixels 一行的大小(*4B)
+  int pixels_w = min(w, W - x); // 输入 pixels 一行的大小(*32bit)
   for (int j = 0; j < h && y + j < H; j ++) { // copy h行
     for(int bias=0; bias<pixels_w; ++bias) {
       outl(FB_ADDR + (y + j) * W + x + bias, pixels[bias]);
