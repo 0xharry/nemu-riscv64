@@ -53,13 +53,12 @@ void init_vga() {
 #ifdef MODE_800x600
   SDL_CreateWindowAndRenderer(SCREEN_W, SCREEN_H, 0, &window, &renderer);
 #else
-  SDL_CreateWindowAndRenderer(SCREEN_W, SCREEN_H, 0, &window, &renderer);// W/H * 2
+  SDL_CreateWindowAndRenderer(SCREEN_W * 2, SCREEN_H * 2, 0, &window, &renderer);
 #endif
   SDL_SetWindowTitle(window, title);
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
       SDL_TEXTUREACCESS_STATIC, SCREEN_W, SCREEN_H);
 #endif
-  // vgactl_port_base {int x, y; void *pixels; int w, h; bool sync;}
   vgactl_port_base = (void *)new_space(8); 
   vgactl_port_base[0] = ((SCREEN_W) << 16) | (SCREEN_H);
   add_pio_map("screen", VGACTL_PORT, (void *)vgactl_port_base, 8, NULL);
