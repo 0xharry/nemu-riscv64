@@ -18,7 +18,7 @@ void __am_gpu_init() {
   // int i;
   // int w = W;
   // int h = H;
-  // fb = (uint32_t *)(uintptr_t)FB_ADDR;
+  fb = (uint32_t *)(uintptr_t)FB_ADDR;
   // for (i = 0; i < w * h; i ++) fb[i] = i;
   // outl(SYNC_ADDR, 1);
 }
@@ -36,17 +36,18 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   int x = ctl->x, y = ctl->y, w = ctl->w, h = ctl->h;
   uint32_t *pixels = ctl->pixels;
-  int pixels_w = min(w, W - x); // 输入 pixels 一行的大小(*32bit)
-printf("(%d,%d)->%d*%d, pixels_w=%d,", x, y, w, h, pixels_w);
-  int count=1;
+  int pixels_w = sizeof(uint32_t) * min(w, W - x);; // 输入 pixels 一行的大小(*32bit)
+// printf("(%d,%d)->%d*%d, pixels_w=%d,", x, y, w, h, pixels_w);
+// int count=1;
   for (int j = 0; j < h && y + j < H; j ++) { // copy h行
-    for(int bias=0; bias<pixels_w; ++bias) {
-      outl(FB_ADDR + (y + j) * W + x + bias, pixels[bias]);
-++count;
-    }
+    // for(int bias=0; bias<pixels_w; ++bias) {
+    //   outl(FB_ADDR + (y + j) * W + x + bias, pixels[bias]);
+// ++count;
+    // }
+      memcpy(&fb[(y + j) * W + x], pixels, pixels_w);
     pixels += w;
   }
-printf(" count=%d\n", count);
+// printf(" count=%d\n", count);
   outl(SYNC_ADDR, 1);
 }
 
