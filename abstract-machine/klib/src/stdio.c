@@ -106,7 +106,7 @@ int vprintf(const char *fmt, va_list p_fmt) {
           break;
 
         case 'p':
-          d=va_arg(p_fmt, int);
+          d=va_arg(p_fmt, uint64_t);
           str_len = strlen(itos_hex(d, num));
           putstr("0x");
           putstr(num);
