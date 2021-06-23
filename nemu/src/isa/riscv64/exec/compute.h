@@ -34,7 +34,8 @@ static inline def_EHelper(sltiu)
 // I-type: x[rd] = x[rs1] + sext(immediate)
 static inline def_EHelper(addi)
 {
-  rtl_addi(s, ddest, dsrc1, id_src2->simm);
+  // rtl_addi(s, ddest, dsrc1, id_src2->simm);
+  rtl_subi(s, ddest, dsrc1, id_src2->simm);
   print_asm_template2(addi);
 }
 
