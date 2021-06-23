@@ -32,13 +32,13 @@ int atoi(const char* nptr) {
 extern void *brk;
 extern const uintptr_t kHEAP_END;
 void *malloc(size_t size) {
-printf("malloc %d in addr=%p\n", size, brk);
   void *start = brk;
   // page aligned;
   // size = (size + 7) & ~7;
   brk += size;
   // overflow may happen
   if((uintptr_t)brk > kHEAP_END) return NULL;
+printf("malloc %d in addr=%p\n", size, start);
   return start;
 }
 
