@@ -32,7 +32,7 @@ int atoi(const char* nptr) {
 extern void *brk;
 extern const uintptr_t kHEAP_END;
 void *malloc(size_t size) {
-printf("malloc %d in addr=%d\n", size, brk);
+printf("malloc %d in addr=%p\n", size, brk);
   void *start = brk;
   // page aligned;
   // size = (size + 7) & ~7;
