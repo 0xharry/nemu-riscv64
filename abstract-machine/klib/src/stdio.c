@@ -54,7 +54,7 @@ static inline char* itos_dec(int num, char* str) {
  * macro, the value of ap is undefined after the call.
  */
 int vsprintf(char *out, const char *fmt, va_list p_fmt) {
-  if(out == NULL) return 0;
+  if(out == NULL) return -1;
   int ret_wordcount=0;
   char* s = NULL;
   int str_len;
