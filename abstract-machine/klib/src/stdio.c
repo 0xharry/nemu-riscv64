@@ -58,10 +58,10 @@ char* itos_hex(int num, char* str) {
     r = num%16;
     num /= 16;
     if(r>9) {
-      str[i++] = 'A';//+r-10;
+      str[i++] = 'A'+r-10;
     }
     else {
-      str[i++] = '0';//+r;
+      str[i++] = '0'+r;
     }
   } while (num);
   str[i] = '\0';
