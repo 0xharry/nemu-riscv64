@@ -44,6 +44,7 @@ char* itos_dec(int num, char* str) {
   }
   return str;
 }
+
 char* itos_hex(int num, char* str) {
   if(str == NULL) {
     // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
@@ -51,17 +52,17 @@ char* itos_hex(int num, char* str) {
       assert(0);
   }
   int i = 0;
-  int neg = 1;
-  if(num<0){
-    str[i++] = '-';
-    neg = -1;
-  }
 
   int r;
   do {
-    r = num%10;
-    num /= 10;
-    str[i++] = '0'+neg*r;
+    r = num%16;
+    num /= 16;
+    if(r>9) {
+      str[i++] = 'A'+r-10;
+    }
+    else {
+      str[i++] = '0'+r;
+    }
   } while (num);
   str[i] = '\0';
 
