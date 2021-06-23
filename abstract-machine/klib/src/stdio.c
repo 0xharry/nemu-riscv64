@@ -67,14 +67,7 @@ char* itos_hex(int num, char* str) {
   str[i] = '\0';
 
   char temp;
-  char* p;
-  if(str[0] == '-') {
-    p = str+1;
-    i--;
-  }
-  else {
-    p = str;
-  }
+  char* p = str;
   for(int j=0; j<i/2; ++j) {
     temp = p[j];
     p[j] = p[i-j-1];
