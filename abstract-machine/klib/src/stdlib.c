@@ -38,7 +38,7 @@ void *malloc(size_t size) {
   brk += size;
   // overflow may happen
   if((uintptr_t)brk > kHEAP_END) return NULL;
-printf("malloc %d in addr=%p\n", size, start);
+// printf("malloc %d in addr=%p\n", size, start);
   return start;
 }
 

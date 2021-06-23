@@ -8,11 +8,11 @@
 
 /* convert decimal integer to string */
 char* itos_dec(long num, char* str) {
-  if(str == NULL) {
-    // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
-    // if(str == NULL)
-      assert(0);
-  }
+  // if(str == NULL) {
+  //   // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
+  //   // if(str == NULL)
+  //     assert(0);
+  // }
   int i = 0;
   int neg = 1;
   if(num<0){
@@ -46,11 +46,11 @@ char* itos_dec(long num, char* str) {
 }
 
 char* itos_hex(long num, char* str) {
-  if(str == NULL) {
-    // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
-    // if(str == NULL)
-      assert(0);
-  }
+  // if(str == NULL) {
+  //   // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
+  //   // if(str == NULL)
+  //     assert(0);
+  // }
   int i = 0;
 
   long r;
@@ -127,7 +127,7 @@ int vprintf(const char *fmt, va_list p_fmt) {
   return ret_wordcount;
 }
 
-int printf(const char *fmt, ...) {
+int prt_native(const char *fmt, ...) {
   // putch(char ch);
   va_list p_fmt; 
   va_start(p_fmt, fmt);
