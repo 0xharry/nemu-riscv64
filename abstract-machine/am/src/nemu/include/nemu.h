@@ -3,7 +3,7 @@
 
 #include <klib-macros.h>
 
-#include _ISA_H_ // "x86.h", "mips32.h", ...
+#include ISA_H // "x86.h", "mips32.h", ...
 // #include "../../riscv64.h"
 
 #if defined(__ISA_X86__)
