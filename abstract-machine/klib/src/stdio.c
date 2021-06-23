@@ -7,7 +7,7 @@
 // formatted output conversion
 
 /* convert decimal integer to string */
-char* itos_dec(int num, char* str) {
+static inline char* itos_dec(int num, char* str) {
   if(str == NULL) {
     // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
     // if(str == NULL)
@@ -45,55 +45,14 @@ char* itos_dec(int num, char* str) {
   return str;
 }
 
-
-int vprintf(const char *fmt, va_list p_fmt) {
-  int ret_wordcount=0;
-  char* s = NULL;
-  char num[12];
-  int str_len;
-  int d;
-  while(*fmt != '\0') {
-    if(*fmt == '%') {
-      switch (*(++fmt)) {
-        case 'c':
-          d = va_arg(p_fmt, int);
-          putch((char)d);
-          ++ret_wordcount;
-          break;
-
-        case 's':
-          s = va_arg(p_fmt, char*);
-          str_len = strlen(s);
-          for (d=0; d<str_len; ++d) putch(*s++);
-          ret_wordcount += str_len;
-          break;
-
-        case 'd':
-          d=va_arg(p_fmt, int);
-          str_len = strlen(itos_dec(d, num));
-          for (d=0, s=num; d<str_len; ++d) putch(*s++);
-          ret_wordcount += str_len;
-          break;
-
-        default: break;
-      }
-      fmt++;
-    }
-    else {
-      putch(*fmt++);
-      ++ret_wordcount;
-    }
-  }
-  putch('\0');
-  return ret_wordcount;
-}
-
+char stream_buffer[1024];
 int printf(const char *fmt, ...) {
   // putch(char ch);
   va_list p_fmt; 
   va_start(p_fmt, fmt);
-  int ret = vprintf(fmt, p_fmt);
+  int ret = vsprintf(stream_buffer, fmt, p_fmt);
   va_end(p_fmt);
+  putstr(stream_buffer);
   return ret;
 }
 
@@ -158,7 +117,6 @@ int sprintf(char *out, const char *fmt, ...) {
   return ret;
 }
 
-// int tail()
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list p_fmt) {
   if(out == NULL || n-- <=0) return 0;
