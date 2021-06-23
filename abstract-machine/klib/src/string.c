@@ -54,12 +54,12 @@ char* strcat(char* dst, const char* src) {
  * tively, to be less than, to match, or be greater than s2.
  */
 int strcmp(const char* s1, const char* s2) {
-  int ret = 0;
-  while(*s1!='\0' || *s2!='\0') {
-    ret = *s1++-*s2++;
-    if(ret != 0)
-      return ret;
-  }
+  // int ret = 0;
+  // while(*s1!='\0' || *s2!='\0') {
+  //   ret = *s1++-*s2++;
+  //   if(ret != 0)
+  //     return ret;
+  // }
   return 0;
 }
 
