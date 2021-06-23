@@ -100,14 +100,13 @@ int vprintf(const char *fmt, va_list p_fmt) {
         case 's':
           s = va_arg(p_fmt, char*);
           str_len = strlen(s);
-          for (d=0; d<str_len; ++d) putch(*s++);
+          putstr(s);
           ret_wordcount += str_len;
           break;
 
         case 'd':
           d=va_arg(p_fmt, int);
           str_len = strlen(itos_dec(d, num));
-          // for (d=0, s=num; d<str_len; ++d) putch(*s++);
           putstr(num);
           ret_wordcount += str_len;
           break;
@@ -116,7 +115,6 @@ int vprintf(const char *fmt, va_list p_fmt) {
           d=va_arg(p_fmt, int);
           str_len = strlen(itos_hex(d, num));
           putstr("0x");
-          // for (d=0, s=num; d<str_len; ++d) putch(*s++);
           putstr(num);
           ret_wordcount += str_len;
           break;
