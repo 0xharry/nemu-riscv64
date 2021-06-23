@@ -7,7 +7,7 @@
 // formatted output conversion
 
 /* convert decimal integer to string */
-char* itos_dec(int num, char* str) {
+char* itos_dec(long num, char* str) {
   if(str == NULL) {
     // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
     // if(str == NULL)
@@ -20,7 +20,7 @@ char* itos_dec(int num, char* str) {
     neg = -1;
   }
 
-  int r;
+  long r;
   do {
     r = num%10;
     num /= 10;
@@ -45,7 +45,7 @@ char* itos_dec(int num, char* str) {
   return str;
 }
 
-char* itos_hex(int num, char* str) {
+char* itos_hex(long num, char* str) {
   if(str == NULL) {
     // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
     // if(str == NULL)
@@ -53,10 +53,9 @@ char* itos_hex(int num, char* str) {
   }
   int i = 0;
 
-  int r;
+  long r;
   do {
     r = num%16;
-    assert(r>=0 && r<16);
     num /= 16;
     if(r>9) {
       str[i++] = 'a'+r-10;
