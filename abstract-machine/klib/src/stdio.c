@@ -56,8 +56,8 @@ char* itos_hex(int num, char* str) {
   int r;
   do {
     r = num%16;
-    num /= 16;
     assert(r>=0 && r<16);
+    num /= 16;
     if(r>9) {
       str[i++] = 'a'+r-10;
     }
