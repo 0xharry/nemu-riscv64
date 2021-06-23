@@ -111,8 +111,7 @@ int vprintf(const char *fmt, va_list p_fmt) {
           d=va_arg(p_fmt, int);
           str_len = strlen(itos_hex(d, num));
           putstr("0x");
-          // putstr(num);
-          for(d=0, s=num; d<str_len; d++) putch(*s++);
+          putstr(num);
           ret_wordcount += str_len;
           break;
 
