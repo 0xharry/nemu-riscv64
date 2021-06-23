@@ -61,7 +61,7 @@ char* itos_hex(int num, char* str) {
       str[i++] = 'A';//+r-10;
     }
     else {
-      str[i++] = '0'+r;
+      str[i++] = '0';//+r;
     }
   } while (num);
   str[i] = '\0';
