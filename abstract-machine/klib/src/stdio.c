@@ -109,7 +109,7 @@ int vprintf(const char *fmt, va_list p_fmt) {
 
         case 'p':
           d=va_arg(p_fmt, int);
-          str_len = strlen(itos_hex(d, num));
+          str_len = strlen(itos_dec(d, num));
           putstr("0x");
           putstr(num);
           ret_wordcount += str_len;
