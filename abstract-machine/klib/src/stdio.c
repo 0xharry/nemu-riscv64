@@ -45,17 +45,6 @@ static inline char* itos_dec(int num, char* str) {
   return str;
 }
 
-char stream_buffer[1024];
-int printf(const char *fmt, ...) {
-  // putch(char ch);
-  va_list p_fmt; 
-  va_start(p_fmt, fmt);
-  int ret = vsprintf(stream_buffer, fmt, p_fmt);
-  va_end(p_fmt);
-  putstr(stream_buffer);
-  return ret;
-}
-
 /* 
  * The  functions  vprintf(),  vfprintf(),  vdprintf(),  vsprintf(),   vs‐
  * nprintf()   are   equivalent  to  the  functions  printf(),  fprintf(),
@@ -108,6 +97,7 @@ int vsprintf(char *out, const char *fmt, va_list p_fmt) {
   return ret_wordcount;
 }
 
+
 // sprintf()  write output  to  the  given  output  stream
 int sprintf(char *out, const char *fmt, ...) {
   va_list p_fmt; 
@@ -117,6 +107,15 @@ int sprintf(char *out, const char *fmt, ...) {
   return ret;
 }
 
+char stream_buffer[1024];
+int printf(const char *fmt, ...) {
+  va_list p_fmt; 
+  va_start(p_fmt, fmt);
+  int ret = vsprintf(stream_buffer, fmt, p_fmt);
+  va_end(p_fmt);
+  putstr(stream_buffer);
+  return ret;
+}
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list p_fmt) {
   if(out == NULL || n-- <=0) return 0;
