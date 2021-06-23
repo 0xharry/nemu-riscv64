@@ -82,6 +82,7 @@ int vprintf(const char *fmt, va_list p_fmt) {
   char num[64];
   int str_len;
   int d;
+  long d_long;
   while(*fmt != '\0') {
     if(*fmt == '%') {
       switch (*(++fmt)) {
@@ -106,8 +107,8 @@ int vprintf(const char *fmt, va_list p_fmt) {
           break;
 
         case 'p':
-          d=va_arg(p_fmt, uint64_t);
-          str_len = strlen(itos_hex(d, num));
+          d_long=va_arg(p_fmt, int64_t);
+          str_len = strlen(itos_hex(d_long, num));
           putstr("0x");
           putstr(num);
           ret_wordcount += str_len;
