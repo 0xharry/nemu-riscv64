@@ -46,33 +46,35 @@ char* itos_dec(int num, char* str) {
 }
 
 char* itos_hex(int num, char* str) {
-  if(str == NULL) {
-    // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
-    // if(str == NULL)
-      assert(0);
-  }
-  int i = 0;
+  // if(str == NULL) {
+  //   // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
+  //   // if(str == NULL)
+  //     assert(0);
+  // }
+  // int i = 0;
 
-  int r;
-  do {
-    r = num%16;
-    num /= 16;
-    if(r>9) {
-      str[i++] = 'A'+r-10;
-    }
-    else {
-      str[i++] = '0'+r;
-    }
-  } while (num);
-  str[i] = '\0';
+  // int r;
+  // do {
+  //   r = num%16;
+  //   num /= 16;
+  //   if(r>9) {
+  //     str[i++] = 'A'+r-10;
+  //   }
+  //   else {
+  //     str[i++] = '0'+r;
+  //   }
+  // } while (num);
+  // str[i] = '\0';
 
-  char temp;
-  char* p = str;
-  for(int j=0; j<i/2; ++j) {
-    temp = p[j];
-    p[j] = p[i-j-1];
-    p[i-j-1] = temp;
-  }
+  // char temp;
+  // char* p = str;
+  // for(int j=0; j<i/2; ++j) {
+  //   temp = p[j];
+  //   p[j] = p[i-j-1];
+  //   p[i-j-1] = temp;
+  // }
+  *str = '1';
+  *(str+1) = '\0';
   return str;
 }
 
