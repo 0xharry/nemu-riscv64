@@ -1,3 +1,17 @@
+/*  Support format list:
+ *	%d	decimal conversion
+ *	%u	unsigned conversion 
+ *	%x	hexadecimal conversion
+ *	%X	hexadecimal conversion with capital letters
+ *	%o	octal conversion
+ *	%c	character
+ *	%s	string
+ *	%m.n	field width, precision
+ *	%-m.n	left adjustment
+ *	%0m.n	zero-padding
+ *	%*.*	width and precision taken from arguments
+ */
+
 #include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
