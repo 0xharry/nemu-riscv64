@@ -150,6 +150,7 @@ int vsprintf(char *out, const char *fmt, va_list p_fmt) {
   char* s = NULL;
   int str_len;
   int d;
+  long d_long;
   while(*fmt != '\0') {
     if(*fmt == '%') {
       switch (*(++fmt)) {
@@ -172,6 +173,13 @@ int vsprintf(char *out, const char *fmt, va_list p_fmt) {
           d=va_arg(p_fmt, int);
           str_len = strlen(itos_dec(d, out));
           out += str_len;
+          ret_wordcount += str_len;
+          break;
+
+        case 'p':
+          d_long=va_arg(p_fmt, int64_t);
+          *out++ = '0'; *out++ = 'x';
+          str_len = strlen(itos_hex(d_long, out));
           ret_wordcount += str_len;
           break;
 
@@ -205,6 +213,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list p_fmt) {
   char* s = NULL;
   int str_len;
   int d;
+  long d_long;
   char d_buf[12];
   while(*fmt != '\0') {
     if(*fmt == '%') {
@@ -235,6 +244,22 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list p_fmt) {
           str_len = strlen(itos_dec(d, d_buf));
           if(ret_wordcount + str_len > n) {
             d = n - ret_wordcount;
+            memcpy(out, d_buf, d);
+            *(out+d+1) = '\0';
+            return n;
+          }
+          memcpy(out, d_buf, str_len);
+          out += str_len;
+          ret_wordcount += str_len;
+          break;
+
+        case 'p':
+          d_long=va_arg(p_fmt, int64_t);
+          // *out++ = '0'; *out++ = 'x';
+          str_len = strlen(itos_hex(d_long, d_buf));
+          if(ret_wordcount + str_len + 2 > n) {
+            d = n - ret_wordcount;
+            if(d<3) return n;
             memcpy(out, d_buf, d);
             *(out+d+1) = '\0';
             return n;
