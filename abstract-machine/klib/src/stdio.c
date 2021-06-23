@@ -79,7 +79,7 @@ char* itos_hex(int num, char* str) {
 int vprintf(const char *fmt, va_list p_fmt) {
   int ret_wordcount=0;
   char* s = NULL;
-  char num[12];
+  char num[64];
   int str_len;
   int d;
   while(*fmt != '\0') {
