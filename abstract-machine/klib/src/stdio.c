@@ -1,17 +1,3 @@
-/*  Support format list:
- *	%d	decimal conversion
- *	%u	unsigned conversion 
- *	%x	hexadecimal conversion
- *	%X	hexadecimal conversion with capital letters
- *	%o	octal conversion
- *	%c	character
- *	%s	string
- *	%m.n	field width, precision
- *	%-m.n	left adjustment
- *	%0m.n	zero-padding
- *	%*.*	width and precision taken from arguments
- */
-
 #include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
@@ -21,7 +7,44 @@
 // formatted output conversion
 
 /* convert decimal integer to string */
-static inline char* itos_dec(int num, char* str) {
+char* itos_dec(int num, char* str) {
+  if(str == NULL) {
+    // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
+    // if(str == NULL)
+      assert(0);
+  }
+  int i = 0;
+  int neg = 1;
+  if(num<0){
+    str[i++] = '-';
+    neg = -1;
+  }
+
+  int r;
+  do {
+    r = num%10;
+    num /= 10;
+    str[i++] = '0'+neg*r;
+  } while (num);
+  str[i] = '\0';
+
+  char temp;
+  char* p;
+  if(str[0] == '-') {
+    p = str+1;
+    i--;
+  }
+  else {
+    p = str;
+  }
+  for(int j=0; j<i/2; ++j) {
+    temp = p[j];
+    p[j] = p[i-j-1];
+    p[i-j-1] = temp;
+  }
+  return str;
+}
+char* itos_hex(int num, char* str) {
   if(str == NULL) {
     // str = (char*) malloc(12); // 最长 int_min 10位十进制整数+负号+终止符号=12位
     // if(str == NULL)
@@ -59,6 +82,67 @@ static inline char* itos_dec(int num, char* str) {
   return str;
 }
 
+int vprintf(const char *fmt, va_list p_fmt) {
+  int ret_wordcount=0;
+  char* s = NULL;
+  char num[12];
+  int str_len;
+  int d;
+  while(*fmt != '\0') {
+    if(*fmt == '%') {
+      switch (*(++fmt)) {
+        case 'c':
+          d = va_arg(p_fmt, int);
+          putch((char)d);
+          ++ret_wordcount;
+          break;
+
+        case 's':
+          s = va_arg(p_fmt, char*);
+          str_len = strlen(s);
+          for (d=0; d<str_len; ++d) putch(*s++);
+          ret_wordcount += str_len;
+          break;
+
+        case 'd':
+          d=va_arg(p_fmt, int);
+          str_len = strlen(itos_dec(d, num));
+          // for (d=0, s=num; d<str_len; ++d) putch(*s++);
+          putstr(num);
+          ret_wordcount += str_len;
+          break;
+
+        case 'p':
+          d=va_arg(p_fmt, int);
+          str_len = strlen(itos_hex(d, num));
+          putstr("0x");
+          // for (d=0, s=num; d<str_len; ++d) putch(*s++);
+          putstr(num);
+          ret_wordcount += str_len;
+          break;
+
+        default: break;
+      }
+      fmt++;
+    }
+    else {
+      putch(*fmt++);
+      ++ret_wordcount;
+    }
+  }
+  putch('\0');
+  return ret_wordcount;
+}
+
+int printf(const char *fmt, ...) {
+  // putch(char ch);
+  va_list p_fmt; 
+  va_start(p_fmt, fmt);
+  int ret = vprintf(fmt, p_fmt);
+  va_end(p_fmt);
+  return ret;
+}
+
 /* 
  * The  functions  vprintf(),  vfprintf(),  vdprintf(),  vsprintf(),   vs‐
  * nprintf()   are   equivalent  to  the  functions  printf(),  fprintf(),
@@ -68,7 +152,7 @@ static inline char* itos_dec(int num, char* str) {
  * macro, the value of ap is undefined after the call.
  */
 int vsprintf(char *out, const char *fmt, va_list p_fmt) {
-  if(out == NULL) return -1;
+  if(out == NULL) return 0;
   int ret_wordcount=0;
   char* s = NULL;
   int str_len;
@@ -111,7 +195,6 @@ int vsprintf(char *out, const char *fmt, va_list p_fmt) {
   return ret_wordcount;
 }
 
-
 // sprintf()  write output  to  the  given  output  stream
 int sprintf(char *out, const char *fmt, ...) {
   va_list p_fmt; 
@@ -121,15 +204,7 @@ int sprintf(char *out, const char *fmt, ...) {
   return ret;
 }
 
-char stream_buffer[1024];
-int printf(const char *fmt, ...) {
-  va_list p_fmt; 
-  va_start(p_fmt, fmt);
-  int ret = vsprintf(stream_buffer, fmt, p_fmt);
-  va_end(p_fmt);
-  putstr(stream_buffer);
-  return ret;
-}
+// int tail()
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list p_fmt) {
   if(out == NULL || n-- <=0) return 0;
