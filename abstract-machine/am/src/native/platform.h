@@ -1,6 +1,5 @@
 #ifndef __PLATFORM_H__
 #define __PLATFORM_H__
-#include<stdio.h>
 
 #include <am.h>
 #include <unistd.h>
