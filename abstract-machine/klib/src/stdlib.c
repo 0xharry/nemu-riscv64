@@ -31,12 +31,13 @@ int atoi(const char* nptr) {
 
 uintptr_t brk = 0;
 void *malloc(size_t size) {
-  void *start = heap.start;
+  void *start = heap.start+brk;
   // page aligned 8 Byte;
   // size = ROUNDUP(size, 8);
   brk += size;
   // overflow may happen
   if((uintptr_t)heap.start + brk > (uintptr_t)heap.end) assert(0);
+// printf("malloc %d in %p\n", size, heap.start + brk);
   return start;
 }
 
