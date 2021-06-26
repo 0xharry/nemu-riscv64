@@ -29,16 +29,14 @@ int atoi(const char* nptr) {
   return x;
 }
 
-extern void *brk;
-extern const uintptr_t kHEAP_END;
+uintptr_t brk = 0;
 void *malloc(size_t size) {
-  void *start = brk;
-  // page aligned;
-  // size = (size + 7) & ~7;
+  void *start = heap.start;
+  // page aligned 8 Byte;
+  // size = ROUNDUP(size, 8);
   brk += size;
   // overflow may happen
-  if((uintptr_t)brk > kHEAP_END) return NULL;
-// printf("malloc %d in addr=%p\n", size, start);
+  if(heap.start + brk > heap.end) assert(0);
   return start;
 }
 

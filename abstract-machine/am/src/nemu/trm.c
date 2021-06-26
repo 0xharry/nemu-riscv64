@@ -6,8 +6,6 @@ extern char _heap_start;
 int main(const char *args);
 
 Area heap = RANGE(&_heap_start, PMEM_END);
-const uintptr_t kHEAP_END = PMEM_END;
-void *brk = &_heap_start;
 
 #ifndef MAINARGS
 #define MAINARGS ""

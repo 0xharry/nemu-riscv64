@@ -15,7 +15,7 @@ ASFLAGS += -fpie -pie
 
 image:
 	@echo + LD "->" $(IMAGE_REL)
-	@g++ -pie -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive -lSDL2
+	@g++ -g -pie -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive -lSDL2
 
 run: image
 	$(IMAGE)
