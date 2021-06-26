@@ -36,7 +36,8 @@ void *malloc(size_t size) {
   brk += ROUNDUP(size, 8);
   // overflow may happen
   if((uintptr_t)heap.start + brk > (uintptr_t)heap.end)
-    assert(0);
+    return NULL;
+    // assert(0);
   for(char *flush=start; flush != start+brk; ++flush)
     *flush=0;
 // printf("malloc %d in %p\n", size, heap.start + brk);
