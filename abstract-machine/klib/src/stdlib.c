@@ -40,7 +40,7 @@ void *malloc(size_t size) {
     // assert(0);
   for(char *flush=start; flush != start+brk; ++flush)
     *flush=0;
-printf("malloc %d in %p\n", ROUNDUP(size, 8), start);
+// printf("malloc %d in %p\n", ROUNDUP(size, 8), start);
   return start;
 }
 
