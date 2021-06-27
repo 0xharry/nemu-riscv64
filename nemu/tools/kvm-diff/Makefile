@@ -17,8 +17,8 @@ BINARY ?= $(BUILD_DIR)/$(ISA)-kvm-so
 CC = gcc
 LD = gcc
 INCLUDES  = $(addprefix -I, $(INC_DIR))
-CFLAGS   += -O2 -fPIC -MMD -Wall -Werror -DNEMU_HOME=$(NEMU_HOME) $(INCLUDES)
-
+CFLAGS   += -fPIC -MMD -Wall -Werror -DNEMU_HOME=$(NEMU_HOME) $(INCLUDES)
+# 上面去掉-O2	
 # Files to be compiled
 SRCS = $(shell find src/ -name "*.c")
 OBJS = $(SRCS:src/%.c=$(OBJ_DIR)/%.o)
@@ -40,7 +40,8 @@ app: $(BINARY)
 
 $(BINARY): $(OBJS)
 	@echo + LD $@
-	@$(LD) -O2 -rdynamic -shared -fPIC -o $@ $^
+	@$(LD) -rdynamic -shared -fPIC -o $@ $^
+# 上面去掉-O2	
 
 clean: 
 	-rm -rf $(BUILD_DIR)
