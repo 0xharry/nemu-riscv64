@@ -85,38 +85,67 @@ void* memset(void* v,int c,size_t n) {
   }
   return v;
 }
-
-/* 
- * memcpy - copy memory area
- * The  memcpy()  function  copies  n bytes from memory area  in to memory
- * out  out.  The memory areas must not overlap.  Use memmove(3)  if  the
- * memory areas do overlap.
- */
-void* memcpy(void* restrict_dst, const void* restrict_src, size_t n) {
-  char* p_out = restrict_dst;
-  while(n--){
-    *p_out++ = *(char*)restrict_src++;
+/* copy from Duan */
+void *memmove(void *dst, const void *src, size_t n) { 
+  char *d = (char *)dst;
+  char *s = (char *)src;
+  //无重叠
+  if ((dst >= src && src + n <= dst) || (dst <= src && dst + n <= src))
+  {
+    while (n--)
+      *d++ = *s++;
   }
-  return restrict_dst;
+  //重叠部分，第一个可以合并
+  else if (dst < src && dst + n > src)
+  {
+    while (n--)
+      *d++ = *s++;
+  }
+  else if (dst > src && src + n > dst)
+  {
+    char *dend = (char *)(dst + n - 1);
+    char *send = (char *)(src + n - 1);
+    while (n--)
+      *dend-- = *send--;
+  }
+
+  return dst; 
 }
 
-/* memmove - copy memory area
- * The  memmove()  function  copies n bytes from memory area src to memory
- * area dest.  The memory areas may overlap: copying takes place as though
- * the  bytes in src are first copied into a temporary array that does not
- * overlap src or dest, and the bytes are then copied from  the  temporary
- * array to dest.
- */
-void* memmove(void* dst,const void* src,size_t n) {
-  if((dst+n-src)*(dst-src+n)>0) {
-    memcpy(dst, src, n);
-    return dst;
-  }
-  char temp[n];
-  memcpy(temp, src, n);
-  memcpy(dst, temp, n);
-  return dst;
+void *memcpy(void *out, const void *in, size_t n) { 
+  return memmove(out, in, n);
 }
+// /* 
+//  * memcpy - copy memory area
+//  * The  memcpy()  function  copies  n bytes from memory area src to memory
+//  * area dest.  The memory areas must not overlap.  Use memmove(3)  if  the
+//  * memory areas do overlap.
+//  */
+// void* memcpy(void* restrict_dst, const void* restrict_src, size_t n) {
+//   char* p_out = restrict_dst;
+//   while(n--){
+//     *p_out++ = *(char*)restrict_src++;
+//   }
+//   return restrict_dst;
+// }
+
+// /* memmove - copy memory area
+//  * The  memmove()  function  copies n bytes from memory area src to memory
+//  * area dest.  The memory areas may overlap: copying takes place as though
+//  * the  bytes in src are first copied into a temporary array that does not
+//  * overlap src or dest, and the bytes are then copied from  the  temporary
+//  * array to dest.
+//  */
+// void* memmove(void* dst,const void* src,size_t n) {
+//   if((dst+n-src)*(dst-src+n)>0) {
+//     memcpy(dst, src, n);
+//     return dst;
+//   }
+//   char temp[n];
+//   memcpy(temp, src, n);
+//   memcpy(dst, temp, n);
+//   return dst;
+// }
 
 /* 
  * memcmp - compare memory areas
