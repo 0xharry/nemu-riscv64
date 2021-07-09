@@ -1,4 +1,9 @@
+#ifdef _KLIB_TEST_
+#include "../tests/klib_test.h"
+#else
 #include <klib.h>
+#endif
+
 #include <stdint.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
