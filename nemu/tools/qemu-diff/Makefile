@@ -18,7 +18,7 @@ BINARY ?= $(BUILD_DIR)/$(ISA)-qemu-so
 CC = gcc
 LD = gcc
 INCLUDES  = $(addprefix -I, $(INC_DIR))
-CFLAGS   += -fPIC -MMD -Wall -Werror -DNEMU_HOME=$(NEMU_HOME) $(INCLUDES) \
+CFLAGS   += -O2 -fPIC -MMD -Wall -Werror -DNEMU_HOME=$(NEMU_HOME) $(INCLUDES) \
             -D_ISA_H_=\"isa/$(ISA).h\"
 # 上面去掉-O2	
 
@@ -44,7 +44,7 @@ app: $(BINARY)
 
 $(BINARY): $(OBJS)
 	@echo + LD $@
-	@$(LD) -rdynamic -shared -fPIC -o $@ $^
+	@$(LD) -O2 -rdynamic -shared -fPIC -o $@ $^
 # 上面去掉-O2	
 
 
