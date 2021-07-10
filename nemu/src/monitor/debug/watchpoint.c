@@ -68,7 +68,14 @@ void wp_free(WP *wp)
   printf("No action, watchpoint not found");
   assert(0);
 }
-
+/* ~~~ */
+static inline void helper(char* dst,const char* src) {
+  if(dst == NULL || src == NULL) return;
+  char* p_dst = dst;
+  const char* p_src = src;
+  while((bool)(*p_dst++ = *p_src++));
+}
+/* ~~~ */
 bool wp_set(char* input_expr)
 {
   int state;
@@ -89,7 +96,7 @@ bool wp_set(char* input_expr)
     printf("malloc for expression failed\n");
     return false;
   }
-  strcpy(wp_expr, input_expr);
+  helper(wp_expr, input_expr);
   wp->expr = wp_expr;
   wp->pre_state_val = expr_val;
   return true;
