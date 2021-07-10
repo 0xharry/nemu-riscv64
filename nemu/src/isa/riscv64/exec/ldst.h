@@ -1,5 +1,5 @@
 static inline def_EHelper(ld) {
-  rtl_lms(s, ddest, dsrc1, id_src2->simm, s->width); // id_src2->imm
+  rtl_lms(s, ddest, dsrc1, id_src2->imm, s->width); // id_src2->imm
 
   print_Dop(id_src1->str, OP_STR_SIZE, "%ld(%s)", id_src2->imm, reg_name(id_src1->reg));
   switch (s->width) {
@@ -24,7 +24,7 @@ static inline def_EHelper(ldu) {
 }
 
 static inline def_EHelper(st) {
-  rtl_sm(s, dsrc1, id_src2->simm, ddest, s->width); // id_src2->imm
+  rtl_sm(s, dsrc1, id_src2->imm, ddest, s->width); // id_src2->imm
 
   print_Dop(id_src1->str, OP_STR_SIZE, "%ld(%s)", id_src2->imm, reg_name(id_src1->reg));
   switch (s->width) {
