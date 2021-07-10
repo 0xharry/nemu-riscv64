@@ -68,7 +68,7 @@ void wp_free(WP *wp)
   printf("No action, watchpoint not found");
   assert(0);
 }
-/* ~~~ */
+/* ~~ this is "strcpy()" ~~ */
 static inline void helper(char* dst,const char* src) {
   if(dst == NULL || src == NULL) return;
   char* p_dst = dst;
