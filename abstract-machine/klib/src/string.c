@@ -112,14 +112,21 @@ void* memcpy(void* restrict_dst, const void* restrict_src, size_t n) {
  * overlap src or dest, and the bytes are then copied from  the  temporary
  * array to dest.
  */
+void mv_helper(void* restrict_dst, const void* restrict_src, size_t n) {
+  char* p_out = restrict_dst;
+  while(n--){
+    *p_out++ = *(char*)restrict_src++;
+  }
+}
+
 void* memmove(void* dst,const void* src,size_t n) {
   if((dst+n-src)*(dst-src+n)>0) {
-    memcpy(dst, src, n);
+    mv_helper(dst, src, n);
     return dst;
   }
   char temp[n];
-  memcpy(temp, src, n);
-  memcpy(dst, temp, n);
+  mv_helper(temp, src, n);
+  mv_helper(dst, temp, n);
   return dst;
 }
 
