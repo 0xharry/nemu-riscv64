@@ -35,7 +35,7 @@ enum BASE {HEX=16, DEC=10};
 
 #define print_pointer()\
   word_count += 2; *out++='0'; *out++='x';\
-  temp = print_num(out, va_arg(p_fmt, void*), HEX, false);\
+  temp = print_num(out, (unsigned long)va_arg(p_fmt, void*), HEX, false);\
   word_count+=temp; out += temp;
 
 #define print_string();\
