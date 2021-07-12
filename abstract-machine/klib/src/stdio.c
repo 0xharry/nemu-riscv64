@@ -19,13 +19,13 @@ static inline bool isdigit(char c) {
 
 static inline int sputstr(char *out, const char *s) {
   int i=0;
-  for (; s[i] != NULL; ++i) out[i]=s[i];
+  for (; s[i] != '\0'; ++i) out[i]=s[i];
   return i;
 }
 
 static inline int snputstr(char *out, const char *s, size_t n) {
   int i=0;
-  for (; (s[i] != NULL) && (n--); ++i) out[i]=s[i];
+  for (; (s[i] != '\0') && (n--); ++i) out[i]=s[i];
   return i;
 }
 
