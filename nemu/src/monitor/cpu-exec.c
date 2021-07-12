@@ -84,10 +84,10 @@ void cpu_exec(uint64_t n) {
     difftest_step(this_pc, cpu.pc);
 
     g_nr_guest_instr ++;
+    asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
 #ifdef DEBUG
     // printf("cpu.pc = 0x%lx\t", cpu.pc);
-    asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
     /* check watchpoints here. */
 #include "/home/harry/ics2020/nemu/src/monitor/debug/watchpoint.h"
