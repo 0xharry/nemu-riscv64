@@ -1,20 +1,21 @@
 
 #ifdef _KLIB_TEST_
 #include "../tests/klib_test.h"
+#include "../include/klib-macros.h"
 #else
 #include <am.h>
 #include <klib.h>
-#endif
-
 #include <klib-macros.h>
 #include <stdarg.h>
+#endif
+
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 // formatted output conversion
 
 /*------------------ function helper ----------------------------*/
 static inline bool isdigit(char c) {
-  return ((c >= '0') && (c <= '9'));
+  return (bool)((c >= '0') && (c <= '9'));
 }
 
 static inline int sputstr(char *out, const char *s) {
@@ -33,6 +34,7 @@ static char num_buf[SIZE_NUM_BUF];
 static char num2char[] = "0123456789abcdef";
 static int field_width;
 static bool zero_padding;
+static bool negtive_sign;
 static int print_num(char *out, unsigned long val, unsigned base, bool neg_sign) {
   int word_count=0;
   int length=0;
@@ -42,23 +44,27 @@ static int print_num(char *out, unsigned long val, unsigned base, bool neg_sign)
     num_buf[length++] = num2char[val%base];
     val /= base;
   }while (val);
+  num_buf[length] = '\0';
 
   // print length with padding
   if(field_width > length) {
-    if(zero_padding)
-      pad_with = '0';
-    else
-      pad_with = ' ';
-    
+    if(zero_padding) { pad_with = '0'; zero_padding=0;}
+    else             { pad_with = ' '; }
+
     int pad_len = field_width-length;
     word_count += pad_len;
+    field_width=0;
+
     while(--pad_len)
       *out++ = pad_with;
 
-    if(neg_sign)
-      *out++ = '-';
-    else
-      *out++ = pad_with;
+    if(neg_sign)    { *out++ = '-'; neg_sign=0;}
+    else            { *out++ = pad_with;}
+  }
+
+  if(neg_sign) {
+    *out++ = '-';
+    ++word_count;
   }
 
   // print num_buf to 'out'
@@ -94,18 +100,26 @@ static int print_num(char *out, unsigned long val, unsigned base, bool neg_sign)
 int vsprintf(char *out, const char *fmt, va_list p_fmt) {
   // if(out == NULL) return 0;
   int word_count=0;
+  int temp=0;
   long number=0;
   field_width=0;
   zero_padding=0;
   char fmt_c=0;
-  while (*fmt != '\0') {
+
+  for (;;) {
     while (*fmt != '%') {
+      if(*fmt == '\0') {
+        *out = '\0';
+        ++word_count;
+        return word_count;
+      }
       *out++ = *fmt++;
       ++word_count;
     }
-    ++fmt;
 
-    fmt_c = *fmt++;
+    // (fmt == %) now
+    fmt_c = *(++fmt); ++fmt;
+
     // zero-padding
     if(fmt_c == '0') {
       zero_padding = 1;
@@ -120,7 +134,7 @@ int vsprintf(char *out, const char *fmt, va_list p_fmt) {
       }
 
     // print fomarts
-    switch (*fmt++) {
+    switch (fmt_c) {
     case 'u': print_unsigned(DEC); break;
     case 'd': print_signed(DEC);   break;
     case 'x': print_signed(HEX);   break;
@@ -147,6 +161,7 @@ int sprintf(char *out, const char *fmt, ...) {
 }
 
 static char ostream[OSTREAM_SIZE];
+#ifndef _KLIB_TEST_
 int printf(const char *fmt, ...) {
   va_list p_fmt; 
   va_start(p_fmt, fmt);
@@ -155,7 +170,7 @@ int printf(const char *fmt, ...) {
   putstr(ostream);
   return ret;
 }
-
+#endif
 /* -------------------------- n printf() -------------------------------*/
 
 /* 
@@ -175,7 +190,18 @@ int snprintf(char *out, size_t n, const char *fmt, ...) {
   int ret = vsprintf(ostream, fmt, p_fmt);
   va_end(p_fmt);
   memcpy(out, ostream, n);
+  out[n-1] = '\0';
   return ret>n? n: ret;
 }
 
+#ifdef _KLIB_TEST_
+int kprintf(const char *fmt, ...) {
+  va_list p_fmt; 
+  va_start(p_fmt, fmt);
+  int ret = vsprintf(ostream, fmt, p_fmt);
+  va_end(p_fmt);
+  putstr(ostream);
+  return ret;
+}
+#endif
 #endif

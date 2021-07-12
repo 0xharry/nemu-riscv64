@@ -12,9 +12,10 @@
 #define _CONCAT(x, y)       x ## y
 #define CONCAT(x, y)        _CONCAT(x, y)
 
+#ifdef _KLIB_TEST_
 #define putstr(s) \
-  ({ for (const char *p = s; *p; p++) putch(*p); })
-
+  ({ for (const char *p = s; *p; p++) putchar(*p); })
+#endif
 
 #define OSTREAM_SIZE 1024
 #define SIZE_NUM_BUF sizeof(long int)*8
@@ -22,18 +23,24 @@ enum BASE {HEX=16, DEC=10};
 
 /* ------------------------ helper of vsprintf -------------------------*/
 #define print_unsigned(base) \
-  word_count+=print_num(out, va_arg(p_fmt, unsigned long), base, false);
+  temp = print_num(out, va_arg(p_fmt, unsigned long), base, false);\
+  word_count+=temp; out += temp;
 
 #define print_signed(base) \
-  number = va_arg(p_fmt, long); if(number<0) {number = -number;}\
-  word_count+=print_num(out, number, base, true);
+  number = va_arg(p_fmt, int);\
+  if(number<0)  { number = -number; negtive_sign = true; }\
+  else          { negtive_sign = false; }\
+  temp = print_num(out, number, base, negtive_sign);\
+  word_count+=temp; out += temp;
 
 #define print_pointer()\
   word_count += 2; *out++='0'; *out++='x';\
-  print_signed(HEX);
+  temp = print_num(out, va_arg(p_fmt, void*), HEX, false);\
+  word_count+=temp; out += temp;
 
 #define print_string();\
-  word_count += sputstr(out, va_arg(p_fmt, char*));
+  temp = sputstr(out, va_arg(p_fmt, char*));\
+  word_count+=temp; out += temp;
 
 #define print_char();\
   *out++=va_arg(p_fmt, int); ++word_count;
@@ -41,6 +48,9 @@ enum BASE {HEX=16, DEC=10};
 
 
 #ifndef _KLIB_TEST_
+#define putstr(s) \
+  ({ for (const char *p = s; *p; p++) putch(*p); })
+
 #define io_read(reg) \
   ({ reg##_T __io_param; \
     ioe_read(reg, &__io_param); \

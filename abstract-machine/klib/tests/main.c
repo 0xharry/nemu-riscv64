@@ -13,7 +13,7 @@ int main() {
 
 
 char *STR_NUM[] = {"1", "2147483647", "-1", "321", "-12", "0", "-2147483648"};
-int   INT_NUM[] = { 1,   2147483647,   -1,   321,   -12,   0,   -2147483648};
+long  INT_NUM[] = { 1,   2147483647,   -1,   321,   -12,   0,   -2147483648};
 void test_stdlib() {
     int i, loop_size;
     // atoi
@@ -33,20 +33,21 @@ void test_stdlib() {
 //     memset(buffer,-1,loop_size);
 // }
 
-char buffer[128];
+
 void test_stdio() {
+    char buffer[128];
+    char temp[128];
     int passed=0;
     int case_num=7;
-    for(passed=0; passed==case_num; ++passed) {
+    for(passed=0; passed<case_num; ++passed) {
         sprintf(buffer, "%dhello\n", INT_NUM[passed]);
-        assert(!strcmp(&STR_NUM[passed], strcat(buffer, "hello\n")));
-        // memset(buffer, 0, 128);
+        assert(!strcmp(buffer, strcat(strcpy(temp,STR_NUM[passed]), "hello\n")));
     }
-    sprintf(buffer, "gsfjd%08dsss%s %p%x %8d ?", 8, " padding ", (void *)32, 32, -2);
-    assert(!strcmp(buffer, "gsfjd00000008sss padding  0x2020       -2 ?"));
-    printf("%s\n",buffer);
-    
+    sprintf(buffer, "gsfjd%08dsss%s %p%x %8d ?", 8, " padding ", (void *)302, 32, -2);
+    assert(!strcmp(buffer, "gsfjd00000008sss padding  0x12e20       -2 ?"));
+    kprintf("%s\n",buffer);
+
     snprintf(buffer, 41, "gsfjd%08dsss%s %p%x %8d ?", 8, " padding ", (void *)32, 32, -2);
     assert(!strcmp(buffer, "gsfjd00000008sss padding  0x2020       -"));
-    printf("%s\n",buffer);
+    kprintf("%s\n",buffer);
 }

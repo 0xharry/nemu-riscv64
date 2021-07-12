@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <stdbool.h>
 
 // string.h
 void  *memset    (void *s, int c, size_t n);
@@ -22,7 +23,7 @@ int    atoi      (const char *nptr);
 // void   free      (void *ptr);
 
 // stdio.h
-// int    printf    (const char *format, ...);
+int    kprintf    (const char *format, ...);
 int    sprintf   (char *str, const char *format, ...);
 int    snprintf  (char *str, size_t size, const char *format, ...);
 int    vsprintf  (char *str, const char *format, va_list ap);
