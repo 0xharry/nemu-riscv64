@@ -12,6 +12,7 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 // formatted output conversion
 
+/*------------------ function helper ----------------------------*/
 static inline bool isdigit(char c) {
   return ((c >= '0') && (c <= '9'));
 }
@@ -68,6 +69,8 @@ static int print_num(char *out, unsigned long val, unsigned base, bool neg_sign)
 
   return word_count;
 }
+/*------------------ function helper ----------------------------*/
+
 
 /* 
  * The  functions  vprintf(),  vfprintf(),  vdprintf(),  vsprintf(),   vs‐
@@ -110,12 +113,11 @@ int vsprintf(char *out, const char *fmt, va_list p_fmt) {
     }
 
     // field width
-    if(isdigit(fmt_c)) {
+    if(isdigit(fmt_c))
       while (isdigit(fmt_c)) {
         field_width = 10*field_width + fmt_c - '0';
         fmt_c = *fmt++;
       }
-    }
 
     // print fomarts
     switch (*fmt++) {
