@@ -46,7 +46,7 @@ void *malloc(size_t size) {
   if((uintptr_t)heap.start + brk_klib > (uintptr_t)heap.end)
     return NULL;
 
-  for(char *flush=start; flush != start+brk_klib; ++flush)
+  for(char *flush=start; (uintptr_t)flush < (uintptr_t)(start+brk_klib); ++flush)
     *flush=0;
 // printf("malloc %d in %p\n", ROUNDUP(size, 8), start);
   return start;
