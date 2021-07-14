@@ -99,7 +99,6 @@ void* memset(void* v,int c,size_t n) {
  */
 #define SZ_LONG sizeof(long)
 void* memcpy(void* restrict_dst, const void* restrict_src, size_t n) {
-  // char* p_out = restrict_dst;
   int i;
   int rem = n%SZ_LONG;
   n/=SZ_LONG;
@@ -109,6 +108,9 @@ void* memcpy(void* restrict_dst, const void* restrict_src, size_t n) {
   for(; i<n+rem; ++i) {
     ((char*)restrict_dst)[i] = ((char*)restrict_src)[i];
   }
+  // for(int i=0; i<n; ++i) {
+  //   ((char*)restrict_dst)[i] = ((char*)restrict_src)[i];
+  // }
   return restrict_dst;
 }
 
