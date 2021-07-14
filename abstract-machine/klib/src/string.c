@@ -98,9 +98,9 @@ void* memset(void* v,int c,size_t n) {
  * memory areas do overlap.
  */
 void* memcpy(void* restrict_dst, const void* restrict_src, size_t n) {
-  char* p_out = restrict_dst;
-  while(n--){
-    *p_out++ = *(char*)restrict_src++;
+  // char* p_out = restrict_dst;
+  for(int i=0; i<n; ++i) {
+    ((char*)restrict_dst)[i] = ((char*)restrict_src)[i];
   }
   return restrict_dst;
 }
