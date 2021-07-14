@@ -102,10 +102,11 @@ void* memcpy(void* restrict_dst, const void* restrict_src, size_t n) {
   // char* p_out = restrict_dst;
   int i;
   int rem = n%SZ_LONG;
-  for(i=0; i<n; i+=SZ_LONG) {
+  n/=SZ_LONG;
+  for(i=0; i<n; ++i) {
     ((long*)restrict_dst)[i] = ((long*)restrict_src)[i];
   }
-  for(i=rem; i<n; ++i) {
+  for(; i<n+rem; ++i) {
     ((char*)restrict_dst)[i] = ((char*)restrict_src)[i];
   }
   return restrict_dst;
