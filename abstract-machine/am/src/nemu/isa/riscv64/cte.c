@@ -25,9 +25,11 @@ extern void __am_asm_trap(void);
 // 调用这个回调函数, 交由操作系统进行后续处理.
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
+  // 设置异常入口地址: 将异常入口地址设置到stvec寄存器
   asm volatile("csrw stvec, %0" : : "r"(__am_asm_trap));
 
-  // register event handler
+  // register event handler 
+  // 注册一个事件处理回调函数, 由Nanos-lite提供
   user_handler = handler;
 
   return true;
