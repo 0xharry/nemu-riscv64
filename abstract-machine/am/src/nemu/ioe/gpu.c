@@ -42,7 +42,7 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
     // for(int bias=0; bias<pixels_w; ++bias) {
     //   outl(FB_ADDR + (y + j) * W + x + bias, pixels[bias]);
     // }
-      memcpy(&fb[(y + j) * W + x], pixels, pixels_w);
+    memcpy(&fb[(y + j) * W + x], pixels, pixels_w); // need to be modified
     pixels += w;
   }
   outl(SYNC_ADDR, 1);

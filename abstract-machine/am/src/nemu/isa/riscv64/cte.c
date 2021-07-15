@@ -21,6 +21,8 @@ Context* __am_irq_handle(Context *c) {
 
 extern void __am_asm_trap(void);
 
+// 进行CTE相关的初始化操作, CTE将会把事件和相关的上下文作为参数,
+// 调用这个回调函数, 交由操作系统进行后续处理.
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
   asm volatile("csrw stvec, %0" : : "r"(__am_asm_trap));
