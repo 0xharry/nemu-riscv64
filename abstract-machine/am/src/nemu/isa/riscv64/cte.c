@@ -9,8 +9,8 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
 ///////////////////////////////////////
     for(int i=0; i<32; ++i)
-      printf("%ux ", c->gpr[i]);
-    printf("\n%ux,%ux,%ux\n", c->cause, c->status, c->epc);
+      printf("%p ", c->gpr[i]);
+    printf("\n%p,%p,%p\n", c->cause, c->status, c->epc);
 //////////////////////////////////////
     Event ev = {0};
     switch (c->cause) {
