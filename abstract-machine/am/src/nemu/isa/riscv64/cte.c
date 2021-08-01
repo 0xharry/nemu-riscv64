@@ -22,7 +22,8 @@ Context* __am_irq_handle(Context *c) {
 extern void __am_asm_trap(void);
 
 // 进行CTE相关的初始化操作, CTE将会把事件和相关的上下文作为参数,
-// 调用这个回调函数, 交由操作系统进行后续处理.
+// 接受一个来自操作系统的事件处理回调函数的指针
+// (当发生事件时, CTE将会把事件和相关的上下文作为参数, 调用这个回调函数, 交由操作系统进行后续处理.)
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
   // 设置异常入口地址: 将异常入口地址设置到stvec寄存器

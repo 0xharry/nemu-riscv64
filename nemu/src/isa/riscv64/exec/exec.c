@@ -66,6 +66,25 @@ static inline def_EHelper(I_type_b) {
   }
 }
 
+// static inline def_EHelper(ecall_ebreak) {
+//   switch (id_src2->imm) {
+//     EX(0, ecall)
+//     EX(1, ebreak)
+//     default: exec_inv(s);
+//   }
+// }
+static inline def_EHelper(I_type_csr) {
+  switch (s->isa.instr.i.funct3) {
+//    EX(0b000, ecall)
+    // EX(0b001, csrrw)
+//    EX(0b010, csrrs)
+    // EX(0b011, csrrc)
+    // EX(0b101, csrrwi)
+    // EX(0b110, cssrrsi)
+    // EX(0b111, csrrci)
+    default: exec_inv(s);
+  }
+}
 
 static inline def_EHelper(B_type) {
   switch (s->isa.instr.b.funct3) {
@@ -187,6 +206,7 @@ static inline void fetch_decode_exec(DecodeExecState *s) {
     IDEX (0b00000, I, load)  // case 0b00000: set_width(s, 0); decode_I(s); exec_load(s); break;
     IDEX (0b00100, I, I_type_a)  // case 0b00000: set_width(s, 0); decode_I(s); exec_I_type_a(s); //second decode; break;
     IDEX (0b00110, I, I_type_b)
+    IDEX (0b11100, I, I_type_csr)
     IDEX (0b01100, R, R_type_a)
     IDEX (0b01110, R, R_type_b)
     IDEX (0b11000, B, B_type)
