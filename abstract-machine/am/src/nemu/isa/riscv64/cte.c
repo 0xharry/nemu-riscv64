@@ -10,7 +10,7 @@ Context* __am_irq_handle(Context *c) {
 ///////////////////////////////////////
     for(int i=0; i<32; ++i)
       printf("%p ", c->gpr[i]);
-    printf("\n%p,%ul,%p\n", c->cause, c->status, c->epc);
+    printf("\n%p,%x,%p\n", c->cause, c->status, c->epc);
 //////////////////////////////////////
     Event ev = {0};
     switch (c->cause) {
