@@ -75,9 +75,9 @@ static inline def_EHelper(I_type_b) {
 // }
 static inline def_EHelper(I_type_csr) {
   switch (s->isa.instr.i.funct3) {
-//    EX(0b000, ecall)
+   EX(0b000, ecall)
     // EX(0b001, csrrw)
-//    EX(0b010, csrrs)
+   EX(0b010, csrrs) // csrw
     // EX(0b011, csrrc)
     // EX(0b101, csrrwi)
     // EX(0b110, cssrrsi)

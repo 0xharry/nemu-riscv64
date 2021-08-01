@@ -9,9 +9,9 @@ void raise_intr(DecodeExecState *s, word_t NO, vaddr_t epc) {
 // 在 scause 寄存器中设置异常号--NO
 // 从 stvec 寄存器中取出异常入口地址
 // 跳转到异常入口地址-- j (stvec)
-
-  // rtl_j(s, );
-  TODO();
+  cpu.csr.sepc = cpu.pc;
+  cpu.csr.scause = NO;
+  rtl_j(s, cpu.csr.stvec);
 }
 
 void query_intr(DecodeExecState *s) {

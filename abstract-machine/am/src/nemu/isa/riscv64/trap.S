@@ -22,7 +22,7 @@ f(30) f(31)
 __am_asm_trap:
   addi sp, sp, -CONTEXT_SIZE
 
-  MAP(REGS, PUSH)
+  MAP(REGS, PUSH) # REGS(PUSH) # sd x1, 1*8(sp) .. sd x31, 8*31(sp)
 
   mv t0, sp
   addi t0, t0, CONTEXT_SIZE

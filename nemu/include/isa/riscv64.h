@@ -7,6 +7,33 @@
 #define riscv64_IMAGE_START 0x100000
 #define riscv64_PMEM_BASE 0x80000000
 
+// Control and Status Registers
+typedef struct {
+  vaddr_t sepc;
+  uintptr_t scause;
+  vaddr_t stvec;
+  union {
+    struct {
+      uint32_t UIE   : 1;
+      uint32_t SIE   : 1;
+      uint32_t NOP1  : 2;
+      uint32_t UPIE  : 1;
+      uint32_t SPIE  : 1;
+      uint32_t NOP2  : 2;
+      uint32_t SPP   : 1;
+      uint32_t NOP3  : 4;
+      uint32_t FS    : 2;
+      uint32_t XS    : 2;
+      uint32_t NOP4  : 1;
+      uint32_t SUM   : 1;
+      uint32_t MXR   : 1;
+      uint32_t XLEN2 :21;
+      uint32_t XLEN1 : 1;
+    } bit;
+    uint32_t val;
+  } sstatus;
+} CSR;
+
 // reg
 typedef struct {
   union {
@@ -14,6 +41,7 @@ typedef struct {
   } gpr[32]; // 32个通用register
 
   vaddr_t pc;
+  CSR csr;
 } riscv64_CPU_state;
 
 // decode

@@ -17,6 +17,8 @@
 #define EX(idx, ex)           EXW(idx, ex, 0)
 #define EMPTY(idx)            EX(idx, inv)
 
+void raise_intr(DecodeExecState *s, word_t NO, vaddr_t epc);
+
 // set_width() is defined in src/isa/$isa/exec/exec.c
 #define CASE_ENTRY(idx, id, ex, w) case idx: set_width(s, w); id(s); ex(s); break;
 
