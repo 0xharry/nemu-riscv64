@@ -20,7 +20,7 @@ f(30) f(31)
 
 .globl __am_asm_trap
 __am_asm_trap:
-  addi sp, sp, -CONTEXT_SIZE
+  addi sp, sp, -CONTEXT_SIZE # creat a struct Context
 
   MAP(REGS, PUSH) # REGS(PUSH) # sd x1, 1*8(sp) .. sd x31, 8*31(sp)
 
