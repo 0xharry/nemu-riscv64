@@ -2,8 +2,8 @@
 #define ARCH_H__
 
 struct Context {
-  uintptr_t gpr[32], cause, status, epc;
   void *pdir;
+  uintptr_t gpr[32], cause, status, epc;
 };
 
 #define GPR1 gpr[17] // a7
@@ -13,3 +13,16 @@ struct Context {
 #define GPRx gpr[0]
 
 #endif
+
+/*
+  -> CONTEXT_SIZE
+.
+.
+.
+sp-> 0
+
+t0, scause
+t1, sstatus
+t2, sepc
+
+*/
