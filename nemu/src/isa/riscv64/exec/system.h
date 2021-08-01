@@ -13,7 +13,7 @@ case num: *ddest = cpu.csr.str;        \
 
 static inline def_EHelper(csrrs) {
   switch (id_src2->imm) {
-    // CASE_CSR_DO(0x100,sstatus)
+    CASE_CSR_DO_s(0x100,sstatus.val)
     CASE_CSR_DO_s(0x105,stvec)
     CASE_CSR_DO_s(0x141,sepc)
     CASE_CSR_DO_s(0x142,scause)
@@ -25,7 +25,7 @@ static inline def_EHelper(csrrs) {
 
 static inline def_EHelper(csrrw) {
   switch (id_src2->imm) {
-    // CASE_CSR_DO(0x100,sstatus)
+    CASE_CSR_DO_w(0x100,sstatus.val)
     CASE_CSR_DO_w(0x105,stvec)
     CASE_CSR_DO_w(0x141,sepc)
     CASE_CSR_DO_w(0x142,scause)
