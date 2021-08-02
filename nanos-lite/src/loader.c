@@ -13,10 +13,15 @@ extern size_t ramdisk_read(void *buf, size_t offset, size_t len);
 extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 extern size_t get_ramdisk_size();
 
+static char* header_buffer[sizeof(Elf_Ehdr)];
+static Elf_Ehdr* elf_header;
+static size_t elf_offset;
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  // ramdisk_read();
-  // ramdisk_write();
-  return 0;
+// read ELF header, start at ${ramdisk_start}
+  elf_offset = ramdisk_read(header_buffer, 0, sizeof(Elf_Ehdr));
+  elf_header = (Elf_Ehdr*)header_buffer;
+  assert(*(uint32_t *)elf_header->e_ident == 0x464c457f);
+  return elf_header->e_entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
