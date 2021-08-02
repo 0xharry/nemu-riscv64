@@ -10,7 +10,7 @@
 #endif
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
-  printf("hello?\n");
+  TODO();
   return 0;
 }
 
