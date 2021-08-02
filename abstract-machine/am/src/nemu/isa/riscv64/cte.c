@@ -7,11 +7,11 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
-///////////////////////////////////////
-    for(int i=0; i<32; ++i)
-      printf("%p ", c->gpr[i]);
-    printf("\n%p,%x,%p\n", c->cause, c->status, c->epc);
-//////////////////////////////////////
+// ///////////////////////////////////////
+//     for(int i=0; i<32; ++i)
+//       printf("%p ", c->gpr[i]);
+//     printf("\n%p,%x,%p\n", c->cause, c->status, c->epc);
+// //////////////////////////////////////
     Event ev = {0};
     switch (c->cause) {
       default: ev.event = EVENT_ERROR; break;

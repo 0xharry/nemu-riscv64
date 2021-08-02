@@ -13,16 +13,3 @@ struct Context {
 #define GPRx gpr[0]
 
 #endif
-
-/*
-  -> CONTEXT_SIZE
-.
-.
-.
-sp-> 0
-
-t0, scause
-t1, sstatus
-t2, sepc
-
-*/
