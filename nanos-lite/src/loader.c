@@ -32,7 +32,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   // for(int i=0; i<elf_header->e_phnum; ++i, pgm_header+=elf_header->e_shentsize){
     
   // }
-  
+  Log("yes, indeed");
   return elf_header->e_entry;
 }
 
