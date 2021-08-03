@@ -37,14 +37,12 @@ static inline def_EHelper(csrrw) {
 // RaiseException(EnvironmentCall)
 static inline def_EHelper(ecall) {
   raise_intr(s, 1, 0);
-// // back to next instruction
-//   s->is_jmp = false;
-//   cpu.pc = cpu.csr.sepc;
   print_asm_template1(ecall);
 }
 
 // ExceptionReturn(Supervisor)
 static inline def_EHelper(sret) {
+  Log("sret");
   assert(s->is_jmp == false);
   cpu.pc = cpu.csr.sepc;
   print_asm_template1(sret);
