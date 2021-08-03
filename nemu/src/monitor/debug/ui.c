@@ -214,9 +214,9 @@ static int cmd_help(char *args) {
 
 void ui_mainloop() {
   if (is_batch_mode()) {
-    // printf("BATCH MODE, remember to use \"cmd_c\"\n");
-    cpu_exec(-1);
-    return;
+    printf("BATCH MODE, remember to use \"cmd_c\"\n");
+    // cpu_exec(-1);
+    // return;
   }
 
   for (char *str; (str = rl_gets()) != NULL; ) {
