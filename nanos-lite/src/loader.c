@@ -60,7 +60,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
                     pgm_header->p_memsz);
     }
   }
-  return 0;//elf_header->e_entry;
+  Log("jump to %p", elf_header->e_entry);
+  return elf_header->e_entry;
 }
 
 void naive_uload(PCB *pcb, const char *filename) {
