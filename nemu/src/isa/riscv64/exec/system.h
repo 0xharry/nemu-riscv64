@@ -36,13 +36,13 @@ static inline def_EHelper(csrrw) {
 
 // RaiseException(EnvironmentCall)
 static inline def_EHelper(ecall) {
-  raise_intr(s, 1, 0);
+  raise_intr(s, 9, 0);
   print_asm_template1(ecall);
 }
 
 // ExceptionReturn(Supervisor)
 static inline def_EHelper(sret) {
   Log("sret to %p", (void*)cpu.csr.sepc);
-  rtl_j(s, cpu.csr.sepc+4);
+  rtl_j(s, cpu.csr.sepc);
   print_asm_template1(sret);
 }
