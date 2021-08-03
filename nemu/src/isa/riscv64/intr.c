@@ -8,6 +8,7 @@ void raise_intr(DecodeExecState *s, word_t NO, vaddr_t epc) {
   cpu.csr.scause = NO;
 // 从 stvec 寄存器中取出异常入口地址
 // 跳转到异常入口地址-- j (stvec)
+  Log("cpu.csr.scause=%ld\tcpu.csr.sepc=%p\n",cpu.csr.scause,(void*)cpu.csr.sepc);
   rtl_j(s, cpu.csr.stvec);
 }
 

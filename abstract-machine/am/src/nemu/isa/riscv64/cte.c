@@ -17,8 +17,9 @@ Context* __am_irq_handle(Context *c) {
       // case EVENT_IRQ_IODEV: break;
       default: ev.event = c->cause; break;
     }
-
+    printf("Context:cause=%d\tepc=%p\n",c->cause,c->epc);
     c = user_handler(ev, c);
+    printf("Context:cause=%d\tepc=%p\n",c->cause,c->epc);
     assert(c != NULL);
   }
 
