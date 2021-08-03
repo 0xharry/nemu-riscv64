@@ -10,6 +10,9 @@ void raise_intr(DecodeExecState *s, word_t NO, vaddr_t epc) {
 // 跳转到异常入口地址-- j (stvec)
   Log("cpu.csr.sepc=%p",(void*)cpu.csr.sepc);
   rtl_j(s, cpu.csr.stvec);
+// // jump to next instruction
+//   s->is_jmp = false;
+//   cpu.pc = cpu.csr.sepc;
 }
 
 void query_intr(DecodeExecState *s) {
