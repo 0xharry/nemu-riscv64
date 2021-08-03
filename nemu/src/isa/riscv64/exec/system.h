@@ -42,8 +42,7 @@ static inline def_EHelper(ecall) {
 
 // ExceptionReturn(Supervisor)
 static inline def_EHelper(sret) {
-  Log("sret");
-  assert(s->is_jmp == false);
+  Log("sret to %p", (void*)cpu.csr.sepc);
   cpu.pc = cpu.csr.sepc;
   print_asm_template1(sret);
 }
