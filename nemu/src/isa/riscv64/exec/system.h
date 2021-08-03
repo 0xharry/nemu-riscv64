@@ -42,3 +42,10 @@ static inline def_EHelper(ecall) {
 //   cpu.pc = cpu.csr.sepc;
   print_asm_template1(ecall);
 }
+
+// ExceptionReturn(Supervisor)
+static inline def_EHelper(sret) {
+  assert(s->is_jmp == false);
+  cpu.pc = cpu.csr.sepc;
+  print_asm_template1(sret);
+}

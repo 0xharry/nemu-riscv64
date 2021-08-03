@@ -66,16 +66,17 @@ static inline def_EHelper(I_type_b) {
   }
 }
 
-// static inline def_EHelper(ecall_ebreak) {
-//   switch (id_src2->imm) {
-//     EX(0, ecall)
-//     EX(1, ebreak)
-//     default: exec_inv(s);
-//   }
-// }
+static inline def_EHelper(ecall_sret) {
+  switch (id_src2->imm) {
+    EX(0, ecall)
+    // EX(1, ebreak)
+    EX(0b000100000010, sret)
+    default: exec_inv(s);
+  }
+}
 static inline def_EHelper(I_type_csr) {
   switch (s->isa.instr.i.funct3) {
-    EX(0b000, ecall)
+    EX(0b000, ecall_sret)
     EX(0b001, csrrw)
     EX(0b010, csrrs) // csrw
     // EX(0b011, csrrc)
