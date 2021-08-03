@@ -6,8 +6,6 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
-  printf("&c=%p\n&c->gpr[1]=%p\nc->cause=%p\n", c, &c->gpr[1], &c->cause);
-  printf("Context:cause=%d\tepc=%p\tstatus=%d\n",c->cause,c->epc,c->status);
   if (user_handler) {
     Event ev = {0};
     switch (c->cause) {
@@ -19,9 +17,13 @@ Context* __am_irq_handle(Context *c) {
       // case EVENT_IRQ_IODEV: break;
       default: ev.event = c->cause; break;
     }
+#ifdef DEBUG
+    printf("&c=%p\n&c->gpr[1]=%p\nc->cause=%p\n", c, &c->gpr[1], &c->cause);
+    printf("Context:cause=%d\tepc=%p\tstatus=%d\n",c->cause,c->epc,c->status);
     for(int i=0;i<31;++i){
       printf("%p\n",c->gpr[i]);
     }
+#endif
     c = user_handler(ev, c);
     assert(c != NULL);
   }
