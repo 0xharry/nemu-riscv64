@@ -10,12 +10,12 @@ Context* __am_irq_handle(Context *c) {
     Event ev = {0};
     switch (c->cause) {
       // case EVENT_NULL: break;
-      // case EVENT_YIELD: break;
+      case EVENT_YIELD:   ev.event = EVENT_YIELD;   break;
       case EVENT_SYSCALL: ev.event = EVENT_SYSCALL; break;
       // case EVENT_PAGEFAULT: break;
       // case EVENT_IRQ_TIMER: break;
       // case EVENT_IRQ_IODEV: break;
-      default: ev.event = c->cause; break;
+      default: ev.event = EVENT_ERROR; break;
     }
 #ifdef DEBUG
     printf("&c=%p\n&c->gpr[1]=%p\nc->cause=%p\n", c, &c->gpr[1], &c->cause);
