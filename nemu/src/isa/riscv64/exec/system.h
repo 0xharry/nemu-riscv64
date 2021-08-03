@@ -43,6 +43,6 @@ static inline def_EHelper(ecall) {
 // ExceptionReturn(Supervisor)
 static inline def_EHelper(sret) {
   Log("sret to %p", (void*)cpu.csr.sepc);
-  rtl_j(s, cpu.csr.sepc);
+  rtl_j(s, cpu.csr.sepc+4);
   print_asm_template1(sret);
 }
