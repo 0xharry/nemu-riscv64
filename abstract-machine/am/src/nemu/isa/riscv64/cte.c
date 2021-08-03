@@ -15,7 +15,7 @@ Context* __am_irq_handle(Context *c) {
       // case EVENT_PAGEFAULT: break;
       // case EVENT_IRQ_TIMER: break;
       // case EVENT_IRQ_IODEV: break;
-      default: ev.event = EVENT_SYSCALL; break;
+      default: ev.event = 8; break;
     }
 
     c = user_handler(ev, c);
