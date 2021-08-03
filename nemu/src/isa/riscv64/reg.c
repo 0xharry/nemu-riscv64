@@ -9,7 +9,7 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
-  printf("cpu.pc = %p\nsepc  = %p\tscause  = %lu\nstvec = %p\tsstatus = %u",
+  printf("cpu.pc = %p\nsepc  = %p\tscause  = %lu\nstvec = %p\tsstatus = %u\n",
           (void*)cpu.pc, (void*)cpu.csr.sepc, cpu.csr.scause, (void*)cpu.csr.stvec, cpu.csr.sstatus.val);
   for(int i=0; i<32; ++i)
     printf("| %d\t%s\t0x%16lx |\n", i,regs[i],cpu.gpr[i]._64);
