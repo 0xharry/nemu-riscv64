@@ -30,6 +30,7 @@ void init_proc() {
 
 }
 
+#include "/home/harry/ics2020/abstract-machine/am/include/am.h"
 Context* schedule(Context *prev) {
   return NULL;
 }
