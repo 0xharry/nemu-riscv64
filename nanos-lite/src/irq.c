@@ -5,7 +5,7 @@ static Context* do_event(Event e, Context* c) {
   switch (e.event) {
     // case EVENT_NULL: break;
     case EVENT_YIELD:
-      printf("user_handler: case EVENT_YIELD");
+      printf("[EVENT] user_handler(do_event): case EVENT_YIELD\n");
       // Log("user_handler: case EVENT_YIELD");
     // case EVENT_SYSCALL: 
     //   break;
