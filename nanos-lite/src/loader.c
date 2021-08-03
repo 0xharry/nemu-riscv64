@@ -31,7 +31,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   // analyze each program header
   for(int i=0; i<elf_header->e_phnum; ++i, pgm_header+=sizeof(Elf_Phdr)){
     // .bss set to zero
-    Log("p_offset=%ld\npgm_header=%ld",pgm_header->p_offset,pgm_header);
+    Log("p_offset=%lu\npgm_header=%lu",(unsigned long)pgm_header->p_offset,(unsigned long)pgm_header);
     assert((unsigned long)pgm_header->p_offset==(unsigned long)pgm_header);
     // ramdisk_write((const void*)&zero_buf, pgm_header->p_offset,
     //                 pgm_header->p_memsz - pgm_header->p_filesz);
