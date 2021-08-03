@@ -1,5 +1,4 @@
 #include <common.h>
-#include "/home/harry/ics2020/abstract-machine/am/include/am.h"
 
 static Context* do_event(Event e, Context* c) {
   switch (e.event) {
