@@ -7,13 +7,14 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
-// ///////////////////////////////////////
-//     for(int i=0; i<32; ++i)
-//       printf("%p ", c->gpr[i]);
-//     printf("\n%p,%x,%p\n", c->cause, c->status, c->epc);
-// //////////////////////////////////////
     Event ev = {0};
     switch (c->cause) {
+      // case EVENT_NULL: break;
+      // case EVENT_YIELD: break;
+      case EVENT_SYSCALL: ev.event = EVENT_SYSCALL; break;
+      // case EVENT_PAGEFAULT: break;
+      // case EVENT_IRQ_TIMER: break;
+      // case EVENT_IRQ_IODEV: break;
       default: ev.event = EVENT_ERROR; break;
     }
 
