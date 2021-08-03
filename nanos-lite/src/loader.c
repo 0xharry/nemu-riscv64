@@ -44,7 +44,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       // # start at: pgm_header->p_offset + pgm_header->p_filesz
       ramdisk_write(&zero_buf,
                      pgm_header->p_offset + pgm_header->p_filesz,
-                     pgm_header->p_memsz  - pgm_header->p_filesz-4);
+                     pgm_header->p_memsz  - pgm_header->p_filesz);
 
       // read segment and write into memery
       // # length  : pgm_header->p_memsz Bytes
