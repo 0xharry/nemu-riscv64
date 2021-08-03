@@ -6,10 +6,8 @@ static Context* do_event(Event e, Context* c) {
     // case EVENT_NULL: break;
     case EVENT_YIELD:
       Log("user_handler: case EVENT_YIELD");
-      break;
-    case EVENT_SYSCALL: 
-      Log("user_handler: case EVENT_SYSCALL");
-      break;
+    // case EVENT_SYSCALL: 
+    //   break;
     // case EVENT_PAGEFAULT: break;
     // case EVENT_ERROR: break;
     // case EVENT_IRQ_TIMER: break;
