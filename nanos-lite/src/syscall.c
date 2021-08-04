@@ -5,10 +5,10 @@
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
-  a[0] = c->GPR1;
-  a[1] = c->GPR2;
-  a[2] = c->GPR3;
-  a[3] = c->GPR4;
+  a[0] = _a7;
+  a[1] = _a0;
+  a[2] = _a1;
+  a[3] = _a2;
   
   // for(int i=0; i<31; ++i) {
   //   printf("x%d : %p\n", i+1, (void*)c->gpr[i]);
