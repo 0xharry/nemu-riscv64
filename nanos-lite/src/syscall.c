@@ -9,9 +9,12 @@ void do_syscall(Context *c) {
   a[1] = c->GPR2;
   a[2] = c->GPR3;
   a[3] = c->GPR4;
-  // for(int i=0; i<30; ++i) {
-  //   printf("%d : %p\n", i, (void*)c->gpr[i]);
-  // }
+  
+#ifdef DEBUG
+  for(int i=0; i<30; ++i) {
+    printf("%d : %p\n", i, (void*)c->gpr[i]);
+  }
+#endif
 
   switch (a[0]) {
     case SYS_exit :  call_(exit);  break;
