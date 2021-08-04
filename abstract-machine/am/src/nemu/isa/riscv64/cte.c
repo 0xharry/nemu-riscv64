@@ -8,15 +8,14 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
-    switch (c->cause) {
-      // case EVENT_NULL: break;
-      case -1:   ev.event = EVENT_YIELD;   break;
-      // case EVENT_SYSCALL: ev.event = EVENT_SYSCALL; break; // syscall number $a7, arguments $a0~5
-      // case EVENT_PAGEFAULT: break;
-      // case EVENT_IRQ_TIMER: break;
-      // case EVENT_IRQ_IODEV: break;
-      default: ev.event = EVENT_ERROR; break;
-    }
+    if(c->cause<=19 && c->cause>=0) ev.event = EVENT_SYSCALL;
+    else if(c->cause==-1)           ev.event = EVENT_YIELD;
+    else                            ev.event = EVENT_ERROR;
+    // switch (c->cause) {
+    //   case -1:   ev.event = EVENT_YIELD;   break;
+    //   case 0 ... 19: ev.event = EVENT_SYSCALL; break; // syscall number $a7, arguments $a0~5
+    //   default: ev.event = EVENT_ERROR; break;
+    // }
     c = user_handler(ev, c);
     assert(c != NULL);
   }
