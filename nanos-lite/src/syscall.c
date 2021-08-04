@@ -20,9 +20,9 @@ void do_syscall(Context *c) {
     // case SYS_open :
     // case SYS_read :
     case SYS_write:  call_(write); break;
-    case SYS_close:
-    case SYS_lseek:
-    case SYS_brk  :
+    // case SYS_close:
+    // case SYS_lseek:
+    case SYS_brk  :  call_(brk);   break;
     case SYS_execve:
     case SYS_gettimeofday:
     default: panic("Unhandled syscall ID = %d", a[0]);
