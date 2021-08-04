@@ -9,17 +9,17 @@ void do_syscall(Context *c) {
   a[1] = c->GPR2;
   a[2] = c->GPR3;
   a[3] = c->GPR4;
-
-  for(int i=0; i<31; ++i) {
-    printf("x%d : %p\n", i+1, (void*)c->gpr[i]);
-  }
+  
+  // for(int i=0; i<31; ++i) {
+  //   printf("x%d : %p\n", i+1, (void*)c->gpr[i]);
+  // }
 
   switch (a[0]) {
-    case SYS_exit :  call_exit(c, a[0], a[1], a[2]);  break;
-    case SYS_yield:  call_yield(c, a[0], a[1], a[2]); break;
+    case SYS_exit :  call_(exit);  break;
+    case SYS_yield:  call_(yield); break;
     // case SYS_open :
     // case SYS_read :
-    case SYS_write:  call_write(c, a[0], a[1], a[2]); break;
+    case SYS_write:  call_(write); break;
     case SYS_close:
     case SYS_lseek:
     case SYS_brk  :
