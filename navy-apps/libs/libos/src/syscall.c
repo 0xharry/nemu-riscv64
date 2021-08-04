@@ -52,7 +52,7 @@ intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
 
 void _exit(int status) {
   _syscall_(SYS_exit, status, 0, 0);
-  while (1);
+  assert(0); // should not reach here
 }
 
 int _open(const char *path, int flags, mode_t mode) {
@@ -62,7 +62,7 @@ int _open(const char *path, int flags, mode_t mode) {
 
 int _write(int fd, void *buf, size_t count) {
   _exit(SYS_write);
-  return 0;
+  return fd;
 }
 
 void *_sbrk(intptr_t increment) {
