@@ -8,7 +8,7 @@ static Context* do_event(Event e, Context* c) {
     case EVENT_YIELD:
       printf("[EVENT]: EVENT_YIELD\n"); break;
     case EVENT_SYSCALL: 
-      printf("[EVENT]: EVENT_SYSCALL\n"); do_syscall(c); break;
+      printf("[EVENT]: EVENT_SYSCALL, cause=%u\n", c->cause); do_syscall(c); break;
     // case EVENT_PAGEFAULT: break;
     // case EVENT_ERROR: break;
     // case EVENT_IRQ_TIMER: break;
