@@ -10,12 +10,12 @@ Context* __am_irq_handle(Context *c) {
     Event ev = {0};
     switch (c->cause) {
       // case EVENT_NULL: break;
-      case EVENT_YIELD:   ev.event = EVENT_YIELD;   break;
-      // case EVENT_SYSCALL: ev.event = EVENT_SYSCALL; break;
+      case -1:   ev.event = EVENT_YIELD;   break;
+      // case EVENT_SYSCALL: ev.event = EVENT_SYSCALL; break; // syscall number $a7, arguments $a0~5
       // case EVENT_PAGEFAULT: break;
       // case EVENT_IRQ_TIMER: break;
       // case EVENT_IRQ_IODEV: break;
-      default: ev.event = c->cause; break;
+      default: ev.event = EVENT_ERROR; break;
     }
     c = user_handler(ev, c);
     assert(c != NULL);
