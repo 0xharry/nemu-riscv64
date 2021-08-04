@@ -7,9 +7,7 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
-#ifdef DEBUG
     printf("trap: cause=%l\n", c->cause);
-#endif
     Event ev = {0};
     if(c->cause<=19 && c->cause>=0) ev.event = EVENT_SYSCALL;
     else if(c->cause==-1)           ev.event = EVENT_YIELD;
