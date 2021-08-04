@@ -60,16 +60,28 @@ int _open(const char *path, int flags, mode_t mode) {
   return 0;
 }
 
-// int _write_r(int fd, void *buf, size_t count) {
-//   return _write(fd, buf, count);
-// }
-
 int _write(int fd, void *buf, size_t count) {
   return _syscall_(SYS_write, fd, buf, count);
 }
 
-void *_sbrk(intptr_t increment) { // SYS_brk
-  return (void *)-1;
+extern char _end;
+static void *brk_navy;
+void *_sbrk(intptr_t increment) {
+  // brk initialization
+  if(increment == 0) {
+    if(brk_navy==0) {
+      brk_navy == &_end;
+    }
+    return brk_navy;
+  }
+
+  void *brk_ret = brk_navy;
+  brk_navy += increment;
+
+  if(_syscall_(SYS_brk, brk_navy, increment, 0)==-1)
+    return (void*)-1;
+  else
+    return brk_ret;
 }
 
 int _read(int fd, void *buf, size_t count) {
