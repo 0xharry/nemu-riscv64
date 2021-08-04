@@ -10,8 +10,8 @@ void do_syscall(Context *c) {
   a[2] = c->GPR3;
   a[3] = c->GPR4;
 
-  for(int i=0; i<30; ++i) {
-    printf("%d : %p\n", i, (void*)c->gpr[i]);
+  for(int i=0; i<31; ++i) {
+    printf("x%d : %p\n", i+1, (void*)c->gpr[i]);
   }
 
   switch (a[0]) {
