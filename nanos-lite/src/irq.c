@@ -6,9 +6,15 @@ static Context* do_event(Event e, Context* c) {
   switch (e.event) {
     // case EVENT_NULL: break;
     case EVENT_YIELD:
-      printf("[EVENT]: EVENT_YIELD\n"); break;
+#ifdef DEBUG
+      printf("[EVENT]: EVENT_YIELD, do nothing\n"); 
+#endif
+      break;
     case EVENT_SYSCALL: 
-      printf("[EVENT]: EVENT_SYSCALL, cause=%u\n", c->cause); do_syscall(c); break;
+#ifdef DEBUG
+      printf("[EVENT]: EVENT_SYSCALL, cause=%u\n", c->cause); 
+#endif
+      do_syscall(c); break;
     // case EVENT_PAGEFAULT: break;
     // case EVENT_ERROR: break;
     // case EVENT_IRQ_TIMER: break;
