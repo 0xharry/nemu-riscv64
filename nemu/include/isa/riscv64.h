@@ -9,9 +9,9 @@
 
 // Control and Status Registers
 typedef struct {
-  vaddr_t sepc;
-  uintptr_t scause;
-  vaddr_t stvec;
+  vaddr_t sepc;       // exception pc
+  uintptr_t scause;   // trap cause
+  vaddr_t stvec;      // trap vector (trap handler base address)
   union {
     struct {
       uint32_t UIE   : 1;
@@ -31,7 +31,7 @@ typedef struct {
       uint32_t XLEN1 : 1;
     } bit;
     uint32_t val;
-  } sstatus;
+  } sstatus;          // status register
 } CSR;
 
 // reg

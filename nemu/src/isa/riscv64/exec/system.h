@@ -34,9 +34,10 @@ static inline def_EHelper(csrrw) {
   print_asm_template3(csrrs);
 }
 
+#define whatever -1
 // RaiseException(EnvironmentCall)
 static inline def_EHelper(ecall) {
-  raise_intr(s, 1, 0);
+  raise_intr(s, whatever, whatever);
   print_asm_template1(ecall);
 }
 
