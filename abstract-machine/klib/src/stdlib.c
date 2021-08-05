@@ -1,14 +1,8 @@
-#ifdef _KLIB_TEST_
-#include "../tests/klib_test.h"
-#include "../include/klib-macros.h"
-#else
 #include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
-#endif
 
-
-#if !defined(__ISA_NATIVE__) || !defined(__NATIVE_USE_KLIB__)
+#if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 static unsigned long int next = 1;
 
 int rand(void) {
@@ -25,31 +19,34 @@ int abs(int x) {
   return (x < 0 ? -x : x);
 }
 
-// convert a string to an integer
 int atoi(const char* nptr) {
-  int x = 0, neg_flag=1;
+  int x = 0;
   while (*nptr == ' ') { nptr ++; }
-  if(*nptr == '-') { neg_flag=-1; }
   while (*nptr >= '0' && *nptr <= '9') {
     x = x * 10 + *nptr - '0';
     nptr ++;
   }
-  return x*neg_flag;
+  return x;
 }
+/*
+在malloc()中维护一个上次分配内存位置的变量addr, 
+每次调用malloc()时, 就返回[addr, addr + size)这段空间. 
+addr的初值设为heap.start, 表示从堆区开始分配. 
+*/
 
-static uintptr_t brk_klib = 0;
+static char * addr = NULL;
 void *malloc(size_t size) {
-  void *start = heap.start+brk_klib;
-  // page aligned 8 Byte;
-  brk_klib += ROUNDUP(size, 8);
-  // overflow may happen
-  if((uintptr_t)heap.start + brk_klib > (uintptr_t)heap.end)
-    return NULL;
-
-  for(char *flush=start; (uintptr_t)flush < (uintptr_t)(start+brk_klib); ++flush)
-    *flush=0;
-// printf("malloc %d in %p\n", ROUNDUP(size, 8), start);
-  return start;
+  if(!addr) addr = (void*)ROUNDUP(heap.start,8);
+  if(size ==  0) return (void *)addr;
+  //分配空间
+  void * ret = addr;
+  addr += ROUNDUP(size,8);
+  //空间清零
+  char * p = (char *)ret;
+  while(p!=addr){
+    *p++ = 0;
+  }
+  return ret;
 }
 
 void free(void *ptr) {
