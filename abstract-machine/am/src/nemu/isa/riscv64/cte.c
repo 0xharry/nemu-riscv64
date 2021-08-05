@@ -2,20 +2,21 @@
 #include <am.h>
 #include <nemu.h>
 #include <klib.h>
+#define ccause c->gpr[16]
 
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
-    // c->epc += 4;
+    c->epc += 4;
     Event ev = {0};
-    // if(c->gpr[16]<=19 && c->gpr[16]>=0) ev.event = EVENT_SYSCALL;
-    // else if(c->gpr[16]==-1)             ev.event = EVENT_YIELD;
-    // else                                ev.event = EVENT_ERROR;
-    switch (c->cause) {
-      case  9: ev.event = EVENT_SYSCALL; break; // syscall number $a7, arguments $a0~5
-      default: ev.event = EVENT_ERROR;   break;
-    }
+    if(ccause<=19 && ccause>=0) ev.event = EVENT_SYSCALL;
+    else if(ccause==-1)         ev.event = EVENT_YIELD;
+    else                        ev.event = EVENT_ERROR;
+    // switch (c->cause) {
+    //   case  9: ev.event = EVENT_SYSCALL; break; // syscall number $a7, arguments $a0~5
+    //   default: ev.event = EVENT_ERROR;   break;
+    // }
     c = user_handler(ev, c);
     assert(c != NULL);
   }
@@ -42,7 +43,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 }
 
 void yield() {
-  asm volatile("li a7, 1; ecall");
+  asm volatile("li a7, -1; ecall");
 }
 
 bool ienabled() {
