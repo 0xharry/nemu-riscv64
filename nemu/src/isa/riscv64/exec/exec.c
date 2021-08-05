@@ -8,220 +8,147 @@ static inline void set_width(DecodeExecState *s, int width) {
 
 static inline def_EHelper(load) {
   switch (s->isa.instr.i.funct3) {
-    EXW  (0b000, ld, 1) // lb
-    EXW  (0b001, ld, 2) // lh
-    EXW  (0b010, ld, 4) // lw
-    EXW  (0b011, ldu,8) // ld
-    EXW  (0b100, ldu,1) // lbu
-    EXW  (0b101, ldu,2) // lhu
-    EXW  (0b110, ldu,4) // lwu
+    //lws这个命名有问题，但是懒得改了
+    EXW  (0, lws, 1)
+    EXW  (1, lws, 2)
+    EXW  (2, lws, 4)
+    EXW  (3, ld,  8)
+    EXW  (4, ld,  1)  //从一个字节加载 lbu
+    EXW  (5, ld,  2)  //lhu
+    EXW  (6, ld,  4)
     default: exec_inv(s);
   }
 }
 
 static inline def_EHelper(store) {
   switch (s->isa.instr.s.funct3) {
-    EXW  (0b000, st, 1) // sb
-    EXW  (0b001, st, 2) // sh
-    EXW  (0b010, st, 4) // sw
-    EXW  (0b011, st, 8) // sd
+    EXW  (0, st, 1)
+    EXW  (1, st, 2)  //只存低两位
+    EXW  (2, st, 4)  //sw 低4字节
+    EXW  (3, st, 8)
+
     default: exec_inv(s);
   }
 }
 
-
-static inline def_EHelper(srxl) {
-  switch (id_src2->imm>>6) {
-    EX(0b000000, srli)
-    EX(0b010000, srai)
-    default: exec_inv(s);
-  }
-}
-static inline def_EHelper(I_type_a) {
+static inline def_EHelper(i32) {
+  if(s->isa.instr.i.funct3!=5)
   switch (s->isa.instr.i.funct3) {
-    EX(0b000, addi)
-    EX(0b001, slli)
-    EX(0b010, slti)
-    EX(0b011, sltiu)
-    EX(0b100, xori)
-    EX(0b101, srxl) // srli or srai
-    EX(0b110, ori)
-    EX(0b111, andi)
+    EX (0, addiw)
+    EX (1, slliw)
+    // EX (5, srliw)
+    // EX (5, sraiw)
     default: exec_inv(s);
   }
-}
-static inline def_EHelper(slra_liw) {
-  switch (id_src2->imm>>6) {
-    EX(0b000000, srliw)
-    EX(0b010000, sraiw)
-    default: exec_inv(s);
+  else{
+    switch (s->isa.instr.i.simm11_0>>5) {
+      EX (0, srliw)
+      EX (0b0100000,sraiw)
+    }
   }
 }
-static inline def_EHelper(I_type_b) {
-  switch (s->isa.instr.i.funct3) {
-    EX(0b000, addiw)
-    EX(0b001, slliw)
-    EX(0b101, slra_liw)
+
+static inline def_EHelper(r2rw){
+  switch (s->isa.instr.r.funct3 | (s->isa.instr.r.funct7<<3)) {
+    EX (0x000, addw)
+    EX (0x100, subw)
+    EX (0x105, sraw)
+    EX (0x001, sllw)
+    EX (0x005, srlw)
+    EX (0x008, mulw)
+    EX (0x00c, divw)
+    EX (0x00d, divuw)
+    EX (0x00e, remw)
+    EX (0x00f, remuw)
     default: exec_inv(s);
   }
 }
 
-static inline def_EHelper(ecall_sret) {
-  switch (id_src2->imm) {
-    EX(0, ecall)
-    // EX(1, ebreak)
-    EX(0b000100000010, sret)
-    default: exec_inv(s);
-  }
-}
-static inline def_EHelper(I_type_csr) {
-  switch (s->isa.instr.i.funct3) {
-    EX(0b000, ecall_sret)
-    EX(0b001, csrrw)
-    EX(0b010, csrrs) // csrw
-    // EX(0b011, csrrc)
-    // EX(0b101, csrrwi)
-    // EX(0b110, cssrrsi)
-    // EX(0b111, csrrci)
+static inline def_EHelper(r2r){
+  switch (s->isa.instr.r.funct3 | (s->isa.instr.r.funct7<<3)) {
+    EX (0x000, add)
+    EX (0x100, sub)
+    EX (0x001, sll)
+    EX (0x002, slt)
+    EX (0x003, sltu)
+    EX (0x004, xor)
+    EX (0x005, srl)
+    EX (0x105, sra)
+    EX (0x006, or)
+    EX (0x007, and)
+    EX (0x008, mul)
+    EX (0x00d, divu)
+    EX (0x00f, remu)
     default: exec_inv(s);
   }
 }
 
-static inline def_EHelper(B_type) {
+static inline def_EHelper(r2i){
+  if(s->isa.instr.i.funct3!=5)
+  switch (s->isa.instr.i.funct3) {
+    EX (0, addi)
+    EX (1, slli)
+    EX (2, slti)
+    EX (3, sltiu)
+    EX (4, xori)
+    EX (6, ori)
+    EX (7, andi)
+    default: exec_inv(s);
+  }else{
+    switch (s->isa.instr.i.simm11_0>>6){
+      EX(0x00, srli)
+      EX(0x10, srai)
+    }
+  }
+}
+
+static inline def_EHelper(branch){
   switch (s->isa.instr.b.funct3) {
-    EX(0b000, beq)
-    EX(0b001, bne)
-    EX(0b100, blt)
-    EX(0b101, bge)
-    EX(0b110, bltu)
-    EX(0b111, bgeu)
+    EX (0, beq)
+    EX (1, bne)
+    EX (4, blt)
+    EX (5, bge)
+    EX (6, bltu)
+    EX (7, bgeu)
+    default: exec_inv(s);
+  }
+}
+
+static inline def_EHelper(system) {
+  switch (s->isa.instr.i.funct3) {
+    IDEX  (0, CSR, inter) //ecall sret ebreak需要分类讨论
+    IDEX  (1, CSR, csrrw)
+    IDEX  (2, CSR, csrrs)
+    IDEX  (3, CSR, csrrc)
+    IDEX  (5, CSRI, csrrwi)  
+    IDEX  (6, CSRI, csrrsi)  
+    IDEX  (7, CSRI, csrrci)
     default: exec_inv(s);
   }
 }
 
 
-static inline def_EHelper(add_sub) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0b0000000, add)
-    EX(0b0000001, mul)
-    EX(0b0100000, sub)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(xor_div) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0b0000000, xor)
-    EX(0b0000001, div)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(srl_divu) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0b0000000, srl)
-    EX(0b0000001, divu)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(or_rem) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0b0000000, or)
-    EX(0b0000001, rem)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(and_remu) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0b0000000, and)
-    EX(0b0000001, remu)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(sll_mulh) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0b0000000, sll)
-    EX(0b0000001, mulh)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(slt_mulhsu) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0b0000000, slt)
-    EX(0b0000001, mulhsu)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(sltu_mulhu) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0b0000000, sltu)
-    EX(0b0000001, mulhu)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(R_type_a) {
-  switch (s->isa.instr.r.funct3) {
-    EX(0b000, add_sub)
-    EX(0b001, sll_mulh)
-    EX(0b010, slt_mulhsu)
-    EX(0b011, sltu_mulhu)
-    EX(0b100, xor_div)
-    EX(0b101, srl_divu)
-    EX(0b110, or_rem)
-    EX(0b111, and_remu)
-    default: exec_inv(s);
-  }
-}
 
-static inline def_EHelper(addw_subw) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0x00, addw)
-    EX(0b01, mulw)
-    EX(0x20, subw)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(srlw_sraw) {
-  switch (s->isa.instr.r.funct7) {
-    EX(0x00, srlw)
-    EX(0x01, divuw)
-    EX(0x20, sraw)
-  default: exec_inv(s);
-  }
-}
-static inline def_EHelper(R_type_b) {
-  switch (s->isa.instr.r.funct3) {
-    EX(0b000, addw_subw)
-    EX(0b001, sllw)
-    EX(0b100, divw)
-    EX(0b101, srlw_sraw)
-    EX(0b110, remw)
-    EX(0b111, remuw)
-    default: exec_inv(s);
-  }
-}
-
-// bool sret_jump = 0;
 static inline void fetch_decode_exec(DecodeExecState *s) {
-  // if(sret_jump) {
-  //   s->seq_pc +=4;
-  //   sret_jump = 0;
-  // }
   s->isa.instr.val = instr_fetch(&s->seq_pc, 4);
+  //opcode第0 1 位都必须为1
   Assert(s->isa.instr.i.opcode1_0 == 0x3, "Invalid instruction");
   switch (s->isa.instr.i.opcode6_2) {
-    IDEX (0b00000, I, load)  // case 0b00000: set_width(s, 0); decode_I(s); exec_load(s); break;
-    IDEX (0b00100, I, I_type_a)  // case 0b00000: set_width(s, 0); decode_I(s); exec_I_type_a(s); //second decode; break;
-    IDEX (0b00110, I, I_type_b)
-    IDEX (0b11100, I, I_type_csr)
-    IDEX (0b01100, R, R_type_a)
-    IDEX (0b01110, R, R_type_b)
-    IDEX (0b11000, B, B_type)
+    IDEX (0b00000, I, load)
     IDEX (0b01000, S, store)
     IDEX (0b01101, U, lui)
+    //TODO: add decode of R and B
+    IDEX (0b01110, R, r2rw)
+    IDEX (0b01100, R, r2r)
+    IDEX (0b11000, B, branch)
     IDEX (0b00101, U, auipc)
     IDEX (0b11011, J, jal)
-    IDEX (0b11001, I, jalr)
+    IDEX (0b00100, I, r2i)
+    IDEX (0b00110, I, i32)
+    // IDEX (0b00110, I, addiw)
     EX   (0b11010, nemu_trap)
-    // TODO(); more instructions id+ex
+    IDEX (0b11001, I, jalr)
+    IDEX (0b11100, CSR, system)
     default: exec_inv(s);
   }
 }
@@ -237,8 +164,9 @@ vaddr_t isa_exec_once() {
 
   fetch_decode_exec(&s);
   update_pc(&s);
-
+  
   reset_zero();
 
   return s.seq_pc;
 }
+

@@ -1,98 +1,73 @@
-static inline sword_t jal_offset_decode(word_t imm)
-{
-  sword_t simm = ((sword_t)(((imm & (word_t)0x00080000) << 1) |
-                            ((imm & (word_t)0x000000FF) << 12)|
-                            ((imm & (word_t)0x00000100) << 3) |
-                            ((imm & (word_t)0x0007FE00) >> 8)))
-                  << 43 >> 43; //sizeof(word_t)-21 = 64-21 = 43
-  return simm;
-}
-/* offset[20|10:1|11|19:12]
- * 20   16   12   8    4    0
- * 0 0000 0000 0000 0000 0000
- * 0                1111 1111 << 12
- * 0              1 0000 0000 << 3
- * 0  111 1111 1110 0000 0000 >> 8
- * 0 1                        << 1
- */
+#include<monitor/difftest.h>
 
-// J-TYPE:
-// J(U)-type:
-// x[rd] = pc+4; pc += sext(offset)
-static inline def_EHelper(jal)
-{
-  rtl_addi(s, ddest, &s->seq_pc, 0);                  // x[rd] = pc+4
-  rtl_j(s, cpu.pc + jal_offset_decode(id_src1->imm)); // pc += sext(offset)
+//x[rd] = pc+4; pc += sext(offset)  J-type
+//这里是seq_pc和jmp_pc的用法
+static inline def_EHelper(jal) {
+  rtl_li(s,ddest,cpu.pc+4);
+  //printf("cpu.pc+4 : %ld, seq_pc : %ld\n",cpu.pc+4,s->seq_pc);
+  //rtl_li(s,&cpu.pc,cpu.pc+id_src1->imm);
+  rtl_j(s,s->jmp_pc);
+  //printf("pc : 0x%0lx\n",cpu.pc);
+  //printf("ra : 0x%0lx\n",reg_d(1));
+  //difftest_skip_dut(1, 2);
   print_asm_template2(jal);
 }
 
-// J(I)-type:
-// t =pc+4
-// pc=(x[rs1]+sext(offset))&~1
-// x[rd]=t
-static inline def_EHelper(jalr)
-{
-  rtl_j(s, (*dsrc1 + id_src2->imm) & ~1);
-  rtl_addi(s, ddest, rz, s->seq_pc);
+//t =pc+8; pc=(x[rs1]+sext(offset))&~1; x[rd]=t ; I-type
+static inline def_EHelper(jalr) {
+  //printf("Jalr started\n");
+  rtl_li(s,s0,cpu.pc+4);
+  //printf("cpu.pc+4 : %ld, seq_pc : %ld\n",cpu.pc+4,s->seq_pc);
+  rtl_addi(s,s1,dsrc1, id_src2->imm);
+  *s1 = (*s1)&(~0x1u);
+  rtl_jr(s,s1);
+  rtl_li(s,ddest,*s0);
+  //difftest_skip_dut(1, 2);
   print_asm_template2(jalr);
 }
 
-
-
-// B_TYPE: -------------------------------
-// id_src1=rs1, id_src2=imm, id_dest=rs2
-
-// if (rs1 ≠ rs2) pc += sext(offset)
-static inline def_EHelper(bne)
-{
-  if(*ddest != *dsrc1)
-    rtl_j(s, cpu.pc + id_src2->simm);
-  print_asm_template2(bne);
+//if (rs1 == rs2) pc += sext(offset)
+static inline def_EHelper(beq) {
+  //if(*dsrc1 == *dsrc2) rtl_j(s,s->jmp_pc);
+  rtl_jrelop(s,RELOP_EQ, dsrc1, dsrc2, s->jmp_pc);
+  print_asm_template3(beq);
 }
 
-// if (rs1 == rs2) pc += sext(offset)
-static inline def_EHelper(beq)
-{
-  if(*ddest == *dsrc1)
-    rtl_j(s, cpu.pc + id_src2->simm);
-  print_asm_template2(beq);
+//if (rs1 ≠ rs2) pc += sext(offset)
+static inline def_EHelper(bne) {
+  // if(*dsrc1 != *dsrc2) rtl_j(s,s->jmp_pc);
+  //printf("bne started\n");
+  //printf("0x%lx, 0x%lx, jmp_pc=0x%lx\n",*dsrc1, *dsrc2,s->jmp_pc);
+  rtl_jrelop(s, RELOP_NE, dsrc1, dsrc2, s->jmp_pc);
+  print_asm_template3(bne);
 }
 
-// if (rs1 < s rs2) pc += sext(offset)
-static inline def_EHelper(blt)
-{
-  if((int32_t)*dsrc1 < (int32_t)*ddest)
-    rtl_j(s, cpu.pc + id_src2->simm);
-  print_asm_template2(blt);
+static inline def_EHelper(blt) {
+  rtl_jrelop(s, RELOP_LT, dsrc1, dsrc2, s->jmp_pc);
+  print_asm_template3(blt);
 }
 
-// if (rs1 < u rs2) pc += sext(offset)
-static inline def_EHelper(bltu)
-{
-  if((uint32_t)*dsrc1 < (uint32_t)*ddest)
-    rtl_j(s, cpu.pc + id_src2->simm);
-  print_asm_template2(bltu);
+static inline def_EHelper(bltu) {
+  rtl_jrelop(s, RELOP_LTU, dsrc1, dsrc2, s->jmp_pc);
+  print_asm_template3(bltu);
 }
 
-// if (rs1 ≥ s rs2) pc += sext(offset)
-static inline def_EHelper(bge)
-{
-  if((int32_t)*dsrc1 >= (int32_t)*ddest)
-    rtl_j(s, cpu.pc + id_src2->simm);
-  print_asm_template2(bge);
+static inline def_EHelper(bge) {
+  rtl_jrelop(s, RELOP_GE, dsrc1, dsrc2, s->jmp_pc);
+  print_asm_template3(bge);
 }
 
-// if (rs1 ≥ u rs2) pc += sext(offset)
-static inline def_EHelper(bgeu)
-{
-  if((uint32_t)*dsrc1 >= (uint32_t)*ddest)
-    rtl_j(s, cpu.pc + id_src2->simm);
-  print_asm_template2(bgeu);
+
+
+// static inline def_EHelper(bltu) {
+//   rtl_jrelop(s, RELOP_LTU, dsrc1, dsrc2, s->jmp_pc);
+//   print_asm_template3(bltu);
+// }
+
+static inline def_EHelper(bgeu) {
+  rtl_jrelop(s, RELOP_GEU, dsrc1, dsrc2, s->jmp_pc);
+  print_asm_template3(bgeu);
 }
 
-// EXTENDS:
-// j: expands to jal x[$0], offset
-// pc += sext(offset)
 
-// ret: expands to jalr x0, 0(x1)
-// pc = x[1]
+

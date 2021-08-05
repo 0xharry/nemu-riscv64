@@ -4,7 +4,7 @@
 // this is not consistent with uint8_t
 // but it is ok since we do not access the array directly
 static const uint32_t img [] = {
-  0x800002b7,  // lui t0,0x80000
+  0x800002b7,  // imm=0x80000, rd=5, op2=0b01101, op1=0b11: lui t0,0x80000
   0x0002b023,  // sd  zero,0(t0)
   0x0002b503,  // ld  a0,0(t0)
   0x0000006b,  // nemu_trap
@@ -16,8 +16,6 @@ static void restart() {
 
   /* The zero register is always 0. */
   cpu.gpr[0]._64 = 0;
-  //why???
-  cpu.sstatus.val = 0x000c0100;
 }
 
 void init_isa() {
