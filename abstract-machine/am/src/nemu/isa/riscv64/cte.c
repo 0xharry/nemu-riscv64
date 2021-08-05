@@ -8,7 +8,6 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     c->epc += 4;
-    printf("cause/t0=%d,status/t1=%d,epc/t2=%p\n", c->cause, c->status, c->epc);
     Event ev = {0};
     if(c->gpr[16]<=19 && c->gpr[16]>=0) ev.event = EVENT_SYSCALL;
     else if(c->gpr[16]==-1)           ev.event = EVENT_YIELD;
