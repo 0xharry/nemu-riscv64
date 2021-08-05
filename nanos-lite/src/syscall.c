@@ -10,9 +10,9 @@ void do_syscall(Context *c) {
   a[2] = _a1;
   a[3] = _a2;
   
-  // for(int i=0; i<31; ++i) {
-  //   printf("x%d : %p\n", i+1, (void*)c->gpr[i]);
-  // }
+  for(int i=0; i<31; ++i) {
+    printf("x%d : %p\n", i+1, (void*)c->gpr[i]);
+  }
 
   switch (a[0]) {
     case SYS_exit :  call_(exit);  break;
