@@ -9,14 +9,14 @@ Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     c->epc += 4;
     Event ev = {0};
-    if(c->gpr[16]<=19 && c->gpr[16]>=0) ev.event = EVENT_SYSCALL;
-    else if(c->gpr[16]==-1)           ev.event = EVENT_YIELD;
-    else                            ev.event = EVENT_ERROR;
-    // switch (c->cause) {
-    //   case -1:   ev.event = EVENT_YIELD;   break;
-    //   case 0 ... 19: ev.event = EVENT_SYSCALL; break; // syscall number $a7, arguments $a0~5
-    //   default: ev.event = EVENT_ERROR; break;
-    // }
+    // if(c->gpr[16]<=19 && c->gpr[16]>=0) ev.event = EVENT_SYSCALL;
+    // else if(c->gpr[16]==-1)             ev.event = EVENT_YIELD;
+    // else                                ev.event = EVENT_ERROR;
+    switch (c->cause) {
+      case -1: ev.event = EVENT_YIELD;   break;
+      case  9: ev.event = EVENT_SYSCALL; break; // syscall number $a7, arguments $a0~5
+      default: ev.event = EVENT_ERROR;   break;
+    }
     c = user_handler(ev, c);
     assert(c != NULL);
   }
