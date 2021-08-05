@@ -5,7 +5,6 @@ extern void do_syscall(Context *c);
 static Context* do_event(Event e, Context* c) {
   switch (e.event) {
     // case EVENT_NULL: break;
-    case dummy:
     case EVENT_YIELD:
       printf("[EVENT]: EVENT_YIELD, do nothing\n"); 
       break;
