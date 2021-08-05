@@ -9,33 +9,25 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
-  int i=0; 
-  while(i<32){
-    printf("%-3s : 0x%lx\n",regs[i],reg_d(i));
-    i++;
-  }
-  printf("pc  : 0x%lx\n",cpu.pc);
+  printf("cpu.pc = %p\nsepc  = %p\tscause  = %lu\nstvec = %p\tsstatus = %u\n",
+          (void*)cpu.pc, (void*)cpu.csr.sepc, cpu.csr.scause, (void*)cpu.csr.stvec, cpu.csr.sstatus.val);
+  for(int i=0; i<32; ++i)
+    printf("| %d\t%s\t0x%16lx |\n", i,regs[i],cpu.gpr[i]._64);
 }
 
-uint64_t isa_reg_str2val(const char *s, bool *success) {
-  int i=0;
-  uint64_t val=0;
-  // printf("isa_reg_str2val %s\n",s);
-  // char * ss=0;
-  // s++;
-  // while(*s){
-  //   *(ss++) = *(s++);
-  // }
-  // *ss = '\0';
-  // printf("isa_reg_str2val %s\n",ss);
-  while(i<32){
-    if(strcmp(s,regs[i])==0){
-      *success = true;
-      val = reg_d(i);
-    }
-    i++;
+word_t isa_reg_str2val(const char *s, bool *success) {
+  if(strncmp("pc", s, 2)==0) {
+    *success = true;
+    return cpu.pc;
   }
 
-  //if(*success) printf("success\n");
-  return val;
+  for(int i=0; i<32; ++i) {
+    if(strncmp(regs[i], s, 3)==0) {
+      *success = true;
+      return cpu.gpr[i]._64;
+    }
+  }
+  
+  *success = false;
+  return 0;
 }

@@ -8,6 +8,7 @@ static inline int check_reg_index(int index) {
   return index;
 }
 
+// cpu.gpr[index]._64
 #define reg_d(index) (cpu.gpr[check_reg_index(index)]._64)
 
 static inline const char* reg_name(int index) {
