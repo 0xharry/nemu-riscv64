@@ -55,6 +55,6 @@ static inline def_EHelper(sret) {
   Log("sret to %p", (void*)cpu.csr.sepc);
 #endif
   rtl_j(s, cpu.csr.sepc);
-  sret_jump = 1;
+  // sret_jump = 1;
   print_asm_template1(sret);
 }

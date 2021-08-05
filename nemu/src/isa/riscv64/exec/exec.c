@@ -199,12 +199,12 @@ static inline def_EHelper(R_type_b) {
   }
 }
 
-bool sret_jump = 0;
+// bool sret_jump = 0;
 static inline void fetch_decode_exec(DecodeExecState *s) {
-  if(sret_jump) {
-    s->seq_pc +=4;
-    sret_jump = 0;
-  }
+  // if(sret_jump) {
+  //   s->seq_pc +=4;
+  //   sret_jump = 0;
+  // }
   s->isa.instr.val = instr_fetch(&s->seq_pc, 4);
   Assert(s->isa.instr.i.opcode1_0 == 0x3, "Invalid instruction");
   switch (s->isa.instr.i.opcode6_2) {
