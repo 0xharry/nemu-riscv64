@@ -9,9 +9,9 @@ static inline void set_width(DecodeExecState *s, int width) {
 static inline def_EHelper(load) {
   switch (s->isa.instr.i.funct3) {
     //lws这个命名有问题，但是懒得改了
-    EXW  (0, lws, 1)
-    EXW  (1, lws, 2)
-    EXW  (2, lws, 4)
+    EXW  (0, ldu, 1)
+    EXW  (1, ldu, 2)
+    EXW  (2, ldu, 4)
     EXW  (3, ld,  8)
     EXW  (4, ld,  1)  //从一个字节加载 lbu
     EXW  (5, ld,  2)  //lhu

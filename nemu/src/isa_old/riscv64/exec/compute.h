@@ -59,7 +59,7 @@ static inline def_EHelper(sraiw)
 {
   // shamt[5]=0 时指令有效
   // rtl_sari自带mask
-  rtl_sarwi(s, ddest, dsrc1, id_src2->simm);
+  rtl_sariw(s, ddest, dsrc1, id_src2->simm);
   print_asm_template2(sraiw);
 }
 
@@ -170,6 +170,13 @@ static inline def_EHelper(sltu)
 {
   rtl_li(s, ddest, ((uint32_t)*dsrc1<(uint32_t)*dsrc2));
   print_asm_template3(sltu);
+}
+
+// x[rd] = (x[rs1] ≫ 𝑠 x[rs2])
+static inline def_EHelper(sra)
+{
+  rtl_sar(s, ddest, dsrc1, dsrc2);
+  print_asm_template2(sra);
 }
 
 // x[rd] = sext(x[rs1][31: 0] ≫ 𝑠 x[rs2][4: 0])

@@ -119,6 +119,7 @@ static inline def_EHelper(srl_divu) {
   switch (s->isa.instr.r.funct7) {
     EX(0b0000000, srl)
     EX(0b0000001, divu)
+    EX(0b0100000, sra)
   default: exec_inv(s);
   }
 }
@@ -199,19 +200,13 @@ static inline def_EHelper(R_type_b) {
   }
 }
 
-// bool sret_jump = 0;
 static inline void fetch_decode_exec(DecodeExecState *s) {
-  // if(sret_jump) {
-  //   s->seq_pc +=4;
-  //   sret_jump = 0;
-  // }
   s->isa.instr.val = instr_fetch(&s->seq_pc, 4);
   Assert(s->isa.instr.i.opcode1_0 == 0x3, "Invalid instruction");
   switch (s->isa.instr.i.opcode6_2) {
     IDEX (0b00000, I, load)  // case 0b00000: set_width(s, 0); decode_I(s); exec_load(s); break;
     IDEX (0b00100, I, I_type_a)  // case 0b00000: set_width(s, 0); decode_I(s); exec_I_type_a(s); //second decode; break;
     IDEX (0b00110, I, I_type_b)
-    IDEX (0b11100, I, I_type_csr)
     IDEX (0b01100, R, R_type_a)
     IDEX (0b01110, R, R_type_b)
     IDEX (0b11000, B, B_type)
@@ -221,6 +216,7 @@ static inline void fetch_decode_exec(DecodeExecState *s) {
     IDEX (0b11011, J, jal)
     IDEX (0b11001, I, jalr)
     EX   (0b11010, nemu_trap)
+    IDEX (0b11100, I, I_type_csr)
     // TODO(); more instructions id+ex
     default: exec_inv(s);
   }
