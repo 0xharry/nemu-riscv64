@@ -16,7 +16,6 @@ void do_syscall(Context *c) {
 
   switch (a[0]) {
     case SYS_exit :  call_(exit);  break;
-    case SYS_dummy:
     case SYS_yield:  call_(yield); break;
     // case SYS_open :
     // case SYS_read :

@@ -21,8 +21,7 @@ enum {
   SYS_unlink,
   SYS_wait,
   SYS_times,
-  SYS_gettimeofday,
-  SYS_dummy=-1
+  SYS_gettimeofday
 };
 
 #endif
