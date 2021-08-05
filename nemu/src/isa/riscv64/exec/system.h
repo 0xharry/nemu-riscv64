@@ -34,11 +34,13 @@ static inline def_EHelper(csrrw) {
   print_asm_template3(csrrs);
 }
 
+#ifdef DIFF_TEST
 extern void difftest_skip_dut(int nr_ref, int nr_dut);
+#endif
 #define whatever -1
 // RaiseException(EnvironmentCall)
 static inline def_EHelper(ecall) {
-  raise_intr(s, whatever, whatever);
+  raise_intr(s, 9, whatever);
   print_asm_template1(ecall);
 #ifdef DIFF_TEST
   difftest_skip_dut(1, 2);

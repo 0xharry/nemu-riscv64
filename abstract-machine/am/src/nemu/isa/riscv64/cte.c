@@ -8,8 +8,8 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
-    if(c->cause<=19 && c->cause>=0) ev.event = EVENT_SYSCALL;
-    else if(c->cause==-1)           ev.event = EVENT_YIELD;
+    if(c->gpr[16]<=19 && c->gpr[16]>=0) ev.event = EVENT_SYSCALL;
+    else if(c->gpr[16]==-1)           ev.event = EVENT_YIELD;
     else                            ev.event = EVENT_ERROR;
     // switch (c->cause) {
     //   case -1:   ev.event = EVENT_YIELD;   break;
