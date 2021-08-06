@@ -72,7 +72,7 @@ int fs_open(const char *pathname, int flags, int mode) {
 size_t fs_read(int fd, void *buf, size_t len) {
   if(fd<=2) return 0; // ignore stdin, stdout and stderr
   assert(len <= file_table[fd].size);
-  printf("read from (%p + offset %d), size=%lu\n", file_table[fd].disk_offset, offset_cur[fd], len);
+  printf("fs_read: from (%u + offset %d), size=%u\n", file_table[fd].disk_offset, offset_cur[fd], len);
   ramdisk_read(buf, file_table[fd].disk_offset + offset_cur[fd], len);
   return fs_lseek(fd, len, SEEK_CUR);
 }

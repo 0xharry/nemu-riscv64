@@ -29,7 +29,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   assert(filename);
   // read ELF header
   int elf_fd = fs_open(filename,0,0);
-  printf("hello fd=%d\n", elf_fd);
+  printf("loader: hello fd=%d\n", elf_fd);
   fs_read(elf_fd, elf_buffer, sizeof(Elf_Ehdr));
 //ramdisk_read(elf_buffer, 0, sizeof(Elf_Ehdr));
   elf_header = (Elf_Ehdr*)elf_buffer;
@@ -44,14 +44,14 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     pgm_header = (Elf_Phdr*)pgm_buffer;
 
     if(pgm_header->p_type == PT_LOAD) {
-      printf("enter pgm_header %p\n", pgm_header);
+      printf("loader: enter pgm_header %p\n", pgm_header);
       // set segment '.bss' to zero 
       // # length  : pgm_header->p_memsz  - pgm_header->p_filesz Bytes
       // to memery
       // # start at: pgm_header->p_vaddr  + pgm_header->p_filesz
       // to elf
       // # start at: pgm_header->p_offset + pgm_header->p_filesz
-      printf("bss set zero, start at %p, size %d\n", pgm_header->p_offset + pgm_header->p_filesz, pgm_header->p_memsz  - pgm_header->p_filesz);
+      printf("loader: bss set zero, start at %p, size %d\n", pgm_header->p_offset + pgm_header->p_filesz, pgm_header->p_memsz  - pgm_header->p_filesz);
       ramdisk_write(&zero_buf,
                      pgm_header->p_offset + pgm_header->p_filesz,
                      pgm_header->p_memsz  - pgm_header->p_filesz);
@@ -62,11 +62,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       // # start at: pgm_header->p_offset
       // to memery
       // # start at: pgm_header->p_vaddr
-      printf("read LOAD, start at %p, size %d\n", pgm_header->p_offset, pgm_header->p_memsz);
+      printf("loader: read LOAD, start at %p, size %d\n", pgm_header->p_offset, pgm_header->p_memsz);
       ramdisk_read( seg_buffer, 
                     pgm_header->p_offset, 
                     pgm_header->p_memsz);
-      printf("write to mem at %p, size %d\n", pgm_header->p_vaddr, pgm_header->p_memsz);
+      printf("loader: write to mem at %p, size %d\n", pgm_header->p_vaddr, pgm_header->p_memsz);
       memcpy((void*)pgm_header->p_vaddr, 
                     seg_buffer, 
                     pgm_header->p_memsz);
