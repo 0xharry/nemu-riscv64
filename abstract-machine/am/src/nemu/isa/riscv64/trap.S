@@ -20,18 +20,21 @@ f(30) f(31)
 
 .globl __am_asm_trap
 __am_asm_trap:
-  addi sp, sp, -CONTEXT_SIZE # creat a 'struct Context* c'
+ 
+  addi sp, sp, -CONTEXT_SIZE
 
-  MAP(REGS, PUSH) # REGS(PUSH) # sd x1, 1*8(sp) .. sd x31, 8*31(sp)
+  MAP(REGS, PUSH)
 
   mv t0, sp
+
   addi t0, t0, CONTEXT_SIZE
+
   sd t0, OFFSET_SP(sp)
+  
 
   csrr t0, scause
   csrr t1, sstatus
-  csrr t2, sepc
-
+  csrr t2, sepc  
   sd t0, OFFSET_CAUSE(sp)
   sd t1, OFFSET_STATUS(sp)
   sd t2, OFFSET_EPC(sp)

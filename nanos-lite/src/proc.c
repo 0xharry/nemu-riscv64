@@ -19,19 +19,18 @@ void hello_fun(void *arg) {
   }
 }
 
-
 extern void naive_uload(PCB *pcb, const char *filename);
-
 void init_proc() {
   switch_boot_pcb();
 
   Log("Initializing processes...");
 
   // load program here
-  // test file
-  naive_uload(NULL, "/bin/bmp-test");
+  naive_uload(NULL, NULL);
+
 }
 
+#include "/home/harry/ics2020/abstract-machine/am/include/am.h"
 Context* schedule(Context *prev) {
   return NULL;
 }
