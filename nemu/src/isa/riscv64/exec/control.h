@@ -40,53 +40,47 @@ static inline def_EHelper(jalr)
 
 
 // B_TYPE: -------------------------------
-// id_src1=rs1, id_src2=imm, id_dest=rs2
+// id_src1=rs1, id_src2=rs2, id_dest=imm
 
-// if (rs1 ≠ rs2) pc += sext(offset)
+// if (rs1 ≠ rs2) pc += sext(offset) (pc changed in decode)
 static inline def_EHelper(bne)
 {
-  if(*ddest != *dsrc1)
-    rtl_j(s, cpu.pc + id_src2->simm);
+  rtl_jrelop(s, RELOP_NE, dsrc1, dsrc2, s->jmp_pc);
   print_asm_template2(bne);
 }
 
 // if (rs1 == rs2) pc += sext(offset)
 static inline def_EHelper(beq)
 {
-  if(*ddest == *dsrc1)
-    rtl_j(s, cpu.pc + id_src2->simm);
+  rtl_jrelop(s, RELOP_EQ, dsrc1, dsrc2, s->jmp_pc);
   print_asm_template2(beq);
 }
 
 // if (rs1 < s rs2) pc += sext(offset)
 static inline def_EHelper(blt)
 {
-  if((int32_t)*dsrc1 < (int32_t)*ddest)
-    rtl_j(s, cpu.pc + id_src2->simm);
+  rtl_jrelop(s, RELOP_LT, dsrc1, dsrc2, s->jmp_pc);
   print_asm_template2(blt);
 }
 
 // if (rs1 < u rs2) pc += sext(offset)
 static inline def_EHelper(bltu)
 {
-  if((uint32_t)*dsrc1 < (uint32_t)*ddest)
-    rtl_j(s, cpu.pc + id_src2->simm);
+  rtl_jrelop(s, RELOP_LTU, dsrc1, dsrc2, s->jmp_pc);
   print_asm_template2(bltu);
 }
 
 // if (rs1 ≥ s rs2) pc += sext(offset)
 static inline def_EHelper(bge)
 {
-  if((int32_t)*dsrc1 >= (int32_t)*ddest)
-    rtl_j(s, cpu.pc + id_src2->simm);
+  rtl_jrelop(s, RELOP_GE, dsrc1, dsrc2, s->jmp_pc);
   print_asm_template2(bge);
 }
 
 // if (rs1 ≥ u rs2) pc += sext(offset)
 static inline def_EHelper(bgeu)
 {
-  if((uint32_t)*dsrc1 >= (uint32_t)*ddest)
-    rtl_j(s, cpu.pc + id_src2->simm);
+  rtl_jrelop(s, RELOP_GEU, dsrc1, dsrc2, s->jmp_pc);
   print_asm_template2(bgeu);
 }
 
