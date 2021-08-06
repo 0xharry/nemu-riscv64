@@ -32,7 +32,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   printf("loader: hello fd=%d\n", elf_fd);
   fs_read(elf_fd, elf_buffer, sizeof(Elf_Ehdr));
   elf_header = (Elf_Ehdr*)elf_buffer;
-  printf("ELF Header:\n Entry point address: %p\n Start of program headers: %u\n Start of section headers: %u\n",\
+  printf("--------------------------------------------\n\
+          ELF Header:\n Entry point address:\t\t%p\n Start of program headers:\t\t%u\n Start of section headers:\t\t%u\n\
+          --------------------------------------------\n",\
           elf_header->e_entry, elf_header->e_phoff, elf_header->e_shoff);
 
   // check elf magic number
@@ -44,7 +46,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     pgm_header = (Elf_Phdr*)pgm_buffer;
 
     if(pgm_header->p_type == PT_LOAD) {
-      printf("Program Headers:\n Offset:\t0x%08x\n VirtAddr:\t%p\n FileSiz:\t0x%08x\n MemSiz:\t0x%08x\n",\
+      printf("--------------------------------------------\n\
+              Program Headers:\n Offset:\t0x%08x\n VirtAddr:\t%p\n FileSiz:\t0x%08x\n MemSiz:\t0x%08x\n\
+              --------------------------------------------\n",\
               pgm_header->p_offset, pgm_header->p_vaddr, pgm_header->p_filesz, pgm_header->p_memsz);
       // set segment '.bss' to zero 
       // # length  : pgm_header->p_memsz  - pgm_header->p_filesz + sizeof(void*) Bytes
