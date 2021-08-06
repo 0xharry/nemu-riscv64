@@ -1,3 +1,4 @@
+// AM设备接口
 #ifndef AM_H__
 #define AM_H__
 
@@ -5,7 +6,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include ARCH_H // this macro is defined in $CFLAGS
-                // examples: "arch/x86-qemu.h", "arch/native.h", ...
+// examples: "arch/x86-qemu.h", "arch/native.h", ...
 
 // Memory protection flags
 #define MMAP_NONE  0x00000000 // no access
@@ -25,10 +26,10 @@ typedef struct {
   enum {
     EVENT_NULL = 0,
     EVENT_YIELD, EVENT_SYSCALL, EVENT_PAGEFAULT, EVENT_ERROR,
-    EVENT_IRQ_TIMER, EVENT_IRQ_IODEV,
-  } event;  //事件编号
-  uintptr_t cause, ref;
-  const char *msg;  //事件信息
+    EVENT_IRQ_TIMER, EVENT_IRQ_IODEV
+  } event; // 事件编号!
+  uintptr_t cause, ref; // 描述事件的补充信息
+  const char *msg;  // 事件信息字符串
 } Event;
 
 // A protected address space with user memory @area
@@ -49,9 +50,9 @@ void     putch       (char ch);
 void     halt        (int code) __attribute__((__noreturn__));
 
 // -------------------- IOE: Input/Output Devices --------------------
-bool     ioe_init    (void);
-void     ioe_read    (int reg, void *buf);
-void     ioe_write   (int reg, void *buf);
+bool     ioe_init    (void);                // IOE相关的初始化操作
+void     ioe_read    (int reg, void *buf);  // 从寄存器[reg]读出内容到缓冲区buf
+void     ioe_write   (int reg, void *buf);  // 向寄存器[reg]写入缓冲区buf的内容
 #include "amdev.h"
 
 // ---------- CTE: Interrupt Handling and Context Switching ----------
