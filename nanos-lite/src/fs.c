@@ -38,7 +38,7 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_DEV]    = {"/dev/events",0, 0, 0, events_read,   invalid_write},
   [FD_DISP]   = {"/proc/dispinfo", 0, 0, 0, dispinfo_read, dispinfo_write},
   [FD_FB]     = {"/dev/fb",    0, 0, 0, invalid_read,  fb_write},
-#include "files.h"
+// #include "files.h"
 };
 
 void init_fs() {

@@ -1,5 +1,5 @@
 #include <common.h>
-#include "syscall.h"
+#include "/home/harry/ics2020/navy-apps/libs/libos/src/syscall.h"
 #include "fs.h"
 #include<sys/time.h>
 
