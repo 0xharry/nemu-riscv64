@@ -20,14 +20,14 @@ void do_syscall(Context *c) {
   a[3] = _a2;
 
   switch (a[0]) {
-    case SYS_exit :  halt(_a0);               break;
-    case SYS_yield:  yield();                 break;
-    case SYS_open :  fs_open ((char*)_a0, _a1, _a2); break;
-    case SYS_read :  fs_read (_a0, (char*)_a1, _a2); break;
-    case SYS_write:  fs_write(_a0, (char*)_a1, _a2); break;
-    case SYS_close:  _ret = 0;                break;
-    case SYS_lseek:  fs_lseek(_a0, _a1, _a2); break;
-    case SYS_brk  :  _ret = 0;                break;
+    case SYS_exit :  halt(_a0);                       break;
+    case SYS_yield:  yield();                         break;
+    case SYS_open :  fs_open ((char*)_a0, _a1, _a2);  break;
+    case SYS_read :  fs_read (_a0, (char*)_a1, _a2);  break;
+    case SYS_write:  fs_write(_a0, (char*)_a1, _a2);  break;
+    case SYS_close:  _ret = 0;                        break;
+    case SYS_lseek:  fs_lseek(_a0, _a1, _a2);         break;
+    case SYS_brk  :  _ret = 0;                        break;
     // case SYS_execve:
     // case SYS_gettimeofday:
     default: panic("Unhandled syscall ID = %d", a[0]);
