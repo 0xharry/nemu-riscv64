@@ -1,4 +1,3 @@
-// riscv64 原生输入输出（本质上是内存访问）
 #ifndef RISCV64_H__
 #define RISCV64_H__
 

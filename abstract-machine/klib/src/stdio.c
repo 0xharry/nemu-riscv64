@@ -1,207 +1,146 @@
-
-#ifdef _KLIB_TEST_
-#include "../tests/klib_test.h"
-#include "../include/klib-macros.h"
-#else
 #include <am.h>
-#include <klib.h>
 #include <klib-macros.h>
+#include <klib.h>
 #include <stdarg.h>
-#endif
-
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
-// formatted output conversion
 
-/*------------------ function helper ----------------------------*/
-static inline bool isdigit(char c) {
-  return (bool)((c >= '0') && (c <= '9'));
-}
-
-static inline int sputstr(char *out, const char *s) {
-  int i=0;
-  for (; s[i] != '\0'; ++i) out[i]=s[i];
-  return i;
-}
-
-static inline int snputstr(char *out, const char *s, size_t n) {
-  int i=0;
-  for (; (s[i] != '\0') && (n--); ++i) out[i]=s[i];
-  return i;
-}
-
-static char num_buf[SIZE_NUM_BUF];
-static char num2char[] = "0123456789abcdef";
-static int field_width;
-static bool zero_padding;
-static bool negtive_sign;
-static int print_num(char *out, unsigned long val, unsigned base, bool neg_sign) {
-  int word_count=0;
-  int length=0;
-  char pad_with=0;
-  // convert number from 'int' to 'str'(reversed)
-  do {
-    num_buf[length++] = num2char[val%base];
-    val /= base;
-  }while (val);
-  num_buf[length] = '\0';
-
-  // print length with padding
-  if(field_width > length) {
-    if(zero_padding) { pad_with = '0'; zero_padding=0;}
-    else             { pad_with = ' '; }
-
-    int pad_len = field_width-length;
-    word_count += pad_len;
-    field_width=0;
-
-    while(--pad_len)
-      *out++ = pad_with;
-
-    if(neg_sign)    { *out++ = '-'; neg_sign=0;}
-    else            { *out++ = pad_with;}
-  }
-
-  if(neg_sign) {
-    *out++ = '-';
-    ++word_count;
-  }
-
-  // print num_buf to 'out'
-  word_count += length;
-  do {
-    *out++ = num_buf[--length];
-  }while (length);
-
-  return word_count;
-}
-/*------------------ function helper ----------------------------*/
+#define is_digit(c) ((c)>='0' &&(c)<='9')
 
 
-/* 
- * The  functions  vprintf(),  vfprintf(),  vdprintf(),  vsprintf(),   vs‐
- * nprintf()   are   equivalent  to  the  functions  printf(),  fprintf(),
- * dprintf(), sprintf(), snprintf(), respectively, except  that  they  are
- * called with a va_list instead of a variable number of arguments.  These
- * functions do not call the va_end macro.  Because they invoke the va_arg
- * macro, the value of ap is undefined after the call.
+
+
+
+/**
+ * @brief 转换int 到 string
  * 
- *  This version implements the following printf features:
- *	%d	decimal conversion
- *	%u	unsigned conversion
- *	%x	hexadecimal conversion
- *  %p  address start with '0x'
- *	%c	character
- *	%s	string
- *	%m	field width
- *	%0m	zero-padding
+ * @param n 
+ * @param radix 
+ * @param ret 
+ * @return int 
  */
-
-int vsprintf(char *out, const char *fmt, va_list p_fmt) {
-  // if(out == NULL) return 0;
-  int word_count=0;
-  int temp=0;
-  long number=0;
-  field_width=0;
-  zero_padding=0;
-  char fmt_c=0;
-
-  for (;;) {
-    while (*fmt != '%') {
-      if(*fmt == '\0') {
-        *out = '\0';
-        ++word_count;
-        return word_count;
-      }
-      *out++ = *fmt++;
-      ++word_count;
-    }
-
-    // (fmt == %) now
-    fmt_c = *(++fmt); ++fmt;
-
-    // zero-padding
-    if(fmt_c == '0') {
-      zero_padding = 1;
-      fmt_c = *fmt++;
-    }
-
-    // field width
-    if(isdigit(fmt_c))
-      while (isdigit(fmt_c)) {
-        field_width = 10*field_width + fmt_c - '0';
-        fmt_c = *fmt++;
-      }
-
-    // print fomarts
-    switch (fmt_c) {
-    case 'u': print_unsigned(DEC); break;
-    case 'd': print_signed(DEC);   break;
-    case 'x': print_signed(HEX);   break;
-    case 'p': print_pointer();     break;
-    case 's': print_string();      break;
-    case 'c': print_char();        break;
-    default:                       break;
-    }
-  }
+int i2a(int n,int base,char *ret) { 
   
-  // print stops
-  *out = '\0';
-  ++word_count;
-  return word_count;
+  int flag = 0;
+  if(n<0 ) flag =1, n=-n;
+
+  char buf[128] = {0};
+  int i=0,j=0;
+  if(n==0) { 
+    *ret = '0';
+    return 1;
+  }
+  while(n>0){
+    buf[i++] = n%base + '0';
+    n/=base;
+  }
+ 
+  if(flag == 1 && base == 10) buf[i++]='-';
+  buf[i]='\0';
+
+  for(j=i-1;j>=0;j--){
+    if(is_digit(buf[i-j-1]) || buf[i-j-1]=='-')
+      ret[j] = buf[i-j-1];
+    else
+      ret[j] = buf[i-j-1]-'9'+'a'-1;
+  }
+  ret[i] = '\0';
+ 
+  return i;
 }
 
-// sprintf()  write output  to  the  given  output  stream
-int sprintf(char *out, const char *fmt, ...) {
-  va_list p_fmt; 
-  va_start(p_fmt, fmt);
-  int ret = vsprintf(out, fmt, p_fmt);
-  va_end(p_fmt);
-  return ret;
-}
-
-static char ostream[OSTREAM_SIZE];
-#ifndef _KLIB_TEST_
 int printf(const char *fmt, ...) {
-  va_list p_fmt; 
-  va_start(p_fmt, fmt);
-  int ret = vsprintf(ostream, fmt, p_fmt);
-  va_end(p_fmt);
-  putstr(ostream);
-  return ret;
+  va_list ap;
+  char buf[4096] = {0};
+  va_start(ap, fmt);
+  int len = vsprintf(buf,fmt,ap);
+  va_end(ap);
+  size_t i = 0;
+  while(buf[i] != '\0') {
+    putch(buf[i]);
+    i++;
+  }
+  return len;
 }
-#endif
-/* -------------------------- n printf() -------------------------------*/
 
-/* 
- * The  functions snprintf() and vsnprintf() write at most n bytes (in‐
- * cluding the terminating null byte ('\0')) to out.
- */
-int vsnprintf(char *out, size_t n, const char *fmt, va_list p_fmt) {
-  // if(out == NULL || n-- <=0 || n>1023) return 0;
-  int ret = vsprintf(ostream, fmt, p_fmt);
-  memcpy(out, ostream, n);
-  return ret>n? n: ret;
+int vsprintf(char *out, const char *fmt, va_list ap) {
+  int arg_int;
+  char *arg_s;
+  int len=0;
+  int base=10;
+  size_t pos=0;
+
+  while(*fmt){
+    switch(*fmt){
+    case '%':
+      ++fmt;
+      switch(*fmt){
+        case 'd': 
+          base = 10;
+          arg_int = va_arg(ap, int);
+          len = i2a(arg_int,base,out+pos);
+          pos+=len;
+          break;
+        case 'x':
+          base = 16;
+          arg_int = va_arg(ap, int);
+          len = i2a(arg_int,base,out+pos);
+          pos+=len;
+          break;
+        case 's': 
+          // putch('s');
+          arg_s = va_arg(ap,char *);
+          strcat(out,arg_s);
+          len = strlen(arg_s);
+          pos+=len;
+          break;
+        case 'c':
+          arg_int = va_arg(ap,int);
+          out[pos] = arg_int+'0';
+          pos++;
+          break;
+        case 'p':
+          out[pos++] = '0';
+          out[pos++] = 'x';
+          base = 16;
+          arg_int = va_arg(ap, int);
+          len = i2a(arg_int,base,out+pos);
+          pos+=len;
+          break;
+        default: break;
+      }
+      break;
+    default: 
+      out[pos++]=*fmt;
+      break;
+  }
+  fmt++;
+  }
+  out[pos] = '\0';
+  va_end(ap);
+  return pos;
+}
+
+int sprintf(char *out, const char *fmt, ...) {
+    //memset(buf,0,sizeof(char)*1024);
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = vsprintf(out, fmt, ap);
+    va_end(ap);
+    return ret;
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  va_list p_fmt; 
-  va_start(p_fmt, fmt);
-  int ret = vsprintf(ostream, fmt, p_fmt);
-  va_end(p_fmt);
-  memcpy(out, ostream, n);
-  out[n-1] = '\0';
-  return ret>n? n: ret;
+    assert(0);
+    return 0;
 }
 
-#ifdef _KLIB_TEST_
-int kprintf(const char *fmt, ...) {
-  va_list p_fmt; 
-  va_start(p_fmt, fmt);
-  int ret = vsprintf(ostream, fmt, p_fmt);
-  va_end(p_fmt);
-  putstr(ostream);
-  return ret;
+int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
+    assert(0);
+    return 0;
 }
-#endif
+
+//TODO:implement sscanf
+
+
 #endif
