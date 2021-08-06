@@ -46,6 +46,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     pgm_header = (Elf_Phdr*)pgm_buffer;
 
     if(pgm_header->p_type == PT_LOAD) {
+      printf("enter pgm_header type LOAD\n");
       // set segment '.bss' to zero 
       // # length  : pgm_header->p_memsz  - pgm_header->p_filesz Bytes
       // to memery
