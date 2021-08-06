@@ -29,6 +29,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   assert(filename);
   // read ELF header
   int elf_fd = fs_open(filename,0,0);
+  printf("hello fd=%d\n", elf_fd);
   fs_read(elf_fd, elf_buffer, sizeof(Elf_Ehdr));
 //ramdisk_read(elf_buffer, 0, sizeof(Elf_Ehdr));
   elf_header = (Elf_Ehdr*)elf_buffer;
