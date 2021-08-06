@@ -51,7 +51,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       // # start at: pgm_header->p_vaddr  + pgm_header->p_filesz
       // to elf
       // # start at: pgm_header->p_offset + pgm_header->p_filesz
-      printf("loader: bss set zero, start at %p, size %d\n", pgm_header->p_offset + pgm_header->p_filesz, pgm_header->p_memsz  - pgm_header->p_filesz);
+      printf("loader: bss set zero, start at %p, size %p\n", pgm_header->p_offset + pgm_header->p_filesz, pgm_header->p_memsz  - pgm_header->p_filesz);
       ramdisk_write(&zero_buf,
                      pgm_header->p_offset + pgm_header->p_filesz,
                      pgm_header->p_memsz  - pgm_header->p_filesz);
@@ -62,11 +62,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       // # start at: pgm_header->p_offset
       // to memery
       // # start at: pgm_header->p_vaddr
-      printf("loader: read LOAD, start at %p, size %d\n", pgm_header->p_offset, pgm_header->p_memsz);
+      printf("loader: read LOAD, start at %p, size %p\n", pgm_header->p_offset, pgm_header->p_memsz);
       ramdisk_read( seg_buffer, 
                     pgm_header->p_offset, 
                     pgm_header->p_memsz);
-      printf("loader: write to mem at %p, size %d\n", pgm_header->p_vaddr, pgm_header->p_memsz);
+      printf("loader: write to mem at %p, size %p\n", pgm_header->p_vaddr, pgm_header->p_memsz);
       memcpy((void*)pgm_header->p_vaddr, 
                     seg_buffer, 
                     pgm_header->p_memsz);
