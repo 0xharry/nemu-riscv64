@@ -34,10 +34,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 //ramdisk_read(elf_buffer, 0, sizeof(Elf_Ehdr));
   elf_header = (Elf_Ehdr*)elf_buffer;
 
-#ifdef DEBUG
   // check elf magic number
   assert(*(uint32_t *)elf_header->e_ident == 0x464c457f);
-#endif
 
   // read and analyze each program header
   for(int i=0; i<elf_header->e_phnum; ++i, pgm_header+=sizeof(Elf_Phdr)){
@@ -46,13 +44,14 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     pgm_header = (Elf_Phdr*)pgm_buffer;
 
     if(pgm_header->p_type == PT_LOAD) {
-      printf("enter pgm_header type LOAD\n");
+      printf("enter pgm_header %p\n", pgm_header);
       // set segment '.bss' to zero 
       // # length  : pgm_header->p_memsz  - pgm_header->p_filesz Bytes
       // to memery
       // # start at: pgm_header->p_vaddr  + pgm_header->p_filesz
       // to elf
       // # start at: pgm_header->p_offset + pgm_header->p_filesz
+      printf("bss set zero, start at %p, size %d\n", pgm_header->p_offset + pgm_header->p_filesz, pgm_header->p_memsz  - pgm_header->p_filesz);
       ramdisk_write(&zero_buf,
                      pgm_header->p_offset + pgm_header->p_filesz,
                      pgm_header->p_memsz  - pgm_header->p_filesz);
@@ -63,9 +62,11 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
       // # start at: pgm_header->p_offset
       // to memery
       // # start at: pgm_header->p_vaddr
+      printf("read LOAD, start at %p, size %d\n", pgm_header->p_offset, pgm_header->p_memsz);
       ramdisk_read( seg_buffer, 
                     pgm_header->p_offset, 
                     pgm_header->p_memsz);
+      printf("write to mem at %p, size %d\n", pgm_header->p_vaddr, pgm_header->p_memsz);
       memcpy((void*)pgm_header->p_vaddr, 
                     seg_buffer, 
                     pgm_header->p_memsz);
