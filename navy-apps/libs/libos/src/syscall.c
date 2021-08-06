@@ -64,43 +64,17 @@ int _write(int fd, void *buf, size_t count) {
   return _syscall_(SYS_write, fd, buf, count);
 }
 
-
-//根据abstract machine里的ld脚本
 extern char _end;
-//program break一开始的位置位于_end
-static char * program_break = &_end;
-// SYS_brk, 它接收一个参数addr, 用于指示新的program break的位置.
+static void *brk_navy = &_end;
 void *_sbrk(intptr_t increment) {
-  //被调用时, 根据记录的program break位置和参数increment, 计算出新program break
-  //若SYS_brk系统调用成功, 该系统调用会返回0
-  char * ret = program_break;
-  if(_syscall_(SYS_brk,program_break+increment,0,0)==0) {
-    program_break+=increment;
-    //将旧program break的位置作为_sbrk()的返回值返回
-    return ret;
+  if(_syscall_(SYS_brk, brk_navy, increment, 0)==0) {
+    void *brk_ret = brk_navy;
+    brk_navy += increment;
+    return brk_ret;
   }
-  //失败, _sbrk()会返回-1
-  return (void *)-1;
+  else
+    return (void*)-1;
 }
-// extern char _end;
-// static void *brk_navy;
-// void *_sbrk(intptr_t increment) {
-//   // brk initialization
-//   if(increment == 0) {
-//     if(brk_navy==0) {
-//       brk_navy == &_end;
-//     }
-//     return brk_navy;
-//   }
-
-//   void *brk_ret = brk_navy;
-//   brk_navy += increment;
-
-//   if(_syscall_(SYS_brk, brk_navy, increment, 0)==-1)
-//     return (void*)-1;
-//   else
-//     return brk_ret;
-// }
 
 int _read(int fd, void *buf, size_t count) {
   _exit(SYS_read);
