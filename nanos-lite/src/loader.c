@@ -38,7 +38,7 @@ elf_header.e_entry, elf_header.e_phoff, elf_header.e_shoff);
 
   // read and analyze each program header
   for(int i=0; i<elf_header.e_phnum; ++i) {
-    fs_lseek(elf_fd, elf_header.e_phoff, SEEK_SET); // 0+64
+    fs_lseek(elf_fd, elf_header.e_phoff + i*sizeof(Elf_Phdr), SEEK_SET); // 0+64
     fs_read(elf_fd, &pgm_header, sizeof(Elf_Phdr));
 
     if(pgm_header.p_type == PT_LOAD) {
