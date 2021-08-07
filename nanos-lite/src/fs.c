@@ -88,13 +88,11 @@ printf("----------------\n[fs_read] fd %d\n from (%u + offset %d)\n size=%p\n---
 
 size_t fs_write(int fd, const void *buf, size_t len) {
   if(fd==1 || fd==2) {
+    putch('0'+len);
     putnstr(buf, len);
     return len;
   }
   if(fd==0) return 0;
-
-printf("----------------\n[fs_write] fd %d\n from (%u + offset %d)\n size=%p\n----------------\n",\
-        fd, file_table[fd].disk_offset, file_table[fd].file_offset, len);
 
   file_table[fd].write(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
   return fs_lseek(fd, len, SEEK_CUR);
