@@ -34,7 +34,7 @@ ELF Header:\n Entry point address:\t\t%p\n Start of program headers:\t\t%u\n\
 elf_header.e_entry, elf_header.e_phoff, elf_header.e_shoff);
 
   // check elf magic number
-  assert(*elf_header.e_ident == 0x464c457f);
+  assert(*(int*)elf_header.e_ident == 0x464c457f);
 
   // read and analyze each program header
   for(int i=0; i<elf_header.e_phnum; ++i) {
