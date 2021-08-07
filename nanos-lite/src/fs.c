@@ -3,7 +3,7 @@
 typedef size_t (*ReadFn) (void *buf, size_t offset, size_t len);
 typedef size_t (*WriteFn) (const void *buf, size_t offset, size_t len);
 
-// extern size_t invalid_read(const void *buf, size_t offset, size_t len);
+// extern size_t serial_write(const void *buf, size_t offset, size_t len);
 // extern size_t events_read(void *buf, size_t offset, size_t len);
 // extern size_t dispinfo_read(void *buf, size_t offset, size_t len);
 
