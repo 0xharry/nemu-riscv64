@@ -88,7 +88,7 @@ printf("----------------\n[fs_read] fd %d\n from (%u + offset %d)\n size=%p\n---
 
 size_t fs_write(int fd, const void *buf, size_t len) {
   if(fd==1 || fd==2) {
-    putch('0'+len);
+    putch(len);
     putnstr(buf, len);
     return len;
   }
