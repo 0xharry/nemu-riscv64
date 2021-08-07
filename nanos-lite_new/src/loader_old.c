@@ -18,29 +18,24 @@ extern size_t fs_write(int fd, const void *buf, size_t len);
 extern size_t fs_lseek(int fd, size_t offset, int whence);
 extern int fs_close(int fd);
 
-#define seg_buf_size 0x20000
-static char* elf_buffer[sizeof(Elf_Ehdr)];
-static char* pgm_buffer[sizeof(Elf_Phdr)];
-static char* seg_buffer[seg_buf_size];
-static Elf_Ehdr* elf_header;
-static Elf_Phdr* pgm_header;
+static Elf_Ehdr elf_header;
+static Elf_Phdr pgm_header;
 static const int zero_buf;
 static uintptr_t loader(PCB *pcb, const char *filename) {
   assert(filename);
   // read ELF header
   int elf_fd = fs_open(filename,0,0);
   printf("loader: hello fd=%d\n", elf_fd);
-  fs_read(elf_fd, elf_buffer, sizeof(Elf_Ehdr));
-  elf_header = (Elf_Ehdr*)elf_buffer;
+  fs_read(elf_fd, &elf_header, sizeof(Elf_Ehdr));
   printf("--------------------------------------------\n\
           ELF Header:\n Entry point address:\t\t%p\n Start of program headers:\t\t%u\n Start of section headers:\t\t%u\n--------------------------------------------\n",\
-          elf_header->e_entry, elf_header->e_phoff, elf_header->e_shoff);
+          elf_header.e_entry, elf_header.e_phoff, elf_header.e_shoff);
 
   // check elf magic number
-  assert(*(uint32_t *)elf_header->e_ident == 0x464c457f);
+  assert(elf_header.e_ident == 0x464c457f);
 
   // read and analyze each program header
-  for(int i=0; i<elf_header->e_phnum; ++i, pgm_header+=sizeof(Elf_Phdr)){
+  for(int i=0; i<elf_header.e_phnum; ++i, pgm_header+=sizeof(Elf_Phdr)){
     fs_read(elf_fd, pgm_buffer, sizeof(Elf_Phdr));
     pgm_header = (Elf_Phdr*)pgm_buffer;
 
