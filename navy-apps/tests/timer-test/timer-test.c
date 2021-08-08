@@ -11,7 +11,6 @@ int main() {
 //       printf("一句话");
 //   }
 //   return 0;
-NDL_Init(0);
     struct timeval time;
     int halfsec = 1;
     int j = 0;
