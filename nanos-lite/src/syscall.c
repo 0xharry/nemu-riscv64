@@ -1,54 +1,35 @@
 #include <common.h>
 #include "syscall.h"
-#include "fs.h"
-#include<sys/time.h>
-
-
-extern void yield();
-
-
-extern int    fs_open(const char *pathname, int flags, int mode);
+#include "/home/harry/ics2020/abstract-machine/am/include/am.h"
+#define _a7  c->GPR1
+#define _a0  c->GPR2
+#define _a1  c->GPR3
+#define _a2  c->GPR4
+#define _ret c->GPRx
+extern int fs_open(const char *pathname, int flags, int mode);
 extern size_t fs_read(int fd, void *buf, size_t len);
 extern size_t fs_write(int fd, const void *buf, size_t len);
 extern size_t fs_lseek(int fd, size_t offset, int whence);
-extern int    fs_close(int fd);
-size_t _write(int fd, void *buf, size_t count);
-int sys_gettimeofday(struct timeval *tv, struct timezone *tz);
-
+// extern int fs_close(int fd);
 
 void do_syscall(Context *c) {
   uintptr_t a[4];
-  a[0] = c->GPR1;  //第一个参数是系统调用号
-  a[1] = c->GPR2;  // a0
-  a[2] = c->GPR3;
-  a[3] = c->GPR4;
+  a[0] = _a7;
+  a[1] = _a0;
+  a[2] = _a1;
+  a[3] = _a2;
+
   switch (a[0]) {
-    case SYS_exit:  halt(a[1]); break;
-    case SYS_yield: c->GPRx = 0;  yield(); break;
-    case SYS_open:  c->GPRx = fs_open((char*)a[1],a[2],a[3]);  break;
-    case SYS_read:  c->GPRx = fs_read(a[1],(void *)a[2],a[3]); break;
-    case SYS_write: c->GPRx = fs_write(a[1],(void *)a[2],a[3]);break;
-    case SYS_close: c->GPRx = fs_close(a[1]);                  break;   
-    case SYS_lseek: c->GPRx = fs_lseek(a[1],a[2],a[3]);        break;
-    case SYS_brk  : c->GPRx = 0;                               break;
-    case SYS_gettimeofday : c->GPRx = sys_gettimeofday((struct timeval *)a[1],(struct timezone *)a[2]);break;
+    case SYS_exit :  halt(_a0);                       break;
+    case SYS_yield:  yield();                         break;
+    case SYS_open :  fs_open ((char*)_a0, _a1, _a2);  break;
+    case SYS_read :  fs_read (_a0, (char*)_a1, _a2);  break;
+    case SYS_write:  fs_write(_a0, (char*)_a1, _a2);  break;
+    case SYS_close:  _ret = 0;                        break;
+    case SYS_lseek:  fs_lseek(_a0, _a1, _a2);         break;
+    case SYS_brk  :  _ret = 0;                        break;
+    // case SYS_execve:
+    // case SYS_gettimeofday:
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
-
-
-
-size_t _write(int fd, void *buf, size_t count){
-  //size_t ret = ramdisk_write(buf,0,count);
-  size_t ret = count;
-  if(fd == 1 || fd == 2) {
-    int i;
-
-    for(i=0;i<count;i++) {
-      putch(*(char *)(buf+i));
-    }
-    return ret;
-  }
-  return -1;
-}
-
