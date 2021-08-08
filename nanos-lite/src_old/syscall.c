@@ -16,8 +16,8 @@ extern size_t fs_lseek(int fd, size_t offset, int whence);
 int tm_get(struct timeval *tv, struct timezone *tz) {
   static uint64_t us;
   ioe_read(AM_TIMER_UPTIME, &us);
-  tv->tv_sec  = us / (uint64_t)10e6;
-  tv->tv_usec = us % (uint64_t)10e6;
+  tv->tv_sec  = us / (uint64_t)10e5;
+  tv->tv_usec = us % (uint64_t)10e5;
   return 0;
 }
 
