@@ -57,35 +57,21 @@ char buf[4096];
 
 
 
+#define total_file_num sizeof(file_table)/sizeof(Finfo)
 //打开文件并返回对应的文件描述符
 int fs_open(const char *pathname, int flags, int mode) {
-  //如何找到pathname? 在file_table中找
-  //忽略权限位 flag
-  //使用ramdisk_read 进行真正的读取
-  //偏移量不要越界
-  
-  // Finfo * ff;
-  
-  //printf("get in fs_open\n");
-  bool find = false;
-  int sum = sizeof(file_table)/sizeof(Finfo);
-  //printf("sum is %d\n",sum);
-  int i,ret = 0;
-  for(i=0;i<sum;i++) {
-    //printf("第%d个 : %s\n",i,file_table[i].name);
-    if(strcmp(pathname,file_table[i].name)==0) {
-      file_table[i].file_offset = 0;
-      if(i>=3){
-        file_table[i].read  = ramdisk_read;
-        file_table[i].write = ramdisk_write;
+  for(int fd=0; fd<total_file_num; ++fd)
+    if(strcmp(pathname, file_table[fd].name)==0) {
+      file_table[fd].file_offset = 0;
+      if(fd > 2) {
+        file_table[fd].read  = ramdisk_read;
+        file_table[fd].write = ramdisk_write;
       }
-      find = true;
-      ret = i;
-      break;
+// printf("----------------\n[fs_open]\n file %d: \"%s\"\n size: %p\n----------------\n", fd, pathname, file_table[fd].size);
+      return fd;
     }
-  }  
-  assert(find==true);
-  return ret;
+
+  assert(0);
 }
 
 //从文件描述符中进行读取
