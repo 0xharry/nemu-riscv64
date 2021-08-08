@@ -86,7 +86,8 @@ size_t fs_read(int fd, void *buf, size_t len) {
 // fd, file_table[fd].disk_offset, file_table[fd].file_offset, len);
 
   file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
-  return fs_lseek(fd, len, SEEK_CUR);
+  fs_lseek(fd, len, SEEK_CUR);
+  return len;
 }
 
 size_t fs_write(int fd, const void *buf, size_t len) {
