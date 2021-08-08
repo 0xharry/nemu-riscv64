@@ -26,6 +26,7 @@ const int disp_w = 400, disp_h = 300;
 static int pipe_size = 0;
 #define FB_SIZE (disp_w * disp_h * sizeof(uint32_t))
 
+//函数指针空？
 static FILE *(*glibc_fopen)(const char *path, const char *mode) = NULL;
 static int (*glibc_open)(const char *path, int flags, ...) = NULL;
 static ssize_t (*glibc_read)(int fd, void *buf, size_t count) = NULL;
@@ -101,8 +102,10 @@ static uint32_t timer_handler(uint32_t interval, void *param) {
 }
 
 static void audio_fill(void *userdata, uint8_t *stream, int len) {
+  //open呢？
   int nread = glibc_read(sb_fifo[0], stream, len);
   if (nread == -1) nread = 0;
+  //填充0
   if (nread < len) memset(stream + nread, 0, len - nread);
 }
 
@@ -117,11 +120,13 @@ static void open_display() {
   SDL_CreateThread(event_thread, "event thread", nullptr);
   SDL_AddTimer(1000 / FPS, timer_handler, NULL);
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, disp_w, disp_h);
-
+  //返回一个“匿名”内存“文件”的fd
   fb_memfd = memfd_create("fb", 0);
   assert(fb_memfd != -1);
+  //改变文件大小
   int ret = ftruncate(fb_memfd, FB_SIZE);
   assert(ret == 0);
+  //
   fb = (uint32_t *)mmap(NULL, FB_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fb_memfd, 0);
   assert(fb != (void *)-1);
   memset(fb, 0, FB_SIZE);
