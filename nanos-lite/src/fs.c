@@ -93,10 +93,10 @@ size_t fs_read(int fd, void *buf, size_t len) {
 
 size_t fs_write(int fd, const void *buf, size_t len) {
   if(fd==1 || fd==2) {
-    putnstr("[stdout/err] len:", 18);
-    putch('0'+len/10);
-    putch('0'+len%10);
-    putch('\t');
+    // putnstr("[stdout/err] len:", 18);
+    // putch('0'+len/10);
+    // putch('0'+len%10);
+    // putch('\t');
     putnstr(buf, len);
     return len;
   }
