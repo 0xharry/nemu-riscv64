@@ -45,13 +45,13 @@ void init_fs() {
 size_t fs_lseek(int fd, size_t offset, int whence) {
   switch (whence){
   case SEEK_SET:
-    assert(file_table[fd].size >= offset+1);
+    assert(file_table[fd].size >= offset);
     file_table[fd].file_offset = offset;
     break;
 
   case SEEK_CUR:
     file_table[fd].file_offset += offset;
-    assert(file_table[fd].file_offset <= file_table[fd].size+1);
+    assert(file_table[fd].file_offset <= file_table[fd].size);
     break;
 
   case SEEK_END:
