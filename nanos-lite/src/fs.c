@@ -49,18 +49,18 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
   case SEEK_SET:
     assert(file_table[fd].size >= offset);
     file_table[fd].file_offset = offset;
-    return offset;
 
   case SEEK_CUR:
     file_table[fd].file_offset += offset;
     assert(file_table[fd].file_offset <= file_table[fd].size);
-    return file_table[fd].file_offset;
 
   case SEEK_END:
     file_table[fd].file_offset = file_table[fd].size + offset;
-    return file_table[fd].file_offset;
+
   default: assert(0);
   }
+
+  return file_table[fd].file_offset;
 }
 
 int fs_open(const char *pathname, int flags, int mode) {
