@@ -1,5 +1,5 @@
 NAME = nemu
-# MAKEFLAGS += -j8
+MAKEFLAGS += -j8
 
 ISA ?= riscv64 # if ISA is undefined，ISA=riscv64
 ISAS = $(shell ls src/isa/)
