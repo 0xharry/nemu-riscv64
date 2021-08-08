@@ -97,9 +97,9 @@ size_t fs_read(int fd, void *buf, size_t len) {
   // 读指针越界 || 读指针地址+读取长度 越界
   assert( ff->file_offset <= ff->size );
 
-  size_t count = file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
-  fs_lseek(fd,count,SEEK_CUR); //注意更新!
-  return count;
+  file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
+  fs_lseek(fd,len,SEEK_CUR); //注意更新!
+  return len;
 }
 
 
