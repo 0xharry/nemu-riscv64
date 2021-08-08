@@ -1,4 +1,5 @@
 #include <proc.h>
+#include "/home/harry/ics2020/abstract-machine/am/include/am.h"
 
 #define MAX_NR_PROC 4
 
