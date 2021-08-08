@@ -14,31 +14,24 @@ ifeq ($(MAKECMDGOALS),)
 endif
 
 ### Override checks when `make clean/clean-all/html`
-### 在clean|clean-all|html中找 $(MAKECMDGOALS)，找到返回，找不到return null
 ifeq ($(findstring $(MAKECMDGOALS),clean|clean-all|html),)
 
 ### Print build info message
 $(info # Building $(NAME)-$(MAKECMDGOALS) [$(ARCH)])
 
 ### Check: environment variable `$AM_HOME` looks sane
-### am.h不能为空
 ifeq ($(wildcard $(AM_HOME)/am/include/am.h),)
   $(error $$AM_HOME must be an AbstractMachine repo)
 endif
 
 ### Check: environment variable `$ARCH` must be in the supported list
-### basename取出点号之前的前缀，notdir去掉路径名，只保留文件名;
-### 总结下来输出scripts下面去除.mk部分的内容，只输出前缀
 ARCHS = $(basename $(notdir $(shell ls $(AM_HOME)/scripts/*.mk)))
-### 这里确保ARCH必须是上面得到的ARCHS里面的一个
 ifeq ($(filter $(ARCHS), $(ARCH)), )
   $(error Expected $$ARCH in {$(ARCHS)}, Got "$(ARCH)")
 endif
 
 ### Extract instruction set architecture (`ISA`) and platform from `$ARCH`. Example: `ARCH=x86_64-qemu -> ISA=x86_64; PLATFORM=qemu`
-### 将ARCH里面的-变为空格
 ARCH_SPLIT = $(subst -, ,$(ARCH))
-###分别取第一个和第二个单词
 ISA        = $(word 1,$(ARCH_SPLIT))
 PLATFORM   = $(word 2,$(ARCH_SPLIT))
 
@@ -49,22 +42,16 @@ endif
 
 ### Create the destination directory (`build/$ARCH`)
 WORK_DIR  = $(shell pwd)
-### dst实际为pwd/build/riscv64-nemu
 DST_DIR   = $(WORK_DIR)/build/$(ARCH)
 $(shell mkdir -p $(DST_DIR))
 
 ### Compilation targets (image or archive)
-
 IMAGE_REL = build/$(NAME)-$(ARCH)
-### 绝对路径
 IMAGE     = $(abspath $(IMAGE_REL))
-### 静态链接库 name实际为am ARCH:riscv64-nemu
 ARCHIVE   = $(WORK_DIR)/build/$(NAME)-$(ARCH).a
 
 ### Files to be linked: object files (`.o`) and libraries (`.a`)
-
 OBJS      = $(addprefix $(DST_DIR)/, $(addsuffix .o, $(basename $(SRCS))))
-### 递归排序去重
 LIBS     := $(sort $(LIBS) am klib) # lazy evaluation ("=") causes infinite recursions
 LINKAGE   = $(OBJS) \
   $(addsuffix -$(ARCH).a, $(join \
@@ -86,7 +73,7 @@ READELF   = $(CROSS_COMPILE)readelf
 ### Compilation flags
 INC_PATH += $(WORK_DIR)/include $(addsuffix /include/, $(addprefix $(AM_HOME)/, $(LIBS)))
 INCFLAGS += $(addprefix -I, $(INC_PATH))
-
+# 下面去掉-O2
 CFLAGS   += -O2 -MMD -Wall -Werror -ggdb $(INCFLAGS) \
             -D__ISA__=\"$(ISA)\" -D__ISA_$(shell echo $(ISA) | tr a-z A-Z)__ \
             -D__ARCH__=$(ARCH) -D__ARCH_$(shell echo $(ARCH) | tr a-z A-Z | tr - _) \

@@ -1,3 +1,4 @@
+// VME(Virtual Memory Extension) - 虚存扩展, 为程序提供虚存管理的能力
 #include <am.h>
 #include <nemu.h>
 #include <klib.h>

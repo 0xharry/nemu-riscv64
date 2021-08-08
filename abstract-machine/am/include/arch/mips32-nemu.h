@@ -1,5 +1,5 @@
-#ifndef __ARCH_H__
-#define __ARCH_H__
+#ifndef ARCH_H__
+#define ARCH_H__
 
 struct Context {
   uintptr_t hi, gpr[32], epc, cause, lo, status;
