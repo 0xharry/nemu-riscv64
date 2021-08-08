@@ -92,10 +92,10 @@ int fs_open(const char *pathname, int flags, int mode) {
 //偏移量不能越界
 size_t fs_read(int fd, void *buf, size_t len) {
   //printf("get in fs_read\n");
-  Finfo * ff = &file_table[fd];
-  assert(ff);
-  // 读指针越界 || 读指针地址+读取长度 越界
-  assert( ff->file_offset <= ff->size );
+  // Finfo * ff = &file_table[fd];
+  // assert(ff);
+  // // 读指针越界 || 读指针地址+读取长度 越界
+  // assert( ff->file_offset <= ff->size );
 
   file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
   fs_lseek(fd,len,SEEK_CUR); //注意更新!
