@@ -7,7 +7,7 @@ int main() {
   unsigned ms=NDL_GetTicks();
   while(1) {
       while(NDL_GetTicks() < ms);
-      ms+=500;
+      ms+=100;
       printf("一句话");
   }
   return 0;
