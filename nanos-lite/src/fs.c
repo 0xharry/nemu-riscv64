@@ -35,14 +35,17 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin",      0, 0, 0, invalid_read,  invalid_write},
   [FD_STDOUT] = {"stdout",     0, 0, 0, invalid_read,  invalid_write},
   [FD_STDERR] = {"stderr",     0, 0, 0, invalid_read,  invalid_write},
+  [FD_DEV]    = {"/dev/events",0, 0, 0, invalid_read,   invalid_write},
+  [FD_DISP]   = {"/proc/dispinfo", 0, 0, 0, invalid_read, invalid_write},
+  [FD_FB]     = {"/dev/fb",    0, 0, 0, invalid_read,  invalid_write},
 #include "files.h"
 };
 
 void init_fs() {
-  // TODO: initialize the size of /dev/fb
-  int w = io_read(AM_GPU_CONFIG).width;
-  int h = io_read(AM_GPU_CONFIG).height;
-  file_table[FD_FB].size = w*h*4;
+  // // TODO: initialize the size of /dev/fb
+  // int w = io_read(AM_GPU_CONFIG).width;
+  // int h = io_read(AM_GPU_CONFIG).height;
+  // file_table[FD_FB].size = w*h*4;
 }
 
 int    fs_open(const char *pathname, int flags, int mode);
@@ -75,7 +78,7 @@ int fs_open(const char *pathname, int flags, int mode) {
     //printf("第%d个 : %s\n",i,file_table[i].name);
     if(strcmp(pathname,file_table[i].name)==0) {
       file_table[i].open_offset = 0;
-      if(i>=2){
+      if(i>=6){
         file_table[i].read  = ramdisk_read;
         file_table[i].write = ramdisk_write;
       }
