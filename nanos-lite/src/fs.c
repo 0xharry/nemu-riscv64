@@ -45,37 +45,26 @@ void init_fs() {
 
 #define total_file_num sizeof(file_table)/sizeof(Finfo)
 size_t fs_lseek(int fd, size_t offset, int whence) {
-  Finfo * ff = &file_table[fd];
+  switch (whence){
+  case SEEK_SET:
+    assert(file_table[fd].size >= offset);
+    file_table[fd].file_offset = offset;
+    break;
 
-  switch(whence) {
-    case SEEK_SET: ff->file_offset = offset;break;
-    case SEEK_CUR: ff->file_offset +=offset;break;
-    case SEEK_END: ff->file_offset = ff->size + offset;break;
-    default: assert(0);
+  case SEEK_CUR:
+    file_table[fd].file_offset += offset;
+    assert(file_table[fd].file_offset <= file_table[fd].size);
+    break;
+
+  case SEEK_END:
+    file_table[fd].file_offset = file_table[fd].size + offset;
+    break;
+
+  default: assert(0);
   }
-  return ff->file_offset;
+
+  return file_table[fd].file_offset;
 }
-// size_t fs_lseek(int fd, size_t offset, int whence) {
-//   switch (whence){
-//   case SEEK_SET:
-//     assert(file_table[fd].size >= offset);
-//     file_table[fd].file_offset = offset;
-//     break;
-
-//   case SEEK_CUR:
-//     file_table[fd].file_offset += offset;
-//     assert(file_table[fd].file_offset <= file_table[fd].size);
-//     break;
-
-//   case SEEK_END:
-//     file_table[fd].file_offset = file_table[fd].size + offset;
-//     break;
-
-//   default: assert(0);
-//   }
-
-//   return file_table[fd].file_offset;
-// }
 
 int fs_open(const char *pathname, int flags, int mode) {
   for(int fd=0; fd<total_file_num; ++fd)
@@ -109,7 +98,6 @@ size_t fs_write(int fd, const void *buf, size_t len) {
     // putch('0'+len%10);
     // putch('\t');
     putnstr(buf, len);
-    fs_lseek(fd, len, SEEK_CUR);
     return len;
   }
   if(fd==0) return 0;

@@ -56,7 +56,7 @@ int    fs_close(int fd);
 
 extern size_t ramdisk_read(void *buf, size_t offset, size_t len);
 extern size_t ramdisk_write(const void *buf, size_t offset, size_t len) ;
-char buf[4096];
+// char buf[4096];
 
 
 
