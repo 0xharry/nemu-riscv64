@@ -44,7 +44,7 @@ typedef struct {
 	uint32_t flags;
 	SDL_PixelFormat *format;
 	int w, h;
-	uint16_t pitch;
+	uint16_t pitch; //?
 	uint8_t *pixels;
 } SDL_Surface;
 

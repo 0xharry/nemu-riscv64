@@ -40,60 +40,70 @@
 #error _syscall_ is not implemented
 #endif
 
+//GPR1 : _arg1 ("ecall", "a7", "a0", "a1", "a2", "a0") =  a7
 intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
   register intptr_t _gpr1 asm (GPR1) = type;
   register intptr_t _gpr2 asm (GPR2) = a0;
   register intptr_t _gpr3 asm (GPR3) = a1;
   register intptr_t _gpr4 asm (GPR4) = a2;
-  register intptr_t ret asm (GPRx);
+  register intptr_t ret   asm (GPRx);
+  //ret用于输出,实际是a0
   asm volatile (SYSCALL : "=r" (ret) : "r"(_gpr1), "r"(_gpr2), "r"(_gpr3), "r"(_gpr4));
   return ret;
 }
 
 void _exit(int status) {
   _syscall_(SYS_exit, status, 0, 0);
-  assert(0); // should not reach here
+  // printf("get out of exit\n");
+  while (1);
 }
 
 int _open(const char *path, int flags, mode_t mode) {
-  return _syscall_(SYS_open, path, flags, mode);
+  return _syscall_(SYS_open,path,(intptr_t)flags,mode);
 }
 
 int _write(int fd, void *buf, size_t count) {
-  return _syscall_(SYS_write, fd, buf, count);
+  //_exit(SYS_write);
+  //ssize_t write(int fd, const void *buf, size_t count);
+  return _syscall_(SYS_write,fd,(intptr_t)buf,count);
 }
 
+//根据abstract machine里的ld脚本
 extern char _end;
-static void *brk_navy = &_end;
+//program break一开始的位置位于_end
+static char * program_break = &_end;
+// SYS_brk, 它接收一个参数addr, 用于指示新的program break的位置.
 void *_sbrk(intptr_t increment) {
-  if(_syscall_(SYS_brk, brk_navy, increment, 0)==0) {
-    void *brk_ret = brk_navy;
-    brk_navy += increment;
-    return brk_ret;
+  //被调用时, 根据记录的program break位置和参数increment, 计算出新program break
+  //若SYS_brk系统调用成功, 该系统调用会返回0
+  char * ret = program_break;
+  if(_syscall_(SYS_brk,program_break+increment,0,0)==0) {
+    program_break+=increment;
+    //将旧program break的位置作为_sbrk()的返回值返回
+    return ret;
   }
-  else
-    return (void*)-1;
+  //失败, _sbrk()会返回-1
+  return (void *)-1;
 }
 
 int _read(int fd, void *buf, size_t count) {
-  return _syscall_(SYS_read, fd, buf, count);
+  return _syscall_(SYS_read,fd,(intptr_t)buf,count);
 }
 
 int _close(int fd) {
-  return _syscall_(SYS_close, fd, 0, 0);;
+  return _syscall_(SYS_close,fd,0,0);
 }
 
 off_t _lseek(int fd, off_t offset, int whence) {
-  return _syscall_(SYS_lseek, fd, offset, whence);
+  return _syscall_(SYS_lseek,fd,(intptr_t)offset,(intptr_t)whence);
 }
 
 int _gettimeofday(struct timeval *tv, struct timezone *tz) {
-  return _syscall_(SYS_gettimeofday, tv, tz, 0);
+  return _syscall_(SYS_gettimeofday,(intptr_t)tv,(intptr_t)tz,0);
 }
 
 int _execve(const char *fname, char * const argv[], char *const envp[]) {
-  _exit(SYS_execve);
-  return 0;
+   return _syscall_(SYS_execve,(intptr_t)fname,(intptr_t)argv,(intptr_t)envp);
 }
 
 // Syscalls below are not used in Nanos-lite.

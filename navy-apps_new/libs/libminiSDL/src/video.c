@@ -11,8 +11,9 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
 
 void SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, uint32_t color) {
 }
-
+//将画布中的指定矩形区域同步到屏幕上
 void SDL_UpdateRect(SDL_Surface *s, int x, int y, int w, int h) {
+
 }
 
 // APIs below are already implemented.

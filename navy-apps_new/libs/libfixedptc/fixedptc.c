@@ -9,11 +9,12 @@
  * be returned, meaning there will be invalid, bogus digits outside the
  * specified precisions.
  */
+//max_dec指定了要生成的小数点右侧有多少个十进制数字。
 void fixedpt_str(fixedpt A, char *str, int max_dec) {
 	int ndec = 0, slen = 0;
 	char tmp[12] = {0};
 	fixedptud fr, ip;
-	const fixedptud one = (fixedptud)1 << FIXEDPT_BITS;
+	const fixedptud one = (fixedptud)1 << FIXEDPT_BITS; //1<<32
 	const fixedptud mask = one - 1;
 
 	if (max_dec == -1)
@@ -21,7 +22,7 @@ void fixedpt_str(fixedpt A, char *str, int max_dec) {
 #if FIXEDPT_WBITS > 16
 		max_dec = 2;
 #else
-		max_dec = 4;
+		max_dec = 4;  
 #endif
 #elif FIXEDPT_BITS == 64
 		max_dec = 10;
@@ -36,17 +37,20 @@ void fixedpt_str(fixedpt A, char *str, int max_dec) {
 		A *= -1;
 	}
 
-	ip = fixedpt_toint(A);
+	ip = fixedpt_toint(A); //ip = A>>8原始数据
 	do {
 		tmp[ndec++] = '0' + ip % 10;
 		ip /= 10;
 	} while (ip != 0);
-
+	//数据是相反的字符串
+	//ndec是数字总位数+1
+	//下面是将数字顺序改正
 	while (ndec > 0)
 		str[slen++] = tmp[--ndec];
 	str[slen++] = '.';
 
-	fr = (fixedpt_fracpart(A) << FIXEDPT_WBITS) & mask;
+	//小数部分
+	fr = (fixedpt_fracpart(A) << FIXEDPT_WBITS) & mask; //<<24 & mask
 	do {
 		fr = (fr & mask) * 10;
 
@@ -63,20 +67,21 @@ void fixedpt_str(fixedpt A, char *str, int max_dec) {
 /* Returns the square root of the given number, or -1 in case of error */
 fixedpt fixedpt_sqrt(fixedpt A) {
 	int invert = 0;
-	int iter = FIXEDPT_FBITS;
+	int iter = FIXEDPT_FBITS; //8
 	int l, i;
 
 	if (A < 0)
 		return (-1);
 	if (A == 0 || A == FIXEDPT_ONE)
 		return (A);
+	// A> 6 and A< 1<<8 ，A是小数？
 	if (A < FIXEDPT_ONE && A > 6) {
-		invert = 1;
+		invert = 1; //?
 		A = fixedpt_div(FIXEDPT_ONE, A);
 	}
+	// A> 1<<8  即转换前>1
 	if (A > FIXEDPT_ONE) {
 		int s = A;
-
 		iter = 0;
 		while (s > 0) {
 			s >>= 2;
@@ -84,7 +89,7 @@ fixedpt fixedpt_sqrt(fixedpt A) {
 		}
 	}
 
-	/* Newton's iterations */
+	/* Newton's iterations 牛顿迭代法*/
 	l = (A >> 1) + 1;
 	for (i = 0; i < iter; i++)
 		l = (l + fixedpt_div(A, l)) >> 1;
