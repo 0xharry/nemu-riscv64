@@ -1,7 +1,7 @@
 #include <fs.h>
 #include "/home/harry/ics2020/abstract-machine/am/include/am.h"
 #define putnstr(buf, n) \
-    for(size_t i=0; i<n; ++i) putch(*(char*)(buf+i))
+    for(size_t i=0; i<n; ++i) putch(*(const char*)(buf+i))
 
 extern size_t ramdisk_read(void *buf, size_t offset, size_t len);
 extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
@@ -88,6 +88,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
 
 size_t fs_write(int fd, const void *buf, size_t len) {
   if(fd==1 || fd==2) {
+    putnstr("[stdout/err] len:", 18);
     putch('0'+len/10);
     putch('0'+len%10);
     putch('\t');
