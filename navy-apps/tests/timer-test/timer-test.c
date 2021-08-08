@@ -23,10 +23,10 @@ int main() {
   // }
   struct timeval t;
   int sec = 1;
-  _syscall_(SYS_gettimeofday, 0, &t, 0);
+  _syscall_(SYS_gettimeofday, &t, 0, 0);
   int base = t.tv_sec;
   while (1) {
-    _syscall_(SYS_gettimeofday, 0, &t, 0);
+    _syscall_(SYS_gettimeofday, &t, 0, 0);
     while(t.tv_sec-base < sec);
     printf("一句话\n");
     sec++;
