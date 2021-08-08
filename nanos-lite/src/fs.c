@@ -98,14 +98,9 @@ int fs_close(int fd) {
 
 // buf -> fd
 size_t fs_write(int fd, const void *buf, size_t len) {
-  Finfo * ff = &file_table[fd];
-  assert(ff);
-  size_t count = ff->write(buf,ff->disk_offset + ff->file_offset,len);
-
-  fs_lseek(fd,count,SEEK_CUR);
-  return count;
+  file_table[fd].write(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
+  return fs_lseek(fd, len, SEEK_CUR);
 }
-
 //根据whence修改offset
 //为每一个已经打开的文件引入偏移量属性file_offset, 
 //来记录目前文件操作的位置. 每次对文件读写了多少个字节, 偏移量就前进多少.
