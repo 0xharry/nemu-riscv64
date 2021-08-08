@@ -98,8 +98,8 @@ size_t fs_read(int fd, void *buf, size_t len) {
   // assert( ff->file_offset <= ff->size );
 
   file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
-  fs_lseek(fd,len,SEEK_CUR); //注意更新!
-  return len;
+   //注意更新!
+  return fs_lseek(fd,len,SEEK_CUR);
 }
 
 
