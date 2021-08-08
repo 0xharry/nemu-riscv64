@@ -11,10 +11,10 @@ extern int _syscall_(int, uintptr_t, uintptr_t, uintptr_t);
 
 int main() {
   struct timeval t;
-  _syscall_(SYS_gettimeofday, 0, &t, 0);
+  _syscall_(SYS_gettimeofday, &t, 0, 0);
   int sec = t.tv_sec;
   int half_sec_glass=((t.tv_usec / 500000) == 1);
-  while(!_syscall_(SYS_gettimeofday, 0, &t, 0)) {
+  while(!_syscall_(SYS_gettimeofday, &t, 0, 0)) {
     half_sec_glass ^= ((t.tv_usec / 500000) == 1);
     if((long)sec <= t.tv_sec) {
       printf("一句话, sec=%d, half_sec_glass=%d\n", sec, t.tv_usec);
