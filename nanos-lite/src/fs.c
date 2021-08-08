@@ -90,25 +90,15 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 //从文件描述符中进行读取
 //偏移量不能越界
+
 size_t fs_read(int fd, void *buf, size_t len) {
-  //printf("get in fs_read\n");
-  Finfo * ff = &file_table[fd];
-  //printf("ff-addr : %p, buf-addr: %p, len-addr: %p\n",ff,buf,&len);
-  assert(ff);
+  if(fd<=2) return 0; // ignore stdin, stdout and stderr
 
-  // 读指针越界 || 读指针地址+读取长度 越界
-  //printf("ff->file_offset : %d,  ff->size : %d\n",ff->file_offset,ff->size);
-  assert( ff->file_offset <= ff->size );
+// printf("----------------\n[fs_read] fd %d\n from (%u + offset %d)\n size=%p\n----------------\n",
+// fd, file_table[fd].disk_offset, file_table[fd].file_offset, len);
 
-  // if(ff->file_offset + len > ff->size) {
-  //   len = ff->size - ff->file_offset;
-  //   assert( len <= ff->size );
-  // }
-  /* read `len' bytes starting from `offset' of ramdisk into `buf' */
-  //printf("disk_offset is 0x%x\n",ff->disk_offset);
-  size_t count = ff->read(buf,ff->disk_offset + ff->file_offset,len);
-  fs_lseek(fd,count,SEEK_CUR); //注意更新!
-  return count;
+  file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
+  return fs_lseek(fd, len, SEEK_CUR);
 }
 
 
