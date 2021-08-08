@@ -9,7 +9,7 @@ int main() {
   while(!gettimeofday(&t,NULL)) {
     half_sec_glass ^= ((t.tv_usec / 500000) == 1);
     if((long)sec <= t.tv_sec) {
-      printf("一句话, sec=%d, half_sec_glass=%d\n", sec, t.tv_usec);
+      printf("一句话 ");
       sec++;
     }
   }
