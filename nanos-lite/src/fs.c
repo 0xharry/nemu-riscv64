@@ -105,13 +105,23 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 //为每一个已经打开的文件引入偏移量属性file_offset, 
 //来记录目前文件操作的位置. 每次对文件读写了多少个字节, 偏移量就前进多少.
 size_t fs_lseek(int fd, size_t offset, int whence) {
-  Finfo * ff = &file_table[fd];
+  switch (whence){
+  case SEEK_SET:
+    assert(file_table[fd].size >= offset);
+    file_table[fd].file_offset = offset;
+    break;
 
-  switch(whence) {
-    case SEEK_SET: ff->file_offset = offset;break;
-    case SEEK_CUR: ff->file_offset +=offset;break;
-    case SEEK_END: ff->file_offset = ff->size + offset;break;
-    default: assert(0);
+  case SEEK_CUR:
+    file_table[fd].file_offset += offset;
+    assert(file_table[fd].file_offset <= file_table[fd].size);
+    break;
+
+  case SEEK_END:
+    file_table[fd].file_offset = file_table[fd].size + offset;
+    break;
+
+  default: assert(0);
   }
-  return ff->file_offset;
+
+  return file_table[fd].file_offset;
 }
