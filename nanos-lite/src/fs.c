@@ -90,15 +90,16 @@ int fs_open(const char *pathname, int flags, int mode) {
 
 //从文件描述符中进行读取
 //偏移量不能越界
-
 size_t fs_read(int fd, void *buf, size_t len) {
-  if(fd<=2) return 0; // ignore stdin, stdout and stderr
+  //printf("get in fs_read\n");
+  Finfo * ff = &file_table[fd];
+  assert(ff);
+  // 读指针越界 || 读指针地址+读取长度 越界
+  assert( ff->file_offset <= ff->size );
 
-// printf("----------------\n[fs_read] fd %d\n from (%u + offset %d)\n size=%p\n----------------\n",
-// fd, file_table[fd].disk_offset, file_table[fd].file_offset, len);
-
-  file_table[fd].read(buf, file_table[fd].disk_offset + file_table[fd].file_offset, len);
-  return fs_lseek(fd, len, SEEK_CUR);
+  size_t count = ff->read(buf,ff->disk_offset + ff->file_offset,len);
+  fs_lseek(fd,count,SEEK_CUR); //注意更新!
+  return count;
 }
 
 
