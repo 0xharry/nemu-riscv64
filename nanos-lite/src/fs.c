@@ -109,6 +109,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
     // putch('0'+len%10);
     // putch('\t');
     putnstr(buf, len);
+    fs_lseek(fd, len, SEEK_CUR);
     return len;
   }
   if(fd==0) return 0;
