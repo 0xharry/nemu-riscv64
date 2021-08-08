@@ -35,9 +35,6 @@ static Finfo file_table[] __attribute__((used)) = {
   [FD_STDIN]  = {"stdin",      0, 0, 0, invalid_read,  invalid_write},
   [FD_STDOUT] = {"stdout",     0, 0, 0, invalid_read,  serial_write},
   [FD_STDERR] = {"stderr",     0, 0, 0, invalid_read,  serial_write},
-  [FD_DEV]    = {"/dev/events",0, 0, 0, invalid_read,   invalid_write},
-  [FD_DISP]   = {"/proc/dispinfo", 0, 0, 0, invalid_read, invalid_write},
-  [FD_FB]     = {"/dev/fb",    0, 0, 0, invalid_read,  invalid_write},
 #include "files.h"
 };
 
@@ -78,7 +75,7 @@ int fs_open(const char *pathname, int flags, int mode) {
     //printf("第%d个 : %s\n",i,file_table[i].name);
     if(strcmp(pathname,file_table[i].name)==0) {
       file_table[i].open_offset = 0;
-      if(i>=6){
+      if(i>=3){
         file_table[i].read  = ramdisk_read;
         file_table[i].write = ramdisk_write;
       }
@@ -127,38 +124,12 @@ int fs_close(int fd) {
 
 // buf -> fd
 size_t fs_write(int fd, const void *buf, size_t len) {
-  
   Finfo * ff = &file_table[fd];
   assert(ff);
-  // printf("ff-addr : %p, buf-addr: %p\n",ff,buf);
-  // 写指针越界 || 读写针地址+写长度 越界
-  // printf("fd is %d\n",fd);
-  // printf("ff->open_offset : %d,  ff->size : %d\n",ff->open_offset,ff->size);
+  size_t count = ff->write(buf,ff->disk_offset + ff->open_offset,len);
 
-  // if(fd==1 || fd==2) {
-  //   int i;
-  //   for(i=0;i<len;i++) {
-  //     putch(*(char *)(buf+i));
-  //   }
-  //   return len;
-  // }
-  // else {
-    //assert( ff->open_offset <= ff->size );
-
-  // if(ff->open_offset + len > ff->size) {
-  //   len = ff->size - ff->open_offset;
-  //   assert( ff->open_offset <= ff->size );
-  // }
-    /* write `len' bytes starting from `buf' into the `offset' of ramdisk */
-    size_t count = ff->write(buf,ff->disk_offset + ff->open_offset,len);
-
-  // int i;
-  // for(i=0;i<count;i++) {
-  //   putch(*(char *)(buf+i));
-  // }
-    fs_lseek(fd,count,SEEK_CUR);
-    return count;
-  // }
+  fs_lseek(fd,count,SEEK_CUR);
+  return count;
 }
 
 //根据whence修改offset
