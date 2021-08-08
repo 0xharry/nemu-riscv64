@@ -10,12 +10,12 @@ extern size_t serial_write(const void *buf, size_t offset, size_t len);
 // extern size_t fb_write(const void *buf, size_t offset, size_t len); 
 // extern size_t dispinfo_write(const void *buf,size_t offset, size_t len) ;
 typedef struct {
-  char *name;    //文件名
-  size_t size;  //文件大小
-  size_t disk_offset; //文件在ramdisk中的偏移
-  size_t open_offset;  //新增！相对于单个文件的偏移
+  char *name;           // fixed in nanos's initialization
+  size_t size;          // fixed in nanos's initialization
+  size_t disk_offset;   // fixed in nanos's initialization
   ReadFn read;
-  WriteFn write;  
+  WriteFn write;
+  size_t file_offset;   // offset for each program file, start at 0;
 } Finfo;
 
 enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_DEV, FD_DISP, FD_FB};
@@ -32,9 +32,9 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
 
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
-  [FD_STDIN]  = {"stdin",      0, 0, 0, invalid_read,  invalid_write},
-  [FD_STDOUT] = {"stdout",     0, 0, 0, invalid_read,  serial_write},
-  [FD_STDERR] = {"stderr",     0, 0, 0, invalid_read,  serial_write},
+  [FD_STDIN]  = {"stdin",      0, 0,invalid_read,  invalid_write},
+  [FD_STDOUT] = {"stdout",     0, 0,invalid_read,  serial_write},
+  [FD_STDERR] = {"stderr",     0, 0,invalid_read,  serial_write},
 #include "files.h"
 };
 
@@ -74,7 +74,7 @@ int fs_open(const char *pathname, int flags, int mode) {
   for(i=0;i<sum;i++) {
     //printf("第%d个 : %s\n",i,file_table[i].name);
     if(strcmp(pathname,file_table[i].name)==0) {
-      file_table[i].open_offset = 0;
+      file_table[i].file_offset = 0;
       if(i>=3){
         file_table[i].read  = ramdisk_read;
         file_table[i].write = ramdisk_write;
@@ -97,16 +97,16 @@ size_t fs_read(int fd, void *buf, size_t len) {
   assert(ff);
 
   // 读指针越界 || 读指针地址+读取长度 越界
-  //printf("ff->open_offset : %d,  ff->size : %d\n",ff->open_offset,ff->size);
-  assert( ff->open_offset <= ff->size );
+  //printf("ff->file_offset : %d,  ff->size : %d\n",ff->file_offset,ff->size);
+  assert( ff->file_offset <= ff->size );
 
-  // if(ff->open_offset + len > ff->size) {
-  //   len = ff->size - ff->open_offset;
+  // if(ff->file_offset + len > ff->size) {
+  //   len = ff->size - ff->file_offset;
   //   assert( len <= ff->size );
   // }
   /* read `len' bytes starting from `offset' of ramdisk into `buf' */
   //printf("disk_offset is 0x%x\n",ff->disk_offset);
-  size_t count = ff->read(buf,ff->disk_offset + ff->open_offset,len);
+  size_t count = ff->read(buf,ff->disk_offset + ff->file_offset,len);
   fs_lseek(fd,count,SEEK_CUR); //注意更新!
   return count;
 }
@@ -117,7 +117,7 @@ size_t fs_read(int fd, void *buf, size_t len) {
 // }
 
 int fs_close(int fd) {
-  file_table[fd].open_offset = 0;
+  file_table[fd].file_offset = 0;
   return 0;
 }
 
@@ -126,23 +126,23 @@ int fs_close(int fd) {
 size_t fs_write(int fd, const void *buf, size_t len) {
   Finfo * ff = &file_table[fd];
   assert(ff);
-  size_t count = ff->write(buf,ff->disk_offset + ff->open_offset,len);
+  size_t count = ff->write(buf,ff->disk_offset + ff->file_offset,len);
 
   fs_lseek(fd,count,SEEK_CUR);
   return count;
 }
 
 //根据whence修改offset
-//为每一个已经打开的文件引入偏移量属性open_offset, 
+//为每一个已经打开的文件引入偏移量属性file_offset, 
 //来记录目前文件操作的位置. 每次对文件读写了多少个字节, 偏移量就前进多少.
 size_t fs_lseek(int fd, size_t offset, int whence) {
   Finfo * ff = &file_table[fd];
 
   switch(whence) {
-    case SEEK_SET: ff->open_offset = offset;break;
-    case SEEK_CUR: ff->open_offset +=offset;break;
-    case SEEK_END: ff->open_offset = ff->size + offset;break;
+    case SEEK_SET: ff->file_offset = offset;break;
+    case SEEK_CUR: ff->file_offset +=offset;break;
+    case SEEK_END: ff->file_offset = ff->size + offset;break;
     default: assert(0);
   }
-  return ff->open_offset;
+  return ff->file_offset;
 }
