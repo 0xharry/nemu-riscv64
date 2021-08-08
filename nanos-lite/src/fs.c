@@ -56,7 +56,9 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
     assert(file_table[fd].file_offset <= file_table[fd].size);
     return file_table[fd].file_offset;
 
-  case SEEK_END: // static file-system, do not support SEEK_END
+  case SEEK_END:
+    file_table[fd].file_offset = file_table[fd].size + offset;
+    return file_table[fd].file_offset;
   default: assert(0);
   }
 }
